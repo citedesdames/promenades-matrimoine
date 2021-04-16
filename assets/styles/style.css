@@ -7,3 +7,32 @@ body {
     width: 100vw;
     height: 100vh;
 }
+
+.btn {
+    display: none;
+
+    width: 60px;
+    height: 60px;
+    outline: none;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+    background-color: cornflowerblue;
+    border: none;
+    border-radius: 0.25rem;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 5%;
+    right: 4%;
+    transition: 300ms ease;
+    z-index: 400;
+}
+
+.btn span a {
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+}
+
+.active {
+    display: initial;
+}

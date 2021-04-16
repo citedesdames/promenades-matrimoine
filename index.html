@@ -1,22 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Les Promenades du matrimoine.</title>
+    <!-- Leaflet.JS --> 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
     crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
     integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
     crossorigin=""></script>
+
+    <!-- AR.JS for Augmented Reality -->
+    <!-- <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/three.js/build/ar-nft.js"></script> -->
+
+    <!-- CSS Style --> 
     <link rel="stylesheet" href="assets/styles/style.css">
 </head>
 <body>
     <div id="mapid"></div>
 
+    <button class="btn" id="btn">
+        <span><a href="augmented-reality/index.html">Photo</a></span>
+    </button>
+
+
+    <!-- PapaParse.JS for CSV data -->
     <script src="assets/scripts/papaparse.min.js"></script>
-    <script src="assets/scripts/app.js"></script>
+    <script src="assets/scripts/fonctions.js"></script>
+    <script src="assets/scripts/app.js" ></script>
 </body>
 </html>
