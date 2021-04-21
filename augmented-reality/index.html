@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>GeoAR.js demo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR.js</title>
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
@@ -15,12 +16,20 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-      <a-text
+      <!-- <a-text
         value="This content will always face you."
         look-at="[gps-camera]"
-        scale="120 120 120"
-        gps-entity-place="latitude: <add-your-latitude>; longitude: <add-your-longitude>;"
-      ></a-text>
+        scale="60 60 60"
+        gps-entity-place="latitude: 48.851456; longitude: 2.42659;"
+      ></a-text> -->
+
+      <a-entity 
+        gltf-model="./assets/cube/model.gltf"
+        rotation="-20 0 0" 
+        scale="0.45 0.45 0.45"
+        gps-entity-place="longitude: 2.423697; latitude: 48.851326;"
+        animation-mixer></a-scene>
+        
       <a-camera gps-camera rotation-reader> </a-camera>
     </a-scene>
   </body>

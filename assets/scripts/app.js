@@ -2,12 +2,21 @@ let sudOuest = L.latLng(48.815003, 2.227135);
 let nordEst = L.latLng(48.902724, 2.488421);
 let bounds = L.latLngBounds(sudOuest, nordEst);
 
+let positionUser, accuracy;
+
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
-    zoom: 5,
+    zoom: 12,
     maxBounds: bounds,
     maxBoundsViscosity: 1.0
-}).fitBounds(bounds);
+});
+
+// mymap.setView([48.861779, 2.343521], mymap.getZoom(), {
+//     "animate": true,
+//     "pan": {
+//       "duration": 10
+//     }
+//   });
 
 // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 //     attribution: '',
@@ -50,9 +59,9 @@ demarre.then(() => {
             let radius = e.accuracy;
     
             positionUser = L.marker(e.latlng).addTo(mymap)
-                .bindPopup("Vous êtes ici !").openPopup();
+                .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
         
-            L.circle(e.latlng, radius).addTo(mymap);
+            accuracy = L.circle(e.latlng, radius).addTo(mymap);
         });
     
         mymap.on('onLocationError', (e) => {
@@ -63,7 +72,7 @@ demarre.then(() => {
 
         setTimeout(() => {
             resolve()
-        }, 4000)
+        }, 2000)
     })
     detectPosition.then(() => {
 

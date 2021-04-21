@@ -6,7 +6,7 @@ function onMapClick(e) {
 function onLocationFound(e) {
     let radius = e.accuracy;
 
-    let positionUser = L.marker(e.latlng).addTo(mymap)
+    positionUser = L.marker(e.latlng).addTo(mymap)
         .bindPopup("Approximativement, voici votre posiion !").openPopup();
 
     L.circle(e.latlng, radius).addTo(mymap);
@@ -17,8 +17,12 @@ function onLocationError(e) {
 }
 
 function locate() {
-    mymap.locate({maxZoom: 16});
-    console.log("Position utilisateur mise à jour")
+    if (positionUser) {
+        // mymap.removeLayer(positionUser);
+        // mymap.removeLayer(accuracy);
+        mymap.locate({maxZoom: 16});
+        console.log("Position utilisateur mise à jour")
+    }
 }
 
 
@@ -26,6 +30,8 @@ function addStep(stepArray) {
     stepArray.map(step => {
         L.marker([`${step.latitude}`, `${step.longitude}`]).addTo(mymap)
             .bindPopup(`<h3>${step.nom}</h3>`).openPopup();
+        
+        // console.log(stepMarker);
     });
 
     
@@ -39,7 +45,7 @@ function addStep(stepArray) {
             color: 'blue'
         }).addTo(mymap);
 
-        // mymap.fitBounds(polyline.getBounds());
+
     }
 }
 
@@ -52,3 +58,8 @@ function verifyPosition() {
         btn.classList.remove("active");
     }
 }
+
+// function () {
+//     mymap.removeLayer(positionUser);
+//     mymap.removeLayer(accuracy);
+// }
