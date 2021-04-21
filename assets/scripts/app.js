@@ -7,7 +7,7 @@ let positionUser, accuracy;
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
-    maxBounds: bounds,
+    // maxBounds: bounds,
     maxBoundsViscosity: 1.0
 });
 
@@ -72,7 +72,7 @@ demarre.then(() => {
 
         setTimeout(() => {
             resolve()
-        }, 2000)
+        }, 4000)
     })
     detectPosition.then(() => {
 
