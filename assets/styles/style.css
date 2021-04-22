@@ -36,3 +36,10 @@ body {
 .active {
     display: initial;
 }
+
+.opacityCursor {
+    position: fixed;
+    bottom: 5%;
+    left: 4%;
+    z-index: 400;
+}

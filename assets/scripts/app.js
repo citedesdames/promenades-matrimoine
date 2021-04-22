@@ -7,16 +7,9 @@ let positionUser, accuracy;
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
-    // maxBounds: bounds,
-    maxBoundsViscosity: 1.0
+    maxBounds: bounds,
+    maxBoundsViscosity: 0.5
 });
-
-// mymap.setView([48.861779, 2.343521], mymap.getZoom(), {
-//     "animate": true,
-//     "pan": {
-//       "duration": 10
-//     }
-//   });
 
 // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 //     attribution: '',
@@ -29,7 +22,13 @@ let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={
     subdomains:['mt0','mt1','mt2','mt3']
 }).addTo(mymap);
 
-L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
+let oldParis1 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
+  attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
+  maxZoom: 20,
+  minZoom: 1
+}).addTo(mymap);
+
+let oldParis2 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.png', {
   attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
   maxZoom: 20,
   minZoom: 1
@@ -45,6 +44,24 @@ const demarre = new Promise((resolve, reject) => {
             addStep(results.data);
         }
     });
+
+    // Papa.parse('../assets/gcps.csv', {
+    //     header: true,
+    //     download: true,
+    //     complete: function(results) {
+    //         console.log(results.data);
+    //         let imageUrl = '../assets/images/paris-XIX.png',
+    //             imageBounds = [
+    //                 [results.data[0].lat, results.data[0].lon],
+    //                 [results.data[1].lat, results.data[1].lon],
+    //                 [results.data[2].lat, results.data[2].lon],
+    //                 [results.data[3].lat, results.data[3].lon]
+    //             ];
+    //             // imageBounds = [[48.815003, 2.227135], [48.902724,  2.488421]];
+                
+    //         L.imageOverlay(imageUrl, imageBounds).addTo(mymap);
+    //     }
+    // });
 
     setTimeout(() => {
         resolve()
@@ -62,6 +79,13 @@ demarre.then(() => {
                 .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
         
             accuracy = L.circle(e.latlng, radius).addTo(mymap);
+
+            // mymap.setView(e.latlng, 16, {
+            //     "animate": true,
+            //     "pan": {
+            //       "duration": 10
+            //     }
+            // });
         });
     
         mymap.on('onLocationError', (e) => {

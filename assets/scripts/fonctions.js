@@ -59,7 +59,16 @@ function verifyPosition() {
     }
 }
 
-// function () {
-//     mymap.removeLayer(positionUser);
-//     mymap.removeLayer(accuracy);
-// }
+function updateOpacity(value) {
+    if (value > 1) {
+        console.log(value);
+        oldParis2.setOpacity(value - 1);
+        oldParis1.setOpacity(1);
+    } else if (value < 1) {
+        console.log(value);
+        oldParis1.setOpacity(value);
+        oldParis2.setOpacity(0);
+    }
+    // console.log(value);
+    // oldParis1.setOpacity(value);
+}
