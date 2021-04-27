@@ -8,28 +8,66 @@
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <script>
+      AFRAME.registerComponent('clicker', {
+        init: function() {
+          this.el.addEventListener('click', e => {
+            alert('Box clicked!');
+          });
+        }
+      });
+      </script>
   </head>
 
   <body style="margin: 0; overflow: hidden;">
+    
     <a-scene
       embedded
+		  cursor='rayOrigin: mouse'
+      raycaster='near: 0; far: 50000'
       loading-screen="enabled: false"
-      arjs="sourceType: webcam; debugUIEnabled: false;"
-    >
+      arjs='sourceType: webcam; debugUIEnabled: false;'
+      renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true">
 
       <!-- 48.851399, 2.42655 -->
-      <!-- 48.851092, 2.426203 -->
+      <!-- 48.851092, 2.426203 // CUBE POSITIONS -->
+      <!-- 48.850950, 2.426600 // PORTRAIT POSITIONS -->
+      <!-- 48.850884, 2.426954 // ARROW POSITIONS -->
 
       <a-entity 
         gltf-model="./assets/cube/model.gltf"
-        look-at="[gps-camera]"
-        rotation="0 0 0" 
-        position="30 30 0"
-        scale="10 10 10"
+        rotation="0 180 0" 
+        position="0 70 0"
+        scale="15 15 15"
         gps-entity-place="latitude: 48.851092; longitude: 2.426203;"
       ></a-entity>
-        
+
+      <a-entity 
+        gltf-model="./assets/arrow-model/RLab-arrow.gltf"
+        rotation="0 0 0" 
+        position="0 90 0"
+        scale="20 20 20"
+        gps-entity-place="latitude: 48.850884; longitude: 2.426954;"
+      ></a-entity>
+
+      <a-entity 
+        gltf-model="./assets/portrait-marguerite/portraitMarguerite.gltf"
+        rotation="0 0 0" 
+        position="15 90 0"
+        scale="3 3 3"
+        gps-entity-place="latitude: 48.850950; longitude: 2.426600;"
+      ></a-entity>
+
+      <a-box 
+        gps-entity-place='latitude: 48.851092; longitude: 2.426203'
+        color='red'
+        scale='7 7 7'
+        position="0 70 0"
+        clicker>
+      </a-box>
+    
       <a-camera gps-camera rotation-reader> </a-camera>
     </a-scene>
   </body>
+
 </html>
