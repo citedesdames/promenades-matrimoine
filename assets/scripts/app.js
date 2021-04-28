@@ -1,8 +1,17 @@
-let sudOuest = L.latLng(48.815003, 2.227135);
-let nordEst = L.latLng(48.902724, 2.488421);
-let bounds = L.latLngBounds(sudOuest, nordEst);
+/*
+    Déclaration des variabls relatives aux limites de la carte pour
+    la première balades, déclaration de variables pour ciblage d'éléments.
+
+    Initialisation et paramétrage de la carte Leaflet
+*/
+
+let sudOuest = L.latLng(48.815003, 2.227135),
+    nordEst = L.latLng(48.902724, 2.488421),
+    bounds = L.latLngBounds(sudOuest, nordEst);
 
 let positionUser, accuracy;
+
+let opacityCursor = document.querySelector("#opacityCursor");
 
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
@@ -11,6 +20,15 @@ let mymap = new L.Map('mapid', {
     maxBoundsViscosity: 0.5
 });
 
+
+
+
+
+/*
+    Chargements des tiles, déclaration des fonds de cartes via calques Leaflet
+    et initialisation du bouton de contrôle des calques historiques.
+*/
+
 // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 //     attribution: '',
 //     maxZoom: 18,
@@ -18,21 +36,55 @@ let mymap = new L.Map('mapid', {
 // }).addTo(mymap);
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-    maxZoom: 20,
+    // maxZoom: 20,
     subdomains:['mt0','mt1','mt2','mt3']
 }).addTo(mymap);
 
-let oldParis1 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
-  attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
-  maxZoom: 20,
-  minZoom: 1
-}).addTo(mymap);
+let paris17 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
+    attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
+    // maxZoom: 20,
+    minZoom: 1
+});
 
-let oldParis2 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.png', {
-  attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
-  maxZoom: 20,
-  minZoom: 1
-}).addTo(mymap);
+let paris19 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.png', {
+    attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
+    // maxZoom: 20,
+    minZoom: 1
+});
+
+let fondsDeCarte = {
+    "Paris XVII": paris17,
+    "Paris XIX": paris19
+};
+
+let control = L.control.layers(fondsDeCarte).addTo(mymap);
+let checkboxes = document.querySelectorAll("input[type=radio][name=leaflet-base-layers_88]"); 
+let enabledSettings = []
+
+checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+      enabledSettings = 
+        Array.from(checkboxes)
+        .filter(i => i.checked)
+        .map(i => i.value)
+        
+      if (enabledSettings == "on") {
+          opacityCursor.classList.add("reveal");
+      }
+    })
+  });
+
+
+
+
+
+/*
+    Initialisation des prommesses et démarrage de l'application
+    
+    Chargement des données des CSV via la librairie Papa Parse, détection de la position
+    de l'utilisateur et test provisoire de distance entre celle-ci et un marqueur donné
+*/
+
 
 const demarre = new Promise((resolve, reject) => {
 
@@ -41,27 +93,12 @@ const demarre = new Promise((resolve, reject) => {
         header: true,
         complete: function (results) {
             console.log(results);
-            addStep(results.data);
+            const items = results.data;
+            items.sort((a, b) => a.ordre - b.ordre);
+            
+            addStep(items);
         }
     });
-
-    // Papa.parse('../assets/gcps.csv', {
-    //     header: true,
-    //     download: true,
-    //     complete: function(results) {
-    //         console.log(results.data);
-    //         let imageUrl = '../assets/images/paris-XIX.png',
-    //             imageBounds = [
-    //                 [results.data[0].lat, results.data[0].lon],
-    //                 [results.data[1].lat, results.data[1].lon],
-    //                 [results.data[2].lat, results.data[2].lon],
-    //                 [results.data[3].lat, results.data[3].lon]
-    //             ];
-    //             // imageBounds = [[48.815003, 2.227135], [48.902724,  2.488421]];
-                
-    //         L.imageOverlay(imageUrl, imageBounds).addTo(mymap);
-    //     }
-    // });
 
     setTimeout(() => {
         resolve()
@@ -80,12 +117,12 @@ demarre.then(() => {
         
             accuracy = L.circle(e.latlng, radius).addTo(mymap);
 
-            // mymap.setView(e.latlng, 16, {
-            //     "animate": true,
-            //     "pan": {
-            //       "duration": 10
-            //     }
-            // });
+            mymap.setView(e.latlng, 14, {
+                "animate": true,
+                "pan": {
+                  "duration": 10
+                }
+            });
         });
     
         mymap.on('onLocationError', (e) => {
@@ -129,9 +166,11 @@ demarre.then(() => {
         // setInterval(locate, 3000);
         
     })
-
-
-
 })
+
+
+/*
+    Détectection des coordonnées GPS au clique de l'utilisateur => provisoire
+*/
 
 mymap.on('click', onMapClick);

@@ -23,16 +23,16 @@
     
     <a-scene
       embedded
-		  cursor='rayOrigin: mouse'
-      raycaster='near: 0; far: 50000'
-      loading-screen="enabled: false"
+      cursor='rayOrigin: mouse'
+      raycaster='near: 0; far: 80000'
+      loading-screen="enabled: false ; dotsColor: red; backgroundColor: black"
       arjs='sourceType: webcam; debugUIEnabled: false;'
       renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true">
 
       <!-- 48.851399, 2.42655 -->
-      <!-- 48.851092, 2.426203 // CUBE POSITIONS -->
-      <!-- 48.850950, 2.426600 // PORTRAIT POSITIONS -->
-      <!-- 48.850884, 2.426954 // ARROW POSITIONS -->
+      <!-- 48.851092, 2.426203 // CUBE POSITION -->
+      <!-- 48.850950, 2.426600 // PORTRAIT POSITION -->
+      <!-- 48.850884, 2.426954 // ARROW POSITION -->
 
       <a-entity 
         gltf-model="./assets/cube/model.gltf"
@@ -51,6 +51,7 @@
       ></a-entity>
 
       <a-entity 
+        clicker
         gltf-model="./assets/portrait-marguerite/portraitMarguerite.gltf"
         rotation="0 0 0" 
         position="15 90 0"
@@ -63,8 +64,7 @@
         color='red'
         scale='7 7 7'
         position="0 70 0"
-        clicker>
-      </a-box>
+      ></a-box>
     
       <a-camera gps-camera rotation-reader> </a-camera>
     </a-scene>

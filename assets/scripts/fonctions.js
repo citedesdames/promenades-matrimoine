@@ -60,15 +60,18 @@ function verifyPosition() {
 }
 
 function updateOpacity(value) {
-    if (value > 1) {
+    // if (value > 1) {
+    //     console.log(value);
+    //     paris19.setOpacity(value - 1);
+    //     paris17.setOpacity(1);
+    // } else if (value < 1) {
+    //     console.log(value);
+    //     paris17.setOpacity(value);
+    //     paris19.setOpacity(0);
+    // }
+    for (const property in fondsDeCarte) {
+        // console.log(`${property}: ${fondsDeCarte[property]}`);
         console.log(value);
-        oldParis2.setOpacity(value - 1);
-        oldParis1.setOpacity(1);
-    } else if (value < 1) {
-        console.log(value);
-        oldParis1.setOpacity(value);
-        oldParis2.setOpacity(0);
-    }
-    // console.log(value);
-    // oldParis1.setOpacity(value);
+        fondsDeCarte[property].setOpacity(value)
+      }
 }
