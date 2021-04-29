@@ -58,7 +58,7 @@ let fondsDeCarte = {
 };
 
 let control = L.control.layers(fondsDeCarte).addTo(mymap);
-let checkboxes = document.querySelectorAll("input[type=radio][name=leaflet-base-layers_88]"); 
+let checkboxes = document.querySelectorAll(".leaflet-control-layers-selector"); 
 let enabledSettings = []
 
 checkboxes.forEach(function(checkbox) {
