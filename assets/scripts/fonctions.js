@@ -3,11 +3,20 @@ function onMapClick(e) {
         .bindPopup("Vous avez clické sur la carte à " + e.latlng.toString()).openPopup()
 }
 
+function onMarkerClick(coord) {
+    let GPSMark = L.latLng(coord.latlng.lat + .0045, coord.latlng.lng);
+    
+    mymap.flyTo(GPSMark, 16, {
+        animate: true,
+        duration: 0.5
+    });
+}
+
 function onLocationFound(e) {
     let radius = e.accuracy;
 
     positionUser = L.marker(e.latlng).addTo(mymap)
-        .bindPopup("Approximativement, voici votre posiion !").openPopup();
+        .bindPopup("Approximativement, voici votre posiion !").openPopup(e.latlng);
 
     L.circle(e.latlng, radius).addTo(mymap);
 }
@@ -27,13 +36,38 @@ function locate() {
 
 
 function addStep(stepArray) {
+    let markerArray = [];
+
     stepArray.map(step => {
-        L.marker([`${step.latitude}`, `${step.longitude}`]).addTo(mymap)
-            .bindPopup(`<h3>${step.nom}</h3>`).openPopup();
+        let mark = L.marker([`${step.latitude}`, `${step.longitude}`]).addTo(mymap)
+            .bindPopup(`
+                <div class="step">
+                    <div class="popup-photo">
+                        <img src="../assets/images/paris-min.jpeg" alt="">
+                    </div>
+                    
+                    <div class="popup-header">
+                        <div class="step-icon">
+                            <img src="../assets/images/maps-and-flags.svg" alt="">
+                        </div>
+                        <div class="step-name">
+                            <h3>${step.nom}</h3>
+                        </div>
+                    </div>
+                    
+                    <div class="popup-description">
+                        <p>Lorem ipsum dolor sit amet. Hic quisquam dolores aut voluptates dolor in dolores quia ut ullam rerum 33 dolorem dolor ut provident voluptatem aut nisi omnis.</p>
+                        <div class="author">Author</div>
+                    </div>
+
+                    <a href=""><div class="know-more">En savoir plus</div></a>
+                </div>
+            `).on("click", onMarkerClick);
         
-        // console.log(stepMarker);
+            markerArray.push(mark);
     });
 
+    console.log(markerArray);
     
     for (let i = 0; i < stepArray.length - 1; i++) {
         var latlngs = [

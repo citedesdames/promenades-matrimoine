@@ -57,6 +57,10 @@ let fondsDeCarte = {
     "Paris XIX": paris19
 };
 
+paris19.on('click', function(e) {
+    alert('I have been clicked ')
+});
+
 let control = L.control.layers(fondsDeCarte).addTo(mymap);
 let checkboxes = document.querySelectorAll(".leaflet-control-layers-selector"); 
 let enabledSettings = []
@@ -87,7 +91,6 @@ checkboxes.forEach(function(checkbox) {
 
 
 const demarre = new Promise((resolve, reject) => {
-
     Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
         download: true,
         header: true,
@@ -117,12 +120,12 @@ demarre.then(() => {
         
             accuracy = L.circle(e.latlng, radius).addTo(mymap);
 
-            mymap.setView(e.latlng, 14, {
-                "animate": true,
-                "pan": {
-                  "duration": 10
-                }
-            });
+            // mymap.setView(e.latlng, 14, {
+            //     "animate": true,
+            //     "pan": {
+            //       "duration": 10
+            //     }
+            // });
         });
     
         mymap.on('onLocationError', (e) => {
@@ -173,4 +176,4 @@ demarre.then(() => {
     Détectection des coordonnées GPS au clique de l'utilisateur => provisoire
 */
 
-mymap.on('click', onMapClick);
+// mymap.on('click', onMapClick);
