@@ -21,6 +21,15 @@ let mymap = new L.Map('mapid', {
 });
 
 
+let shutter = document.querySelector(".shutter")
+let notchBtn = document.querySelector(".notch");
+let closeBtn = document.querySelector(".close");
+notchBtn.addEventListener('click', event => {
+    onBtnShutterClick(shutter);
+});
+closeBtn.addEventListener('click', event => {
+    onBtnShutterClick(shutter);
+});
 
 
 
@@ -34,6 +43,15 @@ let mymap = new L.Map('mapid', {
 //     maxZoom: 18,
 //     id: 'mapbox/streets-v11',
 // }).addTo(mymap);
+
+var icon = L.icon({
+    iconUrl: 'assets/images/marker-leaflet.png',
+    shadowUrl: 'leaf-shadow.png',
+
+    iconSize:     [25, 39.1], // size of the icon
+    iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+});
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
     // maxZoom: 20,

@@ -21,19 +21,32 @@
 </head>
 
 <body>
-    <a href="">
-        <div class="notch">
-            <div class="arrow"></div>
-        </div>
-    </a>
+    <main>
+        <div id="mapid"></div>
 
-    <div id="mapid"></div>
+        <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
+    
+        <button class="btn" id="btn">
+            <span><a href="augmented-reality/index.html">Photo</a></span>
+        </button>
+    </main>
 
-    <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
+    <section class="shutter">
+        <!-- <a class="notch-btn"> -->
+            <div class="notch">
+                <!-- <div class="arrow"></div> -->
+                <img class="arrow" src="assets/images/right-arrow.svg" alt="">
+            </div>
+        <!-- </a> -->
 
-    <button class="btn" id="btn">
-        <span><a href="augmented-reality/index.html">Photo</a></span>
-    </button>
+        <!-- <a class="notch-close-btn"> -->
+            <div class="notch-close">
+                <img class="close" src="assets/images/close.svg" alt="">
+            </div>
+        <!-- </a> -->
+
+        <h2 class="shutter-heading">Lorem, ipsum.</h1>
+    </section>
 
 
     <!-- JS app --> 

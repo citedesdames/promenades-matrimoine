@@ -4,7 +4,7 @@ function onMapClick(e) {
 }
 
 function onMarkerClick(coord) {
-    let GPSMark = L.latLng(coord.latlng.lat + .0045, coord.latlng.lng);
+    let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
     
     mymap.flyTo(GPSMark, 16, {
         animate: true,
@@ -39,11 +39,12 @@ function addStep(stepArray) {
     let markerArray = [];
 
     stepArray.map(step => {
-        let mark = L.marker([`${step.latitude}`, `${step.longitude}`]).addTo(mymap)
+        let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: icon}).addTo(mymap)
             .bindPopup(`
                 <div class="step">
                     <div class="popup-photo">
                         <img src="../assets/images/paris-min.jpeg" alt="">
+                        <span class="source-photo">Wikimedia Commons, Lorem Ispum<span>
                     </div>
                     
                     <div class="popup-header">
@@ -56,8 +57,8 @@ function addStep(stepArray) {
                     </div>
                     
                     <div class="popup-description">
-                        <p>Lorem ipsum dolor sit amet. Hic quisquam dolores aut voluptates dolor in dolores quia ut ullam rerum 33 dolorem dolor ut provident voluptatem aut nisi omnis.</p>
-                        <div class="author">Author</div>
+                        <p>${step.description}</p>
+                        <div class="author">${step.auteur}</div>
                     </div>
 
                     <a href=""><div class="know-more">En savoir plus</div></a>
@@ -76,7 +77,8 @@ function addStep(stepArray) {
         ];
 
         L.polyline(latlngs, {
-            color: 'blue'
+            color: '#DD6262',
+            // color: '#B55050'
         }).addTo(mymap);
 
 
@@ -108,4 +110,12 @@ function updateOpacity(value) {
         console.log(value);
         fondsDeCarte[property].setOpacity(value)
       }
+}
+
+function onBtnShutterClick(element) {
+    if(!element.classList.contains("open")) {
+        element.classList.add("open");
+    } else {
+        element.classList.remove("open");
+    }
 }
