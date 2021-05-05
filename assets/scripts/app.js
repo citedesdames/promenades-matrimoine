@@ -46,7 +46,6 @@ closeBtn.addEventListener('click', event => {
 
 var icon = L.icon({
     iconUrl: 'assets/images/marker-leaflet.png',
-    shadowUrl: 'leaf-shadow.png',
 
     iconSize:     [25, 39.1], // size of the icon
     iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
