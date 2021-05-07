@@ -3,15 +3,6 @@ function onMapClick(e) {
         .bindPopup("Vous avez clické sur la carte à " + e.latlng.toString()).openPopup()
 }
 
-function onMarkerClick(coord) {
-    let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
-    
-    mymap.flyTo(GPSMark, 16, {
-        animate: true,
-        duration: 0.5
-    });
-}
-
 function onLocationFound(e) {
     let radius = e.accuracy;
 
@@ -61,9 +52,22 @@ function addStep(stepArray) {
                         <div class="author">${step.auteur}</div>
                     </div>
 
-                    <a href=""><div class="know-more">En savoir plus</div></a>
+                    <button class="know-more">En savoir plus</button>
                 </div>
-            `).on("click", onMarkerClick);
+            `).on("click", function(coord) {
+                let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
+    
+                mymap.flyTo(GPSMark, 16, {
+                    animate: true,
+                    duration: 0.5
+                });
+            
+                let knowMore = document.querySelector(".know-more");
+                knowMore.addEventListener('click', event => {
+                    this.closePopup();
+                    openShutter(shutter);
+                });
+            });
         
             markerArray.push(mark);
     });
@@ -80,8 +84,6 @@ function addStep(stepArray) {
             color: '#DD6262',
             // color: '#B55050'
         }).addTo(mymap);
-
-
     }
 }
 
@@ -112,10 +114,15 @@ function updateOpacity(value) {
       }
 }
 
-function onBtnShutterClick(element) {
+function openShutter(element) {
     if(!element.classList.contains("open")) {
         element.classList.add("open");
     } else {
         element.classList.remove("open");
+
+        mymap.flyTo(mymap.getCenter(), 13, {
+            animate: true,
+            duration: 1.5
+        });
     }
 }

@@ -20,18 +20,16 @@ let mymap = new L.Map('mapid', {
     maxBoundsViscosity: 0.5
 });
 
+let shutter = document.querySelector(".shutter"),
+    notchBtn = document.querySelector(".notch"),
+    closeBtn = document.querySelector(".close");
 
-let shutter = document.querySelector(".shutter")
-let notchBtn = document.querySelector(".notch");
-let closeBtn = document.querySelector(".close");
 notchBtn.addEventListener('click', event => {
-    onBtnShutterClick(shutter);
+    openShutter(shutter);
 });
 closeBtn.addEventListener('click', event => {
-    onBtnShutterClick(shutter);
+    openShutter(shutter);
 });
-
-
 
 /*
     Chargements des tiles, déclaration des fonds de cartes via calques Leaflet
@@ -94,8 +92,6 @@ checkboxes.forEach(function(checkbox) {
       }
     })
   });
-
-
 
 
 
