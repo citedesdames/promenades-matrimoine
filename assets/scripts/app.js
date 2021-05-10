@@ -104,6 +104,8 @@ checkboxes.forEach(function(checkbox) {
 
 
 const demarre = new Promise((resolve, reject) => {
+    let dataEtape = [];
+    let dataDocument = [];
     Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
         download: true,
         header: true,
@@ -111,10 +113,20 @@ const demarre = new Promise((resolve, reject) => {
             console.log(results);
             const items = results.data;
             items.sort((a, b) => a.ordre - b.ordre);
-            
+            dataEtape.push(results.data);
             addStep(items);
         }
     });
+
+    Papa.parse(' https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=954920506&single=true&output=csv', {
+        download: true,
+        header: true,
+        complete: function (results) {
+            dataDocument.push(results.data);
+            console.log(dataDocument);
+        }
+    });
+
 
     setTimeout(() => {
         resolve()

@@ -67,6 +67,8 @@ function addStep(stepArray) {
                     this.closePopup();
                     openShutter(shutter);
                 });
+
+
             });
         
             markerArray.push(mark);
