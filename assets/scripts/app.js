@@ -24,6 +24,8 @@ let shutter = document.querySelector(".shutter"),
     notchBtn = document.querySelector(".notch"),
     closeBtn = document.querySelector(".close");
 
+let stepDocument = document.querySelector("#stepDocument");
+
 notchBtn.addEventListener('click', event => {
     openShutter(shutter);
 });
@@ -78,7 +80,7 @@ paris19.on('click', function(e) {
 
 let control = L.control.layers(fondsDeCarte).addTo(mymap);
 let checkboxes = document.querySelectorAll(".leaflet-control-layers-selector"); 
-let enabledSettings = []
+let enabledSettings = [];
 
 checkboxes.forEach(function(checkbox) {
     checkbox.addEventListener('change', function() {
@@ -104,8 +106,8 @@ checkboxes.forEach(function(checkbox) {
 
 
 const demarre = new Promise((resolve, reject) => {
-    let dataEtape = [];
-    let dataDocument = [];
+    let dataEtape;
+    let dataDocument;
     Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
         download: true,
         header: true,
@@ -113,8 +115,8 @@ const demarre = new Promise((resolve, reject) => {
             console.log(results);
             const items = results.data;
             items.sort((a, b) => a.ordre - b.ordre);
-            dataEtape.push(results.data);
-            addStep(items);
+            dataEtape = items;
+            // addStep(items);
         }
     });
 
@@ -122,13 +124,16 @@ const demarre = new Promise((resolve, reject) => {
         download: true,
         header: true,
         complete: function (results) {
-            dataDocument.push(results.data);
+            dataDocument = results.data;
             console.log(dataDocument);
+            // dataDocument.push(results.data);
         }
     });
 
 
     setTimeout(() => {
+        addStep(dataEtape);
+        addDocuments(dataDocument);
         resolve()
     }, 2000)
 })

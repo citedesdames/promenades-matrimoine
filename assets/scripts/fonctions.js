@@ -25,6 +25,23 @@ function locate() {
     }
 }
 
+// function onMarkerClick(coord) {
+//     let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
+
+//     mymap.flyTo(GPSMark, 16, {
+//         animate: true,
+//         duration: 0.5
+//     });
+
+//     let knowMore = document.querySelector(".know-more");
+//     knowMore.addEventListener('click', event => {
+//         this.closePopup();
+//         openShutter(shutter);
+//         // knowMoreBtn(dataDocument);
+//     });
+
+// }
+
 
 function addStep(stepArray) {
     let markerArray = [];
@@ -52,9 +69,10 @@ function addStep(stepArray) {
                         <div class="author">${step.auteur}</div>
                     </div>
 
-                    <button class="know-more">En savoir plus</button>
+                    <button class="know-more" ordre="${step.ordre}">En savoir plus</button>
                 </div>
             `).on("click", function(coord) {
+                // console.log(this);
                 let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
     
                 mymap.flyTo(GPSMark, 16, {
@@ -65,9 +83,17 @@ function addStep(stepArray) {
                 let knowMore = document.querySelector(".know-more");
                 knowMore.addEventListener('click', event => {
                     this.closePopup();
-                    openShutter(shutter);
+                    let markerRankNumber = markerArray.indexOf(mark);
+                    
+                    // console.log(knowMore.getAttribute("ordre"));
+                    // console.log(markerArray.indexOf(mark));
+                    openShutter(shutter, markerRankNumber);
+                    // knowMoreBtn(dataDocument);
                 });
 
+                
+                // console.log(this.getAttribute("data-latlng"));
+                // console.log(markerArray.indexOf(mark));
 
             });
         
@@ -100,15 +126,6 @@ function verifyPosition() {
 }
 
 function updateOpacity(value) {
-    // if (value > 1) {
-    //     console.log(value);
-    //     paris19.setOpacity(value - 1);
-    //     paris17.setOpacity(1);
-    // } else if (value < 1) {
-    //     console.log(value);
-    //     paris17.setOpacity(value);
-    //     paris19.setOpacity(0);
-    // }
     for (const property in fondsDeCarte) {
         // console.log(`${property}: ${fondsDeCarte[property]}`);
         console.log(value);
@@ -116,15 +133,60 @@ function updateOpacity(value) {
       }
 }
 
-function openShutter(element) {
+function openShutter(element, rank) {
+    let stepDocumentChildrens = document.querySelectorAll(".document");
     if(!element.classList.contains("open")) {
         element.classList.add("open");
+        let docNumber = 0;
+        for (let i = 0; i < stepDocumentChildrens.length; i++) {
+            if(stepDocumentChildrens[i].getAttribute("id_etape") == rank + 1) {
+                docNumber++;
+                stepDocumentChildrens[i].classList.add("visible");
+            }
+        }
+        document.querySelector(".doc-number").innerHTML = docNumber;
     } else {
         element.classList.remove("open");
+        setTimeout(() => {
+            document.querySelector(".doc-number").innerHTML = "";
+
+            for (let i = 0; i < stepDocumentChildrens.length; i++) {
+                stepDocumentChildrens[i].classList.remove("visible");
+            }
+        }, 1200)
 
         mymap.flyTo(mymap.getCenter(), 13, {
             animate: true,
             duration: 1.5
         });
     }
+}
+
+// function knowMoreBtn(docArray) {
+//     console.log(docArray);
+// }
+
+function addDocuments(docArray) {
+    
+
+    let docContent = docArray.map(doc => {
+        let docContent = document.createElement("div");
+        docContent.classList.add('document');
+        docContent.setAttribute("id_etape", `${doc.id_etape}`);
+
+        let newContent = `<div class="dot"></div>
+                        <div class="photo-doc">
+                            <img src="assets/images/photo-camera.svg" alt="">
+                        </div>
+                        <div class="doc-content">
+                            <span>${doc.type}</span>
+                            <p>${doc.description}</p>
+                        </div>`;
+
+        docContent.innerHTML = newContent;
+    
+        stepDocument.append(docContent);
+
+    });
+    
 }

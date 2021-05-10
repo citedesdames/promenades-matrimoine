@@ -72,6 +72,7 @@ main {
     display: initial;
 }
 
+
 .leaflet-popup-content-wrapper {
     /* box-shadow: inset 0 0 2000px rgba(255, 255, 255, .5);
     filter: blur(10px); */
@@ -345,18 +346,15 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-bottom: 65%;
 }
 
 .document {
+    display: none;
     width: 100%;
-    height: 110px;
+    min-height: 110px;
     background: #E6E6E6;
     border-radius: 10px;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 15px;
     margin-bottom: 1.25rem;
 }
@@ -397,6 +395,7 @@ main {
 }
 
 .doc-content span {
+    text-transform: capitalize;
     font-weight: 600;
     color: #76ACF4;
 }
@@ -426,4 +425,10 @@ main {
 }
 .augmented-reality-btn span {
     margin-left: 10px;
+}
+
+.visible {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
