@@ -27,7 +27,7 @@ function locate() {
 
 // function onMarkerClick(coord) {
 //     let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
-
+    
 //     mymap.flyTo(GPSMark, 16, {
 //         animate: true,
 //         duration: 0.5
@@ -36,10 +36,12 @@ function locate() {
 //     let knowMore = document.querySelector(".know-more");
 //     knowMore.addEventListener('click', event => {
 //         this.closePopup();
-//         openShutter(shutter);
-//         // knowMoreBtn(dataDocument);
+//         let markerRankNumber = markerArray.indexOf(mark);
+        
+//         // console.log(knowMore.getAttribute("ordre"));
+//         // console.log(markerArray.indexOf(mark));
+//         openShutter(shutter, markerRankNumber);
 //     });
-
 // }
 
 
@@ -72,7 +74,6 @@ function addStep(stepArray) {
                     <button class="know-more" ordre="${step.ordre}">En savoir plus</button>
                 </div>
             `).on("click", function(coord) {
-                // console.log(this);
                 let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
     
                 mymap.flyTo(GPSMark, 16, {
@@ -88,14 +89,56 @@ function addStep(stepArray) {
                     // console.log(knowMore.getAttribute("ordre"));
                     // console.log(markerArray.indexOf(mark));
                     openShutter(shutter, markerRankNumber);
-                    // knowMoreBtn(dataDocument);
                 });
 
-                
-                // console.log(this.getAttribute("data-latlng"));
-                // console.log(markerArray.indexOf(mark));
-
             });
+
+            let shutterContent = document.createElement("div");
+            shutterContent.classList.add('shutter-content');
+            shutterContent.setAttribute("shuter_id_etape", `${step.ordre}`);
+
+            let newContent = `
+                <div class="step-address">
+                    <img src="assets/images/gps.svg" alt="">
+                    <div class="address">${step.adresse}</div>
+                </div>
+                <h2>L’<span>héritage</span> culturelle du <span>${step.nom}</span>.</h2>
+
+                <div class="doc-header">
+                    <h3>Documents sur ce lieu</h3>
+                    <div class="doc-list"><span class="doc-number"></span></div>
+                </div>
+
+                <div class="step-document" document_id_etape=${step.ordre}></div>
+                <a href="">
+                    <div class="augmented-reality-btn">
+                        <img src="assets/images/photo-camera.svg" alt="">
+                        <span>Appareil photo</span>
+                    </div>
+                </a>`;
+
+            let stepRoute = document.createElement("div");
+            stepRoute.classList.add('step-route');
+            let newStep = `
+                <div class="dot"></div>
+                <div class="step-route-info">
+                    <div class="photo-doc">
+                        <img src="assets/images/photo-camera.svg" alt="">
+                    </div>
+                    <div class="step-route-address">
+                        <div>
+                            <span class="location">${step.nom}</span>
+                            <span class="distance">2 Km</span>
+                        </div>
+                        <p>${step.adresse}</p>
+                    </div>
+                </div>
+            `;
+
+            shutterContent.innerHTML = newContent;
+            shutterPage.append(shutterContent);
+            stepRoute.innerHTML = newStep;
+            route.append(stepRoute);
         
             markerArray.push(mark);
     });
@@ -134,25 +177,30 @@ function updateOpacity(value) {
 }
 
 function openShutter(element, rank) {
-    let stepDocumentChildrens = document.querySelectorAll(".document");
+    let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
     if(!element.classList.contains("open")) {
         element.classList.add("open");
-        let docNumber = 0;
+        
+            
         for (let i = 0; i < stepDocumentChildrens.length; i++) {
-            if(stepDocumentChildrens[i].getAttribute("id_etape") == rank + 1) {
-                docNumber++;
-                stepDocumentChildrens[i].classList.add("visible");
+            if(stepDocumentChildrens[i].getAttribute("shuter_id_etape") == rank + 1) {
+                routeSection.classList.add("hidden");
+                stepDocumentChildrens[i].classList.add("reveal");
+                
+                let elementList = stepDocumentChildrens[i].childNodes;
+                let docNumber = elementList[7].childNodes.length;
+                let childNumber = elementList[5].childNodes;
+                childNumber[3].firstChild.innerHTML = docNumber;
+                // console.log(document.querySelector(".doc-number"));
             }
         }
-        document.querySelector(".doc-number").innerHTML = docNumber;
     } else {
         element.classList.remove("open");
         setTimeout(() => {
-            document.querySelector(".doc-number").innerHTML = "";
-
             for (let i = 0; i < stepDocumentChildrens.length; i++) {
-                stepDocumentChildrens[i].classList.remove("visible");
+                stepDocumentChildrens[i].classList.remove("reveal");
             }
+            routeSection.classList.remove("hidden");
         }, 1200)
 
         mymap.flyTo(mymap.getCenter(), 13, {
@@ -162,30 +210,31 @@ function openShutter(element, rank) {
     }
 }
 
-// function knowMoreBtn(docArray) {
-//     console.log(docArray);
-// }
-
 function addDocuments(docArray) {
-    
-
+    let shutterChildrens = document.querySelectorAll(".step-document");
     let docContent = docArray.map(doc => {
-        let docContent = document.createElement("div");
-        docContent.classList.add('document');
-        docContent.setAttribute("id_etape", `${doc.id_etape}`);
+        for (let i = 0; i < shutterChildrens.length; i++) {
 
-        let newContent = `<div class="dot"></div>
-                        <div class="photo-doc">
-                            <img src="assets/images/photo-camera.svg" alt="">
-                        </div>
-                        <div class="doc-content">
-                            <span>${doc.type}</span>
-                            <p>${doc.description}</p>
-                        </div>`;
+            if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
+                let docContent = document.createElement("div");
+                docContent.classList.add('document');
+                docContent.setAttribute("id_etape", `${doc.id_etape}`);
+        
+                let newContent = `<div class="dot"></div>
+                                <div class="photo-doc">
+                                    <img src="assets/images/photo-camera.svg" alt="">
+                                </div>
+                                <div class="doc-content">
+                                    <span>${doc.type}</span>
+                                    <p>${doc.description}</p>
+                                </div>`;
+        
+                docContent.innerHTML = newContent;
+            
+                shutterChildrens[i].append(docContent);
+            }
 
-        docContent.innerHTML = newContent;
-    
-        stepDocument.append(docContent);
+        }
 
     });
     

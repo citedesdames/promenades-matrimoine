@@ -22,9 +22,11 @@ let mymap = new L.Map('mapid', {
 
 let shutter = document.querySelector(".shutter"),
     notchBtn = document.querySelector(".notch"),
-    closeBtn = document.querySelector(".close");
+    closeBtn = document.querySelector(".close"),
+    shutterPage = document.querySelector(".shutter-page"),
+    route = document.querySelector(".route"),
+    routeSection = document.querySelector(".route-section");
 
-let stepDocument = document.querySelector("#stepDocument");
 
 notchBtn.addEventListener('click', event => {
     openShutter(shutter);
@@ -133,6 +135,8 @@ const demarre = new Promise((resolve, reject) => {
 
     setTimeout(() => {
         addStep(dataEtape);
+        // let stepDocument = document.querySelector(".step-document");
+        let stepAddress = document.querySelector(".address");
         addDocuments(dataDocument);
         resolve()
     }, 2000)
