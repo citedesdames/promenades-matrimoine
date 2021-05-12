@@ -53,13 +53,13 @@ function addStep(stepArray) {
             .bindPopup(`
                 <div class="step">
                     <div class="popup-photo">
-                        <img src="../assets/images/paris-min.jpeg" alt="">
-                        <span class="source-photo">Wikimedia Commons, Lorem Ispum<span>
+                        <img src="./assets/images/paris-min.jpeg" alt="">
+                        <span class="source-photo">${step.sourcePhoto}<span>
                     </div>
                     
                     <div class="popup-header">
                         <div class="step-icon">
-                            <img src="../assets/images/maps-and-flags.svg" alt="">
+                            <img src="./assets/images/maps-and-flags.svg" alt="">
                         </div>
                         <div class="step-name">
                             <h3>${step.nom}</h3>
@@ -110,7 +110,7 @@ function addStep(stepArray) {
                 </div>
 
                 <div class="step-document" document_id_etape=${step.ordre}></div>
-                <a href="">
+                <a href="" class="augmented-reality-link">
                     <div class="augmented-reality-btn">
                         <img src="assets/images/photo-camera.svg" alt="">
                         <span>Appareil photo</span>
@@ -122,16 +122,17 @@ function addStep(stepArray) {
             let newStep = `
                 <div class="dot"></div>
                 <div class="step-route-info">
-                    <div class="photo-doc">
-                        <img src="assets/images/photo-camera.svg" alt="">
-                    </div>
-                    <div class="step-route-address">
-                        <div>
-                            <span class="location">${step.nom}</span>
-                            <span class="distance">2 Km</span>
+
+                        <div class="photo-doc">
+                            <img src="assets/images/photo-camera.svg" alt="">
                         </div>
-                        <p>${step.adresse}</p>
-                    </div>
+                        <div class="step-route-address">
+                            <div>
+                                <span class="location">${step.nom}</span>
+                                <span class="distance">2 Km</span>
+                            </div>
+                            <p>${step.adresse}</p>
+                        </div>
                 </div>
             `;
 
@@ -181,7 +182,6 @@ function openShutter(element, rank) {
     if(!element.classList.contains("open")) {
         element.classList.add("open");
         
-            
         for (let i = 0; i < stepDocumentChildrens.length; i++) {
             if(stepDocumentChildrens[i].getAttribute("shuter_id_etape") == rank + 1) {
                 routeSection.classList.add("hidden");
@@ -191,7 +191,6 @@ function openShutter(element, rank) {
                 let docNumber = elementList[7].childNodes.length;
                 let childNumber = elementList[5].childNodes;
                 childNumber[3].firstChild.innerHTML = docNumber;
-                // console.log(document.querySelector(".doc-number"));
             }
         }
     } else {
@@ -220,14 +219,20 @@ function addDocuments(docArray) {
                 docContent.classList.add('document');
                 docContent.setAttribute("id_etape", `${doc.id_etape}`);
         
-                let newContent = `<div class="dot"></div>
-                                <div class="photo-doc">
-                                    <img src="assets/images/photo-camera.svg" alt="">
-                                </div>
-                                <div class="doc-content">
-                                    <span>${doc.type}</span>
-                                    <p>${doc.description}</p>
-                                </div>`;
+                let newContent = `
+                    <div>
+                        <div class="dot"></div>
+                        <div class="photo-doc">
+                            <img src="assets/images/photo-camera.svg" alt="">
+                        </div>
+                        <div class="doc-content">
+                            <span>${doc.type}</span>
+                            <p>${doc.description}</p>
+                        </div>
+                    </div>
+                    <article class="informations hidden">
+                        <p>${doc.source}</p>
+                    </article>`;
         
                 docContent.innerHTML = newContent;
             

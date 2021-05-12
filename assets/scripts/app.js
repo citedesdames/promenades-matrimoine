@@ -138,6 +138,20 @@ const demarre = new Promise((resolve, reject) => {
         // let stepDocument = document.querySelector(".step-document");
         let stepAddress = document.querySelector(".address");
         addDocuments(dataDocument);
+        let documentDiv = document.querySelectorAll(".document");
+        // console.log(documentDiv);
+        documentDiv.forEach(function(i) {
+            i.addEventListener('click', event => {
+                console.log("ok");
+                console.log(i.childNodes)
+                if(i.childNodes[3].classList.contains("hidden")) {
+                    i.childNodes[3].classList.remove("hidden");
+                    // i.childNodes[3].classList.add("reveal");
+                } else {
+                    i.childNodes[3].classList.add("hidden");
+                }
+            });
+        });
         resolve()
     }, 2000)
 })
