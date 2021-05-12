@@ -51,11 +51,11 @@ function addStep(stepArray) {
     stepArray.map(step => {
         let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: icon}).addTo(mymap)
             .bindPopup(`
-                <div class="step">
-                    <div class="popup-photo">
-                        <img src="./assets/images/paris-min.jpeg" alt="">
-                        <span class="source-photo">${step.sourcePhoto}<span>
-                    </div>
+            <div class="popup-photo">
+            <img src="./assets/images/paris-min.jpeg" alt="">
+            <span class="source-photo">${step.sourcePhoto}<span>
+            </div>
+            <div class="step">
                     
                     <div class="popup-header">
                         <div class="step-icon">
