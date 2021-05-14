@@ -243,12 +243,12 @@ function addDocuments(docArray) {
 }
 
 function openFullscreen() {
-    if (mymap.requestFullscreen) {
+    if (mapUserInterface.requestFullscreen) {
         console.log('ok');
-        mymap.requestFullscreen();
-    } else if (mymap.webkitRequestFullscreen) { /* Safari */
-        mymap.webkitRequestFullscreen();
-    } else if (mymap.msRequestFullscreen) { /* IE11 */
-        mymap.msRequestFullscreen();
+        mapUserInterface.requestFullscreen();
+    } else if (mapUserInterface.webkitRequestFullscreen) { /* Safari */
+        mapUserInterface.webkitRequestFullscreen();
+    } else if (mapUserInterface.msRequestFullscreen) { /* IE11 */
+        mapUserInterface.msRequestFullscreen();
     }
 }
