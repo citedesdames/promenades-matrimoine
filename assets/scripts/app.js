@@ -9,6 +9,11 @@ let sudOuest = L.latLng(48.815003, 2.227135),
     nordEst = L.latLng(48.902724, 2.488421),
     bounds = L.latLngBounds(sudOuest, nordEst);
 
+let fullScreenBtn = document.querySelector('.fullScreen-btn');
+fullScreenBtn.addEventListener('click', event => {
+    openFullscreen();
+});
+
 let positionUser, accuracy;
 
 let opacityCursor = document.querySelector("#opacityCursor");

@@ -52,8 +52,8 @@ function addStep(stepArray) {
         let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: icon}).addTo(mymap)
             .bindPopup(`
             <div class="popup-photo">
-            <img src="./assets/images/paris-min.jpeg" alt="">
-            <span class="source-photo">${step.sourcePhoto}<span>
+                <img src="./assets/images/paris-min.jpeg" alt="">
+                <span class="source-photo">${step.sourcePhoto}<span>
             </div>
             <div class="step">
                     
@@ -238,9 +238,17 @@ function addDocuments(docArray) {
             
                 shutterChildrens[i].append(docContent);
             }
-
         }
-
     });
-    
+}
+
+function openFullscreen() {
+    if (mymap.requestFullscreen) {
+        console.log('ok');
+        mymap.requestFullscreen();
+    } else if (mymap.webkitRequestFullscreen) { /* Safari */
+        mymap.webkitRequestFullscreen();
+    } else if (mymap.msRequestFullscreen) { /* IE11 */
+        mymap.msRequestFullscreen();
+    }
 }
