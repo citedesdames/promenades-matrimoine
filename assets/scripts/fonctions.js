@@ -243,12 +243,12 @@ function addDocuments(docArray) {
 }
 
 function openFullscreen() {
-    if (mapUserInterface.requestFullscreen) {
+    if (appUserInterface.requestFullscreen) {
         console.log('ok');
-        mapUserInterface.requestFullscreen();
-    } else if (mapUserInterface.webkitRequestFullscreen) { /* Safari */
-        mapUserInterface.webkitRequestFullscreen();
-    } else if (mapUserInterface.msRequestFullscreen) { /* IE11 */
-        mapUserInterface.msRequestFullscreen();
+        appUserInterface.requestFullscreen();
+    } else if (appUserInterface.webkitRequestFullscreen) { /* Safari */
+        appUserInterface.webkitRequestFullscreen();
+    } else if (appUserInterface.msRequestFullscreen) { /* IE11 */
+        appUserInterface.msRequestFullscreen();
     }
 }
