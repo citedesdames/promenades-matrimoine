@@ -179,7 +179,10 @@ function updateOpacity(value) {
 function openShutter(element, rank) {
     let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
     if(!element.classList.contains("open")) {
-        element.classList.add("open");
+        header.classList.add("closed");
+        setTimeout(() => {
+            element.classList.add("open");
+        }, 350)
         
         for (let i = 0; i < stepDocumentChildrens.length; i++) {
             if(stepDocumentChildrens[i].getAttribute("shuter_id_etape") == rank + 1) {
@@ -194,6 +197,9 @@ function openShutter(element, rank) {
         }
     } else {
         element.classList.remove("open");
+        setTimeout(() => {
+            header.classList.remove("closed");
+        }, 350)
         setTimeout(() => {
             for (let i = 0; i < stepDocumentChildrens.length; i++) {
                 stepDocumentChildrens[i].classList.remove("reveal");

@@ -10,6 +10,7 @@ let sudOuest = L.latLng(48.815003, 2.227135),
     bounds = L.latLngBounds(sudOuest, nordEst);
 
 let appUserInterface = document.querySelector('html');
+let header = document.querySelector('header');
 let fullScreenBtn = document.querySelector('.fullScreen-btn');
 fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
