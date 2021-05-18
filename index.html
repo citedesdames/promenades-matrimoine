@@ -24,7 +24,7 @@
 
 <body>
     <header>
-        <div class="premoneade-indicator main-indicator">
+        <div class="main-indicator">
             <h3>Promenade <span class="premonade-rank">01</span></h3>
         </div>
         <h1>Promenade des Marguerites</h1>
@@ -37,7 +37,16 @@
             <img src="assets/images/fullscreen.svg" alt="">
         </button>
 
-        <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
+        <button class="locate-btn">
+            <img src="assets/images/gps.svg" alt="">
+        </button>
+
+        <div class="range">
+            <div class="range-value">1</div>
+            <div class="field">
+                <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
+            </div>
+        </div>
     
         <button class="btn" id="btn">
             <span><a href="augmented-reality/index.html">Photo</a></span>

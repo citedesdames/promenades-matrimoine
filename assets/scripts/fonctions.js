@@ -5,18 +5,25 @@ function onMapClick(e) {
 
 function onLocationFound(e) {
     let radius = e.accuracy;
-
+    
     positionUser = L.marker(e.latlng).addTo(mymap)
-        .bindPopup("Approximativement, voici votre posiion !").openPopup(e.latlng);
+        .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
 
-    L.circle(e.latlng, radius).addTo(mymap);
+    accuracy = L.circle(e.latlng, radius).addTo(mymap);
+
+    // mymap.setView(e.latlng, 14, {
+    //     "animate": true,
+    //     "pan": {
+    //       "duration": 10
+    //     }
+    // });
 }
 
 function onLocationError(e) {
     alert(e.message);
 }
 
-function locate() {
+function locateUser() {
     if (positionUser) {
         // mymap.removeLayer(positionUser);
         // mymap.removeLayer(accuracy);
@@ -173,6 +180,7 @@ function updateOpacity(value) {
         // console.log(`${property}: ${fondsDeCarte[property]}`);
         console.log(value);
         fondsDeCarte[property].setOpacity(value)
+        document.querySelector('.range-value').innerHTML = value;
       }
 }
 
@@ -224,7 +232,7 @@ function addDocuments(docArray) {
                 docContent.classList.add('document');
                 docContent.setAttribute("id_etape", `${doc.id_etape}`);
         
-                let newContent = `
+                let cardContent = `
                     <div>
                         <div class="dot"></div>
                         <div class="photo-doc">
@@ -234,10 +242,41 @@ function addDocuments(docArray) {
                             <span>${doc.type}</span>
                             <p>${doc.description}</p>
                         </div>
-                    </div>
+                    </div>`;
+
+                let mainContent;
+
+                if(`${doc.type}` == 'citation') {
+                    // console.log(`${doc.type}`);
+                    mainContent = `
+                    <article class="informations hidden">
+                        <p>${doc.texte}</p>
+                    </article>`;
+                } else if(`${doc.type}` == 'vidéo'){
+                    mainContent = `
+                    <article class="informations video-type hidden">
+                        <div class="touch-bar"></div>
+                        <div class="embed-vid">
+                            <iframe frameborder="0" width="640" height="360" 
+                                src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
+                                allowfullscreen 
+                                allow="autoplay; fullscreen">
+                            </iframe>
+                        </div>
+                        <div class="additional-infos">
+                            <p>${doc.description}</p>
+                            <span>${doc.source}</span>
+                        </div>
+                    </article>`;
+                } else {
+                    console.log('okay');
+                    mainContent = `
                     <article class="informations hidden">
                         <p>${doc.source}</p>
                     </article>`;
+                }
+
+                let newContent = cardContent + mainContent;
         
                 docContent.innerHTML = newContent;
             

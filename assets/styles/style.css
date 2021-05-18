@@ -27,6 +27,11 @@ body {
     padding: 0;
 }
 
+iframe {
+    width: 100%;
+    height: calc((100vw / 26) * 14); /* force le 16/9 */
+}
+
 main {
     width: 100%;
     height: auto;
@@ -41,8 +46,8 @@ header {
     z-index: 1000;
     top: 0;
     width: 100%;
-    height: 94px;
-    padding: 16px 26px;
+    height: 88px;
+    padding: 12px 20px;
     background: #EFEDED;
     border-bottom-left-radius: 18px;
     border-bottom-right-radius: 18px;
@@ -53,7 +58,7 @@ header {
 }
 
 header h1 {
-    font-size: 1.375em;
+    font-size: 1.25em;
     font-family: var(--font-fam);
     font-weight: 600;
     color: #707070;
@@ -90,7 +95,8 @@ header h1 {
 }
 
 .fullScreen-btn {
-    display: flex;
+    display: none;
+    /* display: flex; */
     justify-content: center;
     align-items: center;
     width: 40px;
@@ -113,17 +119,81 @@ header h1 {
     height: auto;
 }
 
+/*    À termes, combiner les styles du bouton fullscreen et le bouton locate     */
+
+.locate-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    outline: none;
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    border-radius: 4px;
+    position: fixed;
+    top: 115px;
+    left: 10px;
+    transition: 300ms ease;
+    z-index: 1000;
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
+}
+
+.locate-btn img {
+    width: 80%;
+    height: auto;
+}
+
 .active {
     display: initial;
 }
 
-.opacityCursor {
+.range {
     display: none;
     position: fixed;
-    bottom: 5%;
+    bottom: 37px;
     left: 4%;
     z-index: 400;
+    width: 250px;
+    height: auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px 20px;
+    
 }
+
+.range-value {
+    font-size: 0.875em;
+    font-family: var(--font-fam);
+    font-weight: 500;
+    color: black;
+}
+
+.field {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+}
+
+.opacityCursor {
+    /* -webkit-appearance: none; */
+    width: 100%;
+    height: 3px;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+}
+
+/* .field input::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background: #664AFF;
+    border-radius: 50%;
+    border: 1px solid #664AFF;
+    cursor: pointer;
+} */
 
 .leaflet-popup-content-wrapper {
     width: 265px;
@@ -373,11 +443,15 @@ header h1 {
     height: auto;
 }
 
-.premoneade-indicator {
-    /* min-width: 142px;
-    min-height: 26px; */
-    background: #676767;
-    margin-left: 15px;
+.main-indicator h3 {
+    font-size: 1em;
+    font-family: var(--font-fam);
+    font-weight: 500;
+    line-height: 1.5;
+    color: white;
+    width: 144px;
+    margin: 0;
+    background: #C9C9C9;
     border-radius: 8px;
     padding: 3px 16px;
 }
@@ -388,7 +462,12 @@ header h1 {
     font-weight: 500;
     line-height: 1.5;
     color: white;
+    width: 144px;
     margin: 0;
+    background: #676767;
+    margin-left: 15px;
+    border-radius: 8px;
+    padding: 3px 16px;
 }
 
 .premonade-rank {
@@ -689,6 +768,47 @@ header h1 {
     margin-left: 10px;
 }
 
+.video-type {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    padding: 0;
+    background: #A1C6B9;
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+}
+
+.touch-bar {
+    width: 75px;
+    height: 8px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.additional-infos {
+    padding: 20px 34px;
+}
+
+.additional-infos p {
+    margin-bottom: 15px;
+}
+
+.additional-infos > span {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #838383;
+    text-transform: capitalize;
+    color: #fff;
+}
+
+.additional-infos > span a {
+    font-family: var(--font-fam);
+    font-size: 0.875em;
+    color: #fff;
+}
+
 .hidden {
     display: none;
 }
@@ -697,16 +817,16 @@ header h1 {
     display: block;
 }
 
-.visible {
+.opacityCursor-reveal {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.main-indicator {
-    width: 144px;
-    margin: 0;
-    background: #C9C9C9;
+.visible {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .main-indicator .premonade-rank {
@@ -718,5 +838,5 @@ header h1 {
 }
 
 .closed {
-    top: -94px;
+    top: -88px;
 }
