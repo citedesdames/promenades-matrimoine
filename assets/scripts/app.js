@@ -179,11 +179,14 @@ setTimeout(() => {
     // console.log(documentDiv);
     documentDiv.forEach(function(i) {
         i.addEventListener('click', event => {
-            // console.log("ok");
-            // console.log(i.childNodes)
             if(i.childNodes[3].classList.contains("hidden")) {
                 i.childNodes[3].classList.remove("hidden");
-                // i.childNodes[3].classList.add("reveal");
+            } else if (i.childNodes[3].classList.contains("video-type")) {
+                if (i.childNodes[3].classList.contains("video-reveal")) { // rajouter condition && pour audio-type à l'avenir
+                    i.childNodes[3].classList.remove("video-reveal");
+                } else {
+                    i.childNodes[3].classList.add("video-reveal");
+                }
             } else {
                 i.childNodes[3].classList.add("hidden");
             }

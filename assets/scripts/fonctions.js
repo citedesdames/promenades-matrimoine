@@ -108,7 +108,7 @@ function addStep(stepArray) {
                     <img src="assets/images/gps.svg" alt="">
                     <div class="address">${step.adresse}</div>
                 </div>
-                <h2>L’<span>héritage</span> culturelle du <span>${step.nom}</span>.</h2>
+                <h2>L’<span>héritage</span> culturel du <span>${step.nom}</span>.</h2>
 
                 <div class="doc-header">
                     <h3>Documents sur ce lieu</h3>
@@ -247,14 +247,15 @@ function addDocuments(docArray) {
                 let mainContent;
 
                 if(`${doc.type}` == 'citation') {
-                    // console.log(`${doc.type}`);
                     mainContent = `
                     <article class="informations hidden">
-                        <p>${doc.texte}</p>
+                        <div class="main-information">
+                            <p>${doc.texte}</p>
+                        </div>
                     </article>`;
                 } else if(`${doc.type}` == 'vidéo'){
                     mainContent = `
-                    <article class="informations video-type hidden">
+                    <article class="informations video-type">
                         <div class="touch-bar"></div>
                         <div class="embed-vid">
                             <iframe frameborder="0" width="640" height="360" 
@@ -268,11 +269,21 @@ function addDocuments(docArray) {
                             <span>${doc.source}</span>
                         </div>
                     </article>`;
-                } else {
-                    console.log('okay');
+                } else if (`${doc.type}` == 'article') {
                     mainContent = `
                     <article class="informations hidden">
-                        <p>${doc.source}</p>
+                    <div class="card-preview">
+                        <div class="preview">
+                            <iframe src="${doc.URL}" frameborder="0"></iframe>
+                        </div>
+                    </div>
+                    </article>`;
+                } else {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="main-information">
+                            <p>${doc.source}</p>
+                        </div>
                     </article>`;
                 }
 
