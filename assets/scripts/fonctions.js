@@ -11,12 +11,39 @@ function onLocationFound(e) {
 
     accuracy = L.circle(e.latlng, radius).addTo(mymap);
 
-    // mymap.setView(e.latlng, 14, {
-    //     "animate": true,
-    //     "pan": {
-    //       "duration": 10
-    //     }
-    // });
+    mymap.setView(e.latlng, 16, {
+        "animate": true,
+        "pan": {
+          "duration": 10
+        }
+    });
+
+    // setTimeout(() => {
+        let distanceStroke = L.polyline([]).addTo(mymap);
+    
+        let marker2 = L.marker([48.853364, 2.428365], {draggable: 'true'}).bindPopup("").addTo(mymap);
+    
+        positionUser.on('dragend', findrag);
+        marker2.on('dragend', findrag);
+        positionUser.on('drag', deplacement);
+        marker2.on('drag', deplacement);
+
+        function findrag(e) {
+            let mark = e.target;
+            let start = positionUser.getLatLng();
+            let end = marker2.getLatLng();
+            distance = Math.round(start.distanceTo(end));
+            mark.getPopup().setContent('Distance = '+distance+' m');
+            mark.openPopup();
+        
+            verifyPosition();
+        
+        }
+        
+        function deplacement(e) {
+            distanceStroke.setLatLngs([positionUser.getLatLng(), marker2.getLatLng()]);
+        }
+    // }, 4000)
 }
 
 function onLocationError(e) {
@@ -167,11 +194,24 @@ function addStep(stepArray) {
 
 function verifyPosition() {
     if(distance < 150) {
-        let btn = document.getElementById("btn");
-        btn.classList.add("active");
+        // let btn = document.getElementById("btn");
+        // btn.classList.add("active");
+        let notif = document.querySelector('.notification');
+        notif.style.top = "12px";
+        let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
+        allAugRealLinks.forEach(function(i) {
+            i.style.display = "initial";
+        });
+        // Ne marche que si l'utilisateur attends que les étapes soient chargées
+        document.querySelector('.btn-close').addEventListener('click', function () {
+            notif.style.top = "-20%";
+        })
+        setTimeout(() => {
+            notif.style.top = "-20%";
+        }, 5000)
     } else if(distance > 150) {
-        let btn = document.getElementById("btn");
-        btn.classList.remove("active");
+        // let btn = document.getElementById("btn");
+        // btn.classList.remove("active");
     }
 }
 
@@ -272,11 +312,19 @@ function addDocuments(docArray) {
                 } else if (`${doc.type}` == 'article') {
                     mainContent = `
                     <article class="informations hidden">
-                    <div class="card-preview">
-                        <div class="preview">
-                            <iframe src="${doc.URL}" frameborder="0"></iframe>
+                        <div class="card-preview">
+                            <div>
+                                <h3>${doc.description}</h3>
+                                <span>${doc.source}</span>
+                            </div>
+                            <div class="preview">
+                                <div class="shadow">
+                                    <a href="">Poursuivre vers le site</a>
+                                </div>
+                                <iframe src="${doc.URL}" frameborder="0">
+                                </iframe>
+                            </div>
                         </div>
-                    </div>
                     </article>`;
                 } else {
                     mainContent = `

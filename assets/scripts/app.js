@@ -29,6 +29,27 @@ let mymap = new L.Map('mapid', {
     maxBoundsViscosity: 0.5
 });
 
+// let ytURL = 'https://www.youtube.com/watch?v=7CeXNGArs54';
+// console.log(ytURL);
+// console.log(ytURL.replace(/.*id=([^\/]+)[\&]*.*]/, "$1"));
+
+function youtube_parser(url){
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    console.log(match);
+    return (match&&match[7].length==11)? match[7] : false;
+}
+
+let id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54');
+console.log(id); 
+id = youtube_parser('https://youtu.be/7CeXNGArs54');
+console.log(id); 
+id = youtube_parser('https://youtu.be/7CeXNGArs54?t=787');
+console.log(id); 
+id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54&list=TLPQMjEwNTIwMjF2pXxMAZt5_w&index=1');
+console.log(id); 
+
+
 notchBtn.addEventListener('click', event => {
     openShutter(shutter);
 });
@@ -45,33 +66,6 @@ locateBtn.addEventListener('click', event => {
     mymap.locate({maxZoom: 16});
     mymap.on('locationfound', onLocationFound);
     mymap.on('locationerror', onLocationError);
-
-    setTimeout(() => {
-        let distanceStroke = L.polyline([]).addTo(mymap);
-    
-        let marker2 = L.marker([48.855228, 2.431798], {draggable: 'true'}).bindPopup("").addTo(mymap);
-    
-        positionUser.on('dragend', findrag);
-        marker2.on('dragend', findrag);
-        positionUser.on('drag', deplacement);
-        marker2.on('drag', deplacement);
-
-        function findrag(e) {
-            let mark = e.target;
-            let start = positionUser.getLatLng();
-            let end = marker2.getLatLng();
-            distance = Math.round(start.distanceTo(end));
-            mark.getPopup().setContent('Distance = '+distance+' m');
-            mark.openPopup();
-        
-            verifyPosition();
-        
-        }
-        
-        function deplacement(e) {
-            distanceStroke.setLatLngs([positionUser.getLatLng(), marker2.getLatLng()]);
-        }
-    }, 4000)
 });
 
 /*
@@ -175,8 +169,8 @@ setTimeout(() => {
     // let stepDocument = document.querySelector(".step-document");
     let stepAddress = document.querySelector(".address");
     addDocuments(dataDocument);
+
     let documentDiv = document.querySelectorAll(".document");
-    // console.log(documentDiv);
     documentDiv.forEach(function(i) {
         i.addEventListener('click', event => {
             if(i.childNodes[3].classList.contains("hidden")) {
