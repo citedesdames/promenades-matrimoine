@@ -8,7 +8,7 @@
 let sudOuest = L.latLng(48.815003, 2.227135),
     nordEst = L.latLng(48.902724, 2.488421),
     bounds = L.latLngBounds(sudOuest, nordEst),
-    positionUser, accuracy;
+    radius, positionUser, accuracy;
 
 let appUserInterface = document.querySelector('html'),
     header = document.querySelector('header');
@@ -22,6 +22,9 @@ let appUserInterface = document.querySelector('html'),
     route = document.querySelector(".route"),
     routeSection = document.querySelector(".route-section");
 
+let isClose = false; 
+let firstGeoloc = true;
+
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
@@ -33,21 +36,14 @@ let mymap = new L.Map('mapid', {
 // console.log(ytURL);
 // console.log(ytURL.replace(/.*id=([^\/]+)[\&]*.*]/, "$1"));
 
-function youtube_parser(url){
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    var match = url.match(regExp);
-    console.log(match);
-    return (match&&match[7].length==11)? match[7] : false;
-}
-
-let id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54');
-console.log(id); 
-id = youtube_parser('https://youtu.be/7CeXNGArs54');
-console.log(id); 
-id = youtube_parser('https://youtu.be/7CeXNGArs54?t=787');
-console.log(id); 
-id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54&list=TLPQMjEwNTIwMjF2pXxMAZt5_w&index=1');
-console.log(id); 
+// let id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54');
+// console.log(id); 
+// id = youtube_parser('https://youtu.be/7CeXNGArs54');
+// console.log(id); 
+// id = youtube_parser('https://youtu.be/7CeXNGArs54?t=787');
+// console.log(id); 
+// id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54&list=TLPQMjEwNTIwMjF2pXxMAZt5_w&index=1');
+// console.log(id); 
 
 
 notchBtn.addEventListener('click', event => {
@@ -79,11 +75,19 @@ locateBtn.addEventListener('click', event => {
 //     id: 'mapbox/streets-v11',
 // }).addTo(mymap);
 
-var icon = L.icon({
+var stepIcon = L.icon({
     iconUrl: 'assets/images/marker-leaflet.png',
 
     iconSize:     [25, 39.1], // size of the icon
     iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+});
+
+var userIcon = L.icon({
+    iconUrl: 'assets/images/user-marker-leaflet.png',
+
+    iconSize:     [25, 28], // size of the icon
+    iconAnchor:   [12.5, 27], // point of the icon which will correspond to marker's location
     popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
 });
 
@@ -145,10 +149,10 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
     download: true,
     header: true,
     complete: function (results) {
-        console.log(results);
         const items = results.data;
         items.sort((a, b) => a.ordre - b.ordre);
         dataEtape = items;
+        console.log(dataEtape);
         // addStep(items);
     }
 });

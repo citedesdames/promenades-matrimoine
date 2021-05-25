@@ -3,62 +3,6 @@ function onMapClick(e) {
         .bindPopup("Vous avez clické sur la carte à " + e.latlng.toString()).openPopup()
 }
 
-function onLocationFound(e) {
-    let radius = e.accuracy;
-    
-    positionUser = L.marker(e.latlng).addTo(mymap)
-        .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
-
-    accuracy = L.circle(e.latlng, radius).addTo(mymap);
-
-    mymap.setView(e.latlng, 16, {
-        "animate": true,
-        "pan": {
-          "duration": 10
-        }
-    });
-
-    // setTimeout(() => {
-        let distanceStroke = L.polyline([]).addTo(mymap);
-    
-        let marker2 = L.marker([48.853364, 2.428365], {draggable: 'true'}).bindPopup("").addTo(mymap);
-    
-        positionUser.on('dragend', findrag);
-        marker2.on('dragend', findrag);
-        positionUser.on('drag', deplacement);
-        marker2.on('drag', deplacement);
-
-        function findrag(e) {
-            let mark = e.target;
-            let start = positionUser.getLatLng();
-            let end = marker2.getLatLng();
-            distance = Math.round(start.distanceTo(end));
-            mark.getPopup().setContent('Distance = '+distance+' m');
-            mark.openPopup();
-        
-            verifyPosition();
-        
-        }
-        
-        function deplacement(e) {
-            distanceStroke.setLatLngs([positionUser.getLatLng(), marker2.getLatLng()]);
-        }
-    // }, 4000)
-}
-
-function onLocationError(e) {
-    alert(e.message);
-}
-
-function locateUser() {
-    if (positionUser) {
-        // mymap.removeLayer(positionUser);
-        // mymap.removeLayer(accuracy);
-        mymap.locate({maxZoom: 16});
-        console.log("Position utilisateur mise à jour")
-    }
-}
-
 // function onMarkerClick(coord) {
 //     let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
     
@@ -83,7 +27,7 @@ function addStep(stepArray) {
     let markerArray = [];
 
     stepArray.map(step => {
-        let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: icon}).addTo(mymap)
+        let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
             .bindPopup(`
                 <div class="popup-photo">
                     <img src="./assets/images/paris-min.jpeg" alt="">
@@ -192,16 +136,92 @@ function addStep(stepArray) {
     }
 }
 
-function verifyPosition() {
-    if(distance < 150) {
-        // let btn = document.getElementById("btn");
-        // btn.classList.add("active");
-        let notif = document.querySelector('.notification');
+function onLocationFound(e) {
+    // radius = 0;
+    // positionUser.removeLayer();
+    // accuracy.removeLayer();
+
+    radius = e.accuracy;
+    positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap)
+        .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
+    accuracy = L.circle(e.latlng, radius).addTo(mymap);
+
+    if (firstGeoloc == true) {
+        mymap.setView(e.latlng, 16, {
+            "animate": true,
+            "pan": {
+              "duration": 10
+            }
+        });
+    }
+
+    dataEtape.map(step => {
+        // console.log(step);
+        let start = positionUser.getLatLng();
+        let end = {
+            lat: step.latitude,
+            lng: step.longitude
+        };
+        distance = Math.round(start.distanceTo(end));
+        console.log(distance);
+
+        verifyPosition(step);
+    });
+
+
+    // let distanceStroke = L.polyline([]).addTo(mymap);
+    // let marker2 = L.marker([48.853364, 2.428365], {draggable: "true"}).bindPopup("").addTo(mymap);
+    
+    // positionUser.on('dragend', findrag);
+    // marker2.on('dragend', findrag);
+    // positionUser.on('drag', deplacement);
+    // marker2.on('drag', deplacement);
+
+    // function findrag(e) {
+    //     console.log(e);
+    //     let mark = e.target;
+    //     let start = positionUser.getLatLng();
+    //     let end = marker2.getLatLng();
+    //     // console.log(end);
+    //     distance = Math.round(start.distanceTo(end));
+    //     mark.getPopup().setContent('Distance = '+distance+' m');
+    //     mark.openPopup();
+        
+    //     verifyPosition();
+    // }
+        
+    // function deplacement(e) {
+    //     distanceStroke.setLatLngs([positionUser.getLatLng(), marker2.getLatLng()]);
+    // }
+    
+    firstGeoloc = false;
+}
+
+function onLocationError(e) {
+    alert(e.message);
+}
+
+function locateUser() {
+    if (positionUser) {
+        // mymap.removeLayer(positionUser);
+        // mymap.removeLayer(accuracy);
+        mymap.locate({maxZoom: 16});
+        console.log("Position utilisateur mise à jour")
+    }
+}
+
+function verifyPosition(step) {
+    let notif = document.querySelector('.notification');
+    let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
+    let stepAddress = document.querySelector('.position');
+
+    if(distance < 5599 && isClose == false) {
+        stepAddress.innerHTML = step.nom;
         notif.style.top = "12px";
-        let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
         allAugRealLinks.forEach(function(i) {
             i.style.display = "initial";
         });
+
         // Ne marche que si l'utilisateur attends que les étapes soient chargées
         document.querySelector('.btn-close').addEventListener('click', function () {
             notif.style.top = "-20%";
@@ -209,10 +229,17 @@ function verifyPosition() {
         setTimeout(() => {
             notif.style.top = "-20%";
         }, 5000)
-    } else if(distance > 150) {
-        // let btn = document.getElementById("btn");
-        // btn.classList.remove("active");
+        isClose = true;
+    } else if (distance < 5599 && isClose == true) {
+        isClose = true;
+    } else if(distance > 5599) {
+        isClose = false;
+        allAugRealLinks.forEach(function(i) {
+            i.style.display = "none";
+        });
     }
+    
+    console.log(isClose);
 }
 
 function updateOpacity(value) {
@@ -280,7 +307,7 @@ function addDocuments(docArray) {
                         </div>
                         <div class="doc-content">
                             <span>${doc.type}</span>
-                            <p>${doc.description}</p>
+                            <p>${doc.titre}</p>
                         </div>
                     </div>`;
 
@@ -291,6 +318,8 @@ function addDocuments(docArray) {
                     <article class="informations hidden">
                         <div class="main-information">
                             <p>${doc.texte}</p>
+                            <p class="source">${doc.source}</p>
+                            <span>${doc.licence}</span>
                         </div>
                     </article>`;
                 } else if(`${doc.type}` == 'vidéo'){
@@ -306,7 +335,10 @@ function addDocuments(docArray) {
                         </div>
                         <div class="additional-infos">
                             <p>${doc.description}</p>
-                            <span>${doc.source}</span>
+                            <p class="source">${doc.source}</p>
+                            <div class="marquee-rtl">
+                                <div><span>${doc.licence}</span></div>
+                            </div>
                         </div>
                     </article>`;
                 } else if (`${doc.type}` == 'article') {
@@ -315,7 +347,7 @@ function addDocuments(docArray) {
                         <div class="card-preview">
                             <div>
                                 <h3>${doc.description}</h3>
-                                <span>${doc.source}</span>
+                                <span class="source">${doc.licence}</span>
                             </div>
                             <div class="preview">
                                 <div class="shadow">
@@ -330,7 +362,9 @@ function addDocuments(docArray) {
                     mainContent = `
                     <article class="informations hidden">
                         <div class="main-information">
-                            <p>${doc.source}</p>
+                            <p>${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                            <span>${doc.licence}</span>
                         </div>
                     </article>`;
                 }
@@ -354,4 +388,11 @@ function openFullscreen() {
     } else if (appUserInterface.msRequestFullscreen) { /* IE11 */
         appUserInterface.msRequestFullscreen();
     }
+}
+
+function youtube_parser(url){
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    console.log(match);
+    return (match&&match[7].length==11)? match[7] : false;
 }
