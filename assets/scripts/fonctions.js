@@ -106,7 +106,7 @@ function addStep(stepArray) {
                         <div class="step-route-address">
                             <div>
                                 <span class="location">${step.nom}</span>
-                                <span class="distance">2 Km</span>
+                                <span class="distance"></span>
                             </div>
                             <p>${step.adresse}</p>
                         </div>
@@ -137,15 +137,19 @@ function addStep(stepArray) {
 }
 
 function onLocationFound(e) {
-    // radius = 0;
-    // positionUser.removeLayer();
-    // accuracy.removeLayer();
+    if(radius && positionUser && accuracy) {
+        radius = 0;
+        mymap.removeLayer(positionUser);
+        mymap.removeLayer(accuracy);
+    }
 
     window.navigator.vibrate(300);
     radius = e.accuracy;
     positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap)
         .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
     accuracy = L.circle(e.latlng, radius).addTo(mymap);
+    let allDstIndicator = document.querySelectorAll('.distance');
+    console.log(allDstIndicator);
 
     if (firstGeoloc == true) {
         mymap.setView(e.latlng, 16, {
@@ -155,9 +159,9 @@ function onLocationFound(e) {
             }
         });
     }
+    console.log(dataEtape);
 
     dataEtape.map(step => {
-        // console.log(step);
         let start = positionUser.getLatLng();
         let end = {
             lat: step.latitude,
@@ -165,6 +169,16 @@ function onLocationFound(e) {
         };
         distance = Math.round(start.distanceTo(end));
         console.log(distance);
+        // console.log(allDstIndicator[step.ordre]);
+        if(distance > 1000) {
+            allDstIndicator[step.ordre - 1].innerHTML = Math.round(distance/1000)/10+ " Km";
+        } else if (distance < 1000) {
+            allDstIndicator[step.ordre - 1].innerHTML = distance + " Km";
+        }
+
+        // allAugRealLinks.forEach(function(i) {
+        //     i.style.display = "none";
+        // });
 
         verifyPosition(step);
     });
@@ -217,6 +231,7 @@ function verifyPosition(step) {
     let stepAddress = document.querySelector('.position');
 
     if(distance < 5599 && isClose == false) {
+        window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
         notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
@@ -361,9 +376,9 @@ function addDocuments(docArray, damesArray) {
                             </div>
                             <div class="preview">
                                 <div class="shadow">
-                                    <a href="">Poursuivre vers le site</a>
+                                    <a href="${doc.URL}" target="_blank">Poursuivre vers le site</a>
                                 </div>
-                                <iframe src="${doc.URL}" frameborder="0">
+                                <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
                                 </iframe>
                             </div>
                         </div>
