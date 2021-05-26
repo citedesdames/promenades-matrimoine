@@ -100,7 +100,7 @@ function addStep(stepArray) {
                 <div class="dot"></div>
                 <div class="step-route-info">
 
-                        <div class="photo-doc">
+                        <div class="step-photo">
                             <img src="assets/images/photo-camera.svg" alt="">
                         </div>
                         <div class="step-route-address">
@@ -141,6 +141,7 @@ function onLocationFound(e) {
     // positionUser.removeLayer();
     // accuracy.removeLayer();
 
+    window.navigator.vibrate(300);
     radius = e.accuracy;
     positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap)
         .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
@@ -289,9 +290,18 @@ function openShutter(element, rank) {
     }
 }
 
-function addDocuments(docArray) {
+function addDocuments(docArray, damesArray) {
     let shutterChildrens = document.querySelectorAll(".step-document");
     let docContent = docArray.map(doc => {
+        // console.log(docArray.indexOf(`${doc.id_dame}`));
+        console.log(`${doc.id_dame}`);
+        // console.log(damesArray.map(function(e) { return e.identifiant; }).indexOf(`${doc.id_dame}`));
+
+        let a = damesArray.map(e => { 
+            return e.identifiant; 
+        }).indexOf(`${doc.id_dame}`);
+        console.log(a);
+
         for (let i = 0; i < shutterChildrens.length; i++) {
 
             if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
@@ -303,7 +313,7 @@ function addDocuments(docArray) {
                     <div>
                         <div class="dot"></div>
                         <div class="photo-doc">
-                            <img src="assets/images/photo-camera.svg" alt="">
+                            <img src="${damesArray[a].portrait}" alt="">
                         </div>
                         <div class="doc-content">
                             <span>${doc.type}</span>
@@ -370,9 +380,7 @@ function addDocuments(docArray) {
                 }
 
                 let newContent = cardContent + mainContent;
-        
                 docContent.innerHTML = newContent;
-            
                 shutterChildrens[i].append(docContent);
             }
         }

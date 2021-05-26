@@ -702,19 +702,28 @@ header h1 {
     background: rgb(88, 156, 248, .8);;
 }
 
-.photo-doc {
-    width: 52px;
-    height: 52px;
+.photo-doc,
+.step-photo {
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: #838383;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .photo-doc img {
+    width: 140%;
+    height: auto;
+    object-fit: cover;
+}
+
+.step-photo img {
     width: 50%;
     height: auto;
+    object-fit: cover;
 }
 
 .doc-content {
@@ -1002,6 +1011,81 @@ header h1 {
     font-family: var(--font-fam);
     font-size: 0.875em;
     color: #fff;
+}
+
+
+/* ------ HOME PAGE ------ */
+
+.home {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 0px 35px;
+}
+
+.logo {
+    width: 210px;
+    height: 210px;
+    background: #C3C3C3;
+    border-radius: 50%;
+}
+
+section {
+    height: 50%;
+}
+
+.home section:first-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome h1 {
+    font-size: 1.5em;
+    font-family: var(--font-fam);
+    font-weight: 600;
+    line-height: 1.5;
+    color: #4E4B4B;
+    margin: 0;
+}
+
+.welcome p {
+    font-size: 1.125em;
+    font-family: var(--font-fam);
+    font-weight: 300;
+    line-height: 1.75;
+    color: black;
+}
+
+.home-btn {
+    display: flex;
+    justify-content: space-between;
+}
+
+.home-btn a {
+    font-size: 1em;
+    font-family: var(--font-fam);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 20px 34px;
+    border-radius: 20px;
+}
+
+/* .home-btn a div {
+    width: 150px;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+}  */
+
+.home-btn a:first-child {
+    color: #646464;
+    background: #D3D3D3;
+}
+
+.home-btn a:last-child {
+    color: #D3D3D3;
+    background: #646464;
 }
 
 .hidden {

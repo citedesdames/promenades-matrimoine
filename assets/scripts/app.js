@@ -143,8 +143,10 @@ checkboxes.forEach(function(checkbox) {
     de l'utilisateur et test provisoire de distance entre celle-ci et un marqueur donné
 */
 
-let dataEtape;
-let dataDocument;
+let dataEtape,
+    dataDocument,
+    dataDames;
+
 Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
     download: true,
     header: true,
@@ -157,7 +159,7 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
     }
 });
 
-Papa.parse(' https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=954920506&single=true&output=csv', {
+Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=954920506&single=true&output=csv', {
     download: true,
     header: true,
     complete: function (results) {
@@ -167,12 +169,22 @@ Papa.parse(' https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS4
     }
 });
 
+Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=0&single=true&output=csv', {
+    download: true,
+    header: true,
+    complete: function (results) {
+        dataDames = results.data;
+        console.log(dataDames);
+        // dataDocument.push(results.data);
+    }
+});
+
 
 setTimeout(() => {
     addStep(dataEtape);
     // let stepDocument = document.querySelector(".step-document");
     let stepAddress = document.querySelector(".address");
-    addDocuments(dataDocument);
+    addDocuments(dataDocument, dataDames);
 
     let documentDiv = document.querySelectorAll(".document");
     documentDiv.forEach(function(i) {
