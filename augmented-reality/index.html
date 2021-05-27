@@ -16,6 +16,39 @@
           });
         }
       });
+
+      document.addEventListener('DOMContentLoaded', function() {
+        let lat, lng, coords, pst, attr;
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            console.log(position.coords.latitude);
+            console.log(position.coords.longitude);
+            coords = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            pst = {
+              x: Number(-3),
+              y: Number(0),
+              z: Number(-3)
+            }
+            attrCoord = 'latitude: '+ coords.latitude +'; longitude: '+ coords.longitude +''; 
+            attrPst = ''+pst.x+' '+pst.y+' '+pst.z+'';
+            console.log(attrPst);
+          })
+          setTimeout(() => {
+            alert(attrCoord);
+            let box = document.querySelector('a-box');
+            box.setAttribute('gps-entity-place', `${attrCoord}`);
+            box.setAttribute('position', `${attrPst}`);
+            console.log(box.getAttribute('gps-entity-place'));
+            console.log(box.getAttribute('position'));
+            console.log(box);
+            
+          }, 4000)
+        }
+      })
+
       </script>
   </head>
 
@@ -34,7 +67,7 @@
       <!-- 48.850950, 2.426600 // PORTRAIT POSITION -->
       <!-- 48.850884, 2.426954 // ARROW POSITION -->
 
-      <a-entity 
+      <!-- <a-entity 
         gltf-model="./assets/cube/model.gltf"
         rotation="0 180 0" 
         position="0 70 0"
@@ -64,7 +97,17 @@
         color='red'
         scale='7 7 7'
         position="0 70 0"
+      ></a-box> -->
+
+
+      <!-- 48.851363, 2.426493 // TESTS 27 MAI -->
+
+
+      <a-box 
+        color='red'
+        scale='0.5 0.5 0.5'
       ></a-box>
+
     
       <a-camera gps-camera rotation-reader> </a-camera>
     </a-scene>

@@ -202,6 +202,14 @@ setTimeout(() => {
             }
         });
     });
+
+    // if(firstGeoloc == true) {
+    //     document.querySelectorAll('.distance').forEach(function(i) {
+    //         i.style.display = "none";
+    //     });
+    // }
+
+    handlePermission();
 }, 2000)
 
 /*

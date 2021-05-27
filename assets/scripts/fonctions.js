@@ -149,7 +149,9 @@ function onLocationFound(e) {
         .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
     accuracy = L.circle(e.latlng, radius).addTo(mymap);
     let allDstIndicator = document.querySelectorAll('.distance');
-    console.log(allDstIndicator);
+    allDstIndicator.forEach(function(i) {
+        i.style.display = "block";
+    });
 
     if (firstGeoloc == true) {
         mymap.setView(e.latlng, 16, {
@@ -171,14 +173,10 @@ function onLocationFound(e) {
         console.log(distance);
         // console.log(allDstIndicator[step.ordre]);
         if(distance > 1000) {
-            allDstIndicator[step.ordre - 1].innerHTML = Math.round(distance/1000)/10+ " Km";
+            allDstIndicator[step.ordre - 1].innerHTML = Math.round((distance/1000)*10)/10+ " Km";
         } else if (distance < 1000) {
-            allDstIndicator[step.ordre - 1].innerHTML = distance + " Km";
+            allDstIndicator[step.ordre - 1].innerHTML = distance + " m";
         }
-
-        // allAugRealLinks.forEach(function(i) {
-        //     i.style.display = "none";
-        // });
 
         verifyPosition(step);
     });
@@ -308,14 +306,11 @@ function openShutter(element, rank) {
 function addDocuments(docArray, damesArray) {
     let shutterChildrens = document.querySelectorAll(".step-document");
     let docContent = docArray.map(doc => {
-        // console.log(docArray.indexOf(`${doc.id_dame}`));
-        console.log(`${doc.id_dame}`);
-        // console.log(damesArray.map(function(e) { return e.identifiant; }).indexOf(`${doc.id_dame}`));
-
+        // console.log(`${doc.id_dame}`);
         let a = damesArray.map(e => { 
             return e.identifiant; 
         }).indexOf(`${doc.id_dame}`);
-        console.log(a);
+        // console.log(a);
 
         for (let i = 0; i < shutterChildrens.length; i++) {
 
@@ -354,16 +349,15 @@ function addDocuments(docArray, damesArray) {
                         <div class="embed-vid">
                             <iframe frameborder="0" width="640" height="360" 
                                 src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
-                                allowfullscreen 
                                 allow="autoplay; fullscreen">
                             </iframe>
                         </div>
                         <div class="additional-infos">
-                            <p>${doc.description}</p>
-                            <p class="source">${doc.source}</p>
                             <div class="marquee-rtl">
                                 <div><span>${doc.licence}</span></div>
                             </div>
+                            <p>${doc.description}</p>
+                            <p class="source">${doc.source}</p>
                         </div>
                     </article>`;
                 } else if (`${doc.type}` == 'article') {
@@ -419,3 +413,41 @@ function youtube_parser(url){
     console.log(match);
     return (match&&match[7].length==11)? match[7] : false;
 }
+
+function handlePermission() {
+    let allDstIndicator = document.querySelectorAll('.distance');
+    navigator.permissions.query({name:'geolocation'}).then(function(result) {
+        if (result.state == 'granted') {
+            report(result.state);
+            if(firstGeoloc == true) {
+                console.log('non effectuée');
+                allDstIndicator.forEach(function(i) {
+                    i.style.display = "none";
+                });
+            } else if (firstGeoloc == false) {
+                console.log('effectuée');
+                allDstIndicator.forEach(function(i) {
+                    i.style.display = "block";
+                });
+            }
+        } else if (result.state == 'prompt') {
+            report(result.state);
+            // geoBtn.style.display = 'none';
+            navigator.geolocation.getCurrentPosition(revealPosition,positionDenied,geoSettings);
+        } else if (result.state == 'denied') {
+            report(result.state);
+            // geoBtn.style.display = 'inline';
+            allDstIndicator.forEach(function(i) {
+                i.style.display = "none";
+            });
+        }
+
+        result.onchange = function() {
+        report(result.state);
+        }
+    });
+}
+
+function report(state) {
+    console.log('Permission ' + state);
+}  
