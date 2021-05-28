@@ -1170,6 +1170,10 @@ section {
     display: block;
 }
 
+.overflow {
+    overflow: hidden;
+}
+
 .opacityCursor-reveal {
     display: flex;
     justify-content: space-between;

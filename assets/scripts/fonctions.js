@@ -247,6 +247,7 @@ function updateOpacity(value) {
 function openShutter(element, rank) {
     let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
     if(!element.classList.contains("open")) {
+        document.querySelector('body').classList.remove("overflow");
         header.classList.add("closed");
         setTimeout(() => {
             element.classList.add("open");
@@ -264,6 +265,7 @@ function openShutter(element, rank) {
             }
         }
     } else {
+        document.querySelector('body').classList.add("overflow");
         element.classList.remove("open");
         setTimeout(() => {
             header.classList.remove("closed");
@@ -411,8 +413,6 @@ function handlePermission() {
             }
         } else if (result.state == 'prompt') {
             report(result.state);
-            // geoBtn.style.display = 'none';
-            navigator.geolocation.getCurrentPosition(revealPosition,positionDenied,geoSettings);
             allDstIndicator.forEach(function(i) {
                 i.style.display = "none";
             });
