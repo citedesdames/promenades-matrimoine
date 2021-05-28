@@ -168,10 +168,10 @@ header h1 {
 }
 
 #mapid {
-    /* width: 100vw;
-    height: 100vh; */
-    width: var(--inner-width);
-    height: var(--inner-height);
+    width: 100vw;
+    height: 100vh;
+    /* width: var(--inner-width);
+    height: var(--inner-height); */
 }
 
 .btn {
