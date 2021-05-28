@@ -88,7 +88,7 @@ var userIcon = L.icon({
 
     iconSize:     [25, 28], // size of the icon
     iconAnchor:   [12.5, 27], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+    popupAnchor:  [0, -24] // point from which the popup should open relative to the iconAnchor
 });
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
@@ -203,11 +203,7 @@ setTimeout(() => {
         });
     });
 
-    // if(firstGeoloc == true) {
-    //     document.querySelectorAll('.distance').forEach(function(i) {
-    //         i.style.display = "none";
-    //     });
-    // }
+    alert(`Largeur : ${window.innerWidth} / ${window.screen.width}; longeur :${window.innerHeight} / ${window.screen.height}`);
 
     handlePermission();
 }, 2000)
