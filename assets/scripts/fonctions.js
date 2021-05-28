@@ -141,19 +141,7 @@ function onLocationFound(e) {
         radius = 0;
         mymap.removeLayer(positionUser);
         mymap.removeLayer(accuracy);
-    }
-
-    window.navigator.vibrate(300);
-    radius = e.accuracy;
-    positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap)
-        .bindPopup("Vous êtes ici ! à " + e.latlng).openPopup();
-    accuracy = L.circle(e.latlng, radius).addTo(mymap);
-    let allDstIndicator = document.querySelectorAll('.distance');
-    allDstIndicator.forEach(function(i) {
-        i.style.display = "block";
-    });
-
-    if (firstGeoloc == true) {
+    } else if (firstGeoloc == true) {
         mymap.setView(e.latlng, 16, {
             "animate": true,
             "pan": {
@@ -161,7 +149,17 @@ function onLocationFound(e) {
             }
         });
     }
-    console.log(dataEtape);
+
+    window.navigator.vibrate(300);
+    let distanceArray = [],
+        allDstIndicator = document.querySelectorAll('.distance');
+
+    radius = e.accuracy;
+    positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap);
+    accuracy = L.circle(e.latlng, radius).addTo(mymap);
+    allDstIndicator.forEach(function(i) {
+        i.style.display = "block";
+    });
 
     dataEtape.map(step => {
         let start = positionUser.getLatLng();
@@ -177,36 +175,17 @@ function onLocationFound(e) {
         } else if (distance < 1000) {
             allDstIndicator[step.ordre - 1].innerHTML = distance + " m";
         }
-
+        distanceArray.push(distance);
         verifyPosition(step);
     });
 
-
-    // let distanceStroke = L.polyline([]).addTo(mymap);
-    // let marker2 = L.marker([48.853364, 2.428365], {draggable: "true"}).bindPopup("").addTo(mymap);
-    
-    // positionUser.on('dragend', findrag);
-    // marker2.on('dragend', findrag);
-    // positionUser.on('drag', deplacement);
-    // marker2.on('drag', deplacement);
-
-    // function findrag(e) {
-    //     console.log(e);
-    //     let mark = e.target;
-    //     let start = positionUser.getLatLng();
-    //     let end = marker2.getLatLng();
-    //     // console.log(end);
-    //     distance = Math.round(start.distanceTo(end));
-    //     mark.getPopup().setContent('Distance = '+distance+' m');
-    //     mark.openPopup();
-        
-    //     verifyPosition();
-    // }
-        
-    // function deplacement(e) {
-    //     distanceStroke.setLatLngs([positionUser.getLatLng(), marker2.getLatLng()]);
-    // }
-    
+    let closest = distanceArray.indexOf(Math.min(...distanceArray));
+    positionUser.bindPopup(`
+        <div class="user-location">
+            <h2> Vous êtes ici !</h2>
+            <p>Étape la plus proche : ${dataEtape[closest].nom}.</p>
+        </div>
+    `).openPopup();
     firstGeoloc = false;
 }
 
