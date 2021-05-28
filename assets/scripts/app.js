@@ -25,6 +25,11 @@ let appUserInterface = document.querySelector('html'),
 let isClose = false; 
 let firstGeoloc = true;
 
+
+document.documentElement.style.setProperty('--inner-width', window.innerWidth + "px");
+document.documentElement.style.setProperty('--inner-height', window.innerHeight + "px");
+
+
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
@@ -203,7 +208,7 @@ setTimeout(() => {
         });
     });
 
-    alert(`Largeur : ${window.innerWidth} / ${window.screen.width}; longeur :${window.innerHeight} / ${window.screen.height}`);
+    // alert(`Largeur : ${window.innerWidth} / ${window.screen.width}; longeur :${window.innerHeight} / ${window.screen.height}`);
 
     handlePermission();
 }, 2000)
