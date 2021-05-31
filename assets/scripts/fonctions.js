@@ -97,7 +97,7 @@ function addStep(stepArray) {
             let stepRoute = document.createElement("div");
             stepRoute.classList.add('step-route');
             let newStep = `
-                <div class="dot"></div>
+                <div class="step-indicator"></div>
                 <div class="step-route-info">
 
                         <div class="step-photo">
@@ -356,6 +356,16 @@ function addDocuments(docArray, damesArray) {
                                 <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
                                 </iframe>
                             </div>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'image') {
+                    mainContent = `
+                    <article class="informations hidden">
+                    <div class="main-information">
+                        <img src="${doc.URL}"></img>
+                            <p>${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                            <span>${doc.licence}</span>
                         </div>
                     </article>`;
                 } else {

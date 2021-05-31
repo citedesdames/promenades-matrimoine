@@ -33,6 +33,7 @@ document.documentElement.style.setProperty('--inner-height', window.innerHeight 
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
+    minZoom: 5,
     maxBounds: bounds,
     maxBoundsViscosity: 0.5
 });
@@ -57,7 +58,6 @@ notchBtn.addEventListener('click', event => {
 closeBtn.addEventListener('click', event => {
     openShutter(shutter);
 });
-
 fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
 });
