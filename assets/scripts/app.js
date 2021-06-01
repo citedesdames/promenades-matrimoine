@@ -20,7 +20,8 @@ let appUserInterface = document.querySelector('html'),
     closeBtn = document.querySelector(".close"),
     shutterPage = document.querySelector(".shutter-page"),
     route = document.querySelector(".route"),
-    routeSection = document.querySelector(".route-section");
+    routeSection = document.querySelector(".route-section"),
+    notif = document.querySelector('.notification');
 
 let isClose = false; 
 let firstGeoloc = true;
@@ -190,6 +191,7 @@ setTimeout(() => {
     // let stepDocument = document.querySelector(".step-document");
     let stepAddress = document.querySelector(".address");
     addDocuments(dataDocument, dataDames);
+    addDames(dataDames);
 
     let documentDiv = document.querySelectorAll(".document");
     documentDiv.forEach(function(i) {

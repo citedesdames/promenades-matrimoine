@@ -55,23 +55,24 @@ iframe {
 main {
     width: 100%;
     height: auto;
-    overflow: hidden;
     position: relative;
     top: 0;
     left: 0;
 }
 
 .notification {
-    padding: 12px 20px;
+    padding: 12px 16px;
     position: fixed;
+    /* width: 92%; */
+    max-width: 376px;
     z-index: 1001;
     /* min-height: 116px;
     top: -116px; */
-    top: -20%;
+    top: -24%;
     left: 50%;
     transform: translateX(-50%);
     display: grid;
-    grid-template-columns: 42px 250px 25px;
+    grid-template-columns: 32px 250px 25px;
     grid-template-rows: 1fr;
     grid-column-gap: 0px;
     grid-row-gap: 0px;
@@ -88,8 +89,8 @@ main {
 }
 
 .icon { 
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #D8D5D5;
     display: flex;
@@ -334,8 +335,103 @@ input[type=range]::-moz-range-thumb {
     margin-top: -7px;
 }
 
+.dame-slider-container {
+    position: absolute;
+    z-index: 1000;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    padding: 18px 18px;
+    overflow: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    transition: bottom var(--easing);
+}
+
+.dame-slider {
+    display: flex;
+    margin-right: 20px;
+}
+
+.dame-card {
+    width: 300px;
+    height: auto;
+    margin-right: 20px;
+    background: #E6E6E6;
+    border-radius: 14px;
+    display: grid;
+    grid-template-columns: 115px 185px;
+    grid-template-rows: 110px 40px;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    -webkit-box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
+    box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
+}
+
+.dame-portrait { 
+    grid-area: 1 / 1 / 2 / 2; 
+    background: #F4F4F4;
+    border-top-left-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.dame-portrait img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.dame-infos { 
+    grid-area: 1 / 2 / 2 / 3; 
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.dame-infos h3 {
+    margin: 0;
+    font-size: 0.875em;
+    font-family: 'Merriweather', serif;
+    font-weight: 500;
+    color: #696969;
+} 
+
+.dame-infos p {
+    margin: 0;
+    font-size: 0.75em;
+    font-family: var(--font-fam);
+    font-weight: 400;
+    line-height: 1.25;
+    color: #8D8D8D;
+} 
+
+.dame-card > a { 
+    grid-area: 2 / 1 / 3 / 3; 
+    text-decoration: none;
+    color: #fff;
+    font-weight: 300;
+    font-family: var(--font-fam);
+    background: var(--orange);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dame-btn > a {
+    text-decoration: none;
+}
+
+
 .leaflet-popup-content-wrapper {
-    width: 265px;
+    /* width: 265px; */
     margin: 0;
     padding: 0;
     position: relative;
@@ -345,6 +441,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .leaflet-popup-content {
+    width: 265px;
     margin: 0;
 }
 
@@ -1012,11 +1109,11 @@ input[type=range]::-moz-range-thumb {
 
 .step-route-address {
     width: 78%;
-    /* height: inherit; */
+    height: inherit;
     padding: 10px;
-    /* display: flex;
+    display: flex;
     flex-direction: column;
-    justify-content: space-around; */
+    justify-content: space-around;
 }
 
 .step-route-address > div {
@@ -1044,7 +1141,7 @@ input[type=range]::-moz-range-thumb {
 
 .distance {
     background: #838383;
-    /* background: #589cf8cc; */
+    font-family: var(--font-fam);
     border-radius: 5px;
     max-height: 21px;
     font-size: 0.75em;
@@ -1310,6 +1407,10 @@ input[type=range]::-moz-range-thumb {
     display: block;
 }
 
+.front-side {
+    display: grid;
+}
+
 .overflow {
     overflow: hidden;
 }
@@ -1339,4 +1440,15 @@ input[type=range]::-moz-range-thumb {
 
 .closed {
     top: -88px;
+}
+
+.hidden-card {
+    bottom: -25%;
+}
+
+@media only screen and (max-height: 500px) {
+    .leaflet-popup-content {
+        width: 235px;
+        margin: 0;
+    }
 }

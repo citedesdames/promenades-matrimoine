@@ -23,6 +23,31 @@ function onMapClick(e) {
 // }
 
 
+function addDames(damesArray) {
+    damesArray.map(dame => {
+        let cardContent = document.createElement("div");
+        cardContent.classList.add('dame-card');
+        cardContent.setAttribute("id_dames", `${dame.identifiant}`);
+
+        let dameCard = `
+            <div class="dame-portrait" style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+            <div class="dame-infos">
+                <h3>${dame.prenom} ${dame.nom}</h3>
+                <p>${dame.biographie.slice(0,100)}...</p>
+            </div>
+            <a href="">
+                <div class="dame-btn">
+                    <span>En savoir plus</span>
+                </div>
+            </a>`
+
+        cardContent.innerHTML = dameCard;
+        document.querySelector('.dame-slider').append(cardContent);
+        // document.querySelector('.dame-portrait').style.backgroundImage = `url('${dame.portrait}')`;
+    })
+}
+
+
 function addStep(stepArray) {
     let markerArray = [];
 
@@ -51,6 +76,17 @@ function addStep(stepArray) {
                     <button class="know-more" ordre="${step.ordre}">En savoir plus</button>
                 </div>
             `).on("click", function(coord) {
+                // if(innerHeight < 500) {
+                //     header.classList.add("closed");
+                //     console.log(document.querySelector('.popup-description'));
+                // }
+
+                // if(!document.querySelector('.dame-slider-container').classList.contains('hidden-card')) {
+                //     document.querySelector('.dame-slider-container').classList.add('hidden-card');
+                // } else {
+                //     document.querySelector('.dame-slider-container').classList.remove('hidden-card');
+                // }
+
                 let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
     
                 mymap.flyTo(GPSMark, 16, {
@@ -67,7 +103,15 @@ function addStep(stepArray) {
                     // console.log(markerArray.indexOf(mark));
                     openShutter(shutter, markerRankNumber);
                 });
-
+                // setTimeout(() => {
+                //     document.querySelector("*:not([leaflet-popup])").addEventListener('click', function() {
+                //         console.log("lkhlkusd");
+                //         header.classList.remove("closed");
+                //         document.querySelector("*:not([leaflet-popup])").removeEventListener('click', function() {})
+                //     })
+                // }, 100)
+            }).on('remove', function() {
+                console.log("lkhlkusd");
             });
 
             let shutterContent = document.createElement("div");
@@ -155,8 +199,17 @@ function onLocationFound(e) {
         allDstIndicator = document.querySelectorAll('.distance');
 
     radius = e.accuracy;
+    accuracy = L.circle(e.latlng, radius, {
+        weight: 0,
+        fillOpacity: 0.35
+    }).addTo(mymap);
     positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap);
-    accuracy = L.circle(e.latlng, radius).addTo(mymap);
+    // positionUser = L.circle(e.latlng, {
+    //     stroke: false,
+    //     fillOpacity: 1,
+    //     fillColor: '#589CF8',
+    //     radius: 10
+    // }).addTo(mymap);
     allDstIndicator.forEach(function(i) {
         i.style.display = "block";
     });
@@ -203,7 +256,6 @@ function locateUser() {
 }
 
 function verifyPosition(step) {
-    let notif = document.querySelector('.notification');
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
     let stepAddress = document.querySelector('.position');
 
@@ -217,10 +269,10 @@ function verifyPosition(step) {
 
         // Ne marche que si l'utilisateur attends que les étapes soient chargées
         document.querySelector('.btn-close').addEventListener('click', function () {
-            notif.style.top = "-20%";
+            notif.style.top = "-24%";
         })
         setTimeout(() => {
-            notif.style.top = "-20%";
+            notif.style.top = "-24%";
         }, 5000)
         isClose = true;
     } else if (distance < 5599 && isClose == true) {
