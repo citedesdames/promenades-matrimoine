@@ -263,9 +263,11 @@ function verifyPosition(step) {
     let test2 = 20000;
 
     if(distance < test2 && isClose == false) {
+        console.log("condition 1")
+        console.log(step.nom)
         window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
-        // notif.style.top = "12px";
+        notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
             i.style.display = "initial";
         });
@@ -285,8 +287,10 @@ function verifyPosition(step) {
             notif.style.top = "-24%";
         }, 5000)
         isClose = true;
-    } else if (distance < test2 && isClose == true) {
+    } else if(distance < test2 && isClose == true) {
         isClose = true;
+        console.log("condition 2")
+        // console.log('Already close to step no need to notif the user');
     } else if(distance > test2) {
         isClose = false;
         allAugRealLinks.forEach(function(i) {
@@ -294,7 +298,7 @@ function verifyPosition(step) {
         });
     }
     
-    console.log(isClose);
+    // console.log(isClose);
 }
 
 function updateOpacity(value) {
