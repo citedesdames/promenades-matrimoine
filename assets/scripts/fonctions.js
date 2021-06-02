@@ -260,7 +260,7 @@ function verifyPosition(step) {
     let stepAddress = document.querySelector('.position');
 
     let test1 = 5599;
-    let test2 = 17500;
+    let test2 = 20000;
 
     if(distance < test2 && isClose == false) {
         window.navigator.vibrate(300);
