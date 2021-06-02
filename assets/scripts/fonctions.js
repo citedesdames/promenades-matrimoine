@@ -259,12 +259,22 @@ function verifyPosition(step) {
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
     let stepAddress = document.querySelector('.position');
 
-    if(distance < 5599 && isClose == false) {
+    let test1 = 5599;
+    let test2 = 17500;
+
+    if(distance < test2 && isClose == false) {
         window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
-        notif.style.top = "12px";
+        // notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
             i.style.display = "initial";
+        });
+
+        Notification.requestPermission( function(status) {
+            console.log(status); // les notifications ne seront affichées que si "autorisées"
+            var n = new Notification(`À proximité de : ${step.nom}`, {
+                body: "Accedez à des documents exclusifs via l'appareil photo de votre smartphone !"
+            }); // this also shows the notification
         });
 
         // Ne marche que si l'utilisateur attends que les étapes soient chargées
@@ -275,9 +285,9 @@ function verifyPosition(step) {
             notif.style.top = "-24%";
         }, 5000)
         isClose = true;
-    } else if (distance < 5599 && isClose == true) {
+    } else if (distance < test2 && isClose == true) {
         isClose = true;
-    } else if(distance > 5599) {
+    } else if(distance > test2) {
         isClose = false;
         allAugRealLinks.forEach(function(i) {
             i.style.display = "none";
