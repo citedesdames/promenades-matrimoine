@@ -210,9 +210,12 @@ setTimeout(() => {
         });
     });
 
-    // alert(`Largeur : ${window.innerWidth} / ${window.screen.width}; longeur :${window.innerHeight} / ${window.screen.height}`);
-
     handlePermission();
+
+    document.querySelector('.dame-btn').addEventListener('click', function() {
+        console.log(this.parentNode);
+        // cardExtend(this.parentNode);
+    })
 }, 2000)
 
 /*

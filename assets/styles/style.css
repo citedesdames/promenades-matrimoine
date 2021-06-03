@@ -19,6 +19,18 @@
     }
   }
 
+@keyframes appears {
+    0% {
+        /* transform: translateY(180px); */
+        bottom: -175px;
+    }
+    100% {
+        /* transform: translateY(0px); */
+        bottom: 0;
+    }
+}
+
+
 @supports (-moz-backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) or
   (backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) {
   .leaflet-popup-content-wrapper {
@@ -213,7 +225,7 @@ header h1 {
     border: none;
     border-radius: 4px;
     position: fixed;
-    bottom: 5%;
+    top: 165px;
     left: 10px;
     transition: 300ms ease;
     z-index: 400;
@@ -342,7 +354,7 @@ input[type=range]::-moz-range-thumb {
     left: 0;
     width: 100%;
     height: auto;
-    padding: 18px 18px;
+    /* padding: 18px 18px; */
     overflow: scroll;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -350,14 +362,17 @@ input[type=range]::-moz-range-thumb {
 }
 
 .dame-slider {
+    width: 100vw;
     display: flex;
     margin-right: 20px;
 }
 
 .dame-card {
-    width: 300px;
+    position: relative;
+    bottom: -175px;
+    width: auto;
     height: auto;
-    margin-right: 20px;
+    margin: 18px 0 18px 24px;
     background: #E6E6E6;
     border-radius: 14px;
     display: grid;
@@ -368,6 +383,8 @@ input[type=range]::-moz-range-thumb {
     -webkit-box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
     -moz-box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
     box-shadow: 0px 6px 18px rgba(0,0,0,0.3);
+    /* animation: appears 300ms var(--easing); */
+    transition: all var(--easing);
 }
 
 .dame-portrait { 
@@ -378,6 +395,15 @@ input[type=range]::-moz-range-thumb {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+}
+
+.dame-portrait div {
+    width: 100%;
+    height: 100%;
+}
+
+.dame-portrait span {
+    display: none;
 }
 
 .dame-portrait img {
@@ -411,7 +437,9 @@ input[type=range]::-moz-range-thumb {
     color: #8D8D8D;
 } 
 
-.dame-card > a { 
+.dame-btn {
+    border: none;
+    cursor: pointer;
     grid-area: 2 / 1 / 3 / 3; 
     text-decoration: none;
     color: #fff;
@@ -425,8 +453,8 @@ input[type=range]::-moz-range-thumb {
     align-items: center;
 }
 
-.dame-btn > a {
-    text-decoration: none;
+.close-to {
+    grid-area: 3 / 1 / 4 / 2;
 }
 
 
@@ -1407,10 +1435,6 @@ input[type=range]::-moz-range-thumb {
     display: block;
 }
 
-.front-side {
-    display: grid;
-}
-
 .overflow {
     overflow: hidden;
 }
@@ -1442,13 +1466,22 @@ input[type=range]::-moz-range-thumb {
     top: -88px;
 }
 
-.hidden-card {
-    bottom: -25%;
+.card-extend {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, 1fr);
 }
 
 @media only screen and (max-height: 500px) {
     .leaflet-popup-content {
         width: 235px;
         margin: 0;
+    }
+
+    .popup-description {
+        margin: 12px;
+    }
+
+    .popup-description p {
+        font-style: 1.25em;
     }
 }

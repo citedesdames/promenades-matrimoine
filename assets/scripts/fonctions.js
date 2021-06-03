@@ -28,23 +28,24 @@ function addDames(damesArray) {
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
         cardContent.setAttribute("id_dames", `${dame.identifiant}`);
-
+        
         let dameCard = `
-            <div class="dame-portrait" style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+            <div class="dame-portrait">
+                <div style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+                <span>${dame.source}</span>
+            </div>
             <div class="dame-infos">
                 <h3>${dame.prenom} ${dame.nom}</h3>
                 <p>${dame.biographie.slice(0,100)}...</p>
             </div>
-            <a href="">
-                <div class="dame-btn">
+            <button class="dame-btn">
                     <span>En savoir plus</span>
-                </div>
-            </a>`
+            </button>`
 
         cardContent.innerHTML = dameCard;
         document.querySelector('.dame-slider').append(cardContent);
-        // document.querySelector('.dame-portrait').style.backgroundImage = `url('${dame.portrait}')`;
     })
+    toggleCard(true);
 }
 
 
@@ -75,19 +76,13 @@ function addStep(stepArray) {
 
                     <button class="know-more" ordre="${step.ordre}">En savoir plus</button>
                 </div>
-            `).on("click", function(coord) {
+            `, {closeOnClick: false}).on("click", function(coord) {
                 // if(innerHeight < 500) {
                 //     header.classList.add("closed");
                 //     console.log(document.querySelector('.popup-description'));
                 // }
 
-                // if(!document.querySelector('.dame-slider-container').classList.contains('hidden-card')) {
-                //     document.querySelector('.dame-slider-container').classList.add('hidden-card');
-                // } else {
-                //     document.querySelector('.dame-slider-container').classList.remove('hidden-card');
-                // }
-
-                let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
+                let GPSMark = L.latLng(coord.latlng.lat + .0046, coord.latlng.lng);
     
                 mymap.flyTo(GPSMark, 16, {
                     animate: true,
@@ -97,10 +92,8 @@ function addStep(stepArray) {
                 let knowMore = document.querySelector(".know-more");
                 knowMore.addEventListener('click', event => {
                     this.closePopup();
+                    toggleCard(false);
                     let markerRankNumber = markerArray.indexOf(mark);
-                    
-                    // console.log(knowMore.getAttribute("ordre"));
-                    // console.log(markerArray.indexOf(mark));
                     openShutter(shutter, markerRankNumber);
                 });
                 // setTimeout(() => {
@@ -110,8 +103,6 @@ function addStep(stepArray) {
                 //         document.querySelector("*:not([leaflet-popup])").removeEventListener('click', function() {})
                 //     })
                 // }, 100)
-            }).on('remove', function() {
-                console.log("lkhlkusd");
             });
 
             let shutterContent = document.createElement("div");
@@ -178,6 +169,19 @@ function addStep(stepArray) {
             // color: '#B55050'
         }).addTo(mymap);
     }
+
+    markerArray.forEach((i) => {
+        i.addEventListener('click', function() {
+            checkPopupState(i);
+            document.querySelector('.leaflet-popup-close-button').addEventListener('click', function() {
+                checkPopupState(i);
+            })
+        })
+        // document.querySelector('#mapid').addEventListener('click', function() {
+        //     // checkPopupState(i);
+        //     console.log(3)
+        // })
+    })
 }
 
 function onLocationFound(e) {
@@ -194,7 +198,6 @@ function onLocationFound(e) {
         });
     }
 
-    window.navigator.vibrate(300);
     let distanceArray = [],
         allDstIndicator = document.querySelectorAll('.distance');
 
@@ -263,7 +266,6 @@ function verifyPosition(step) {
     let test2 = 20000;
 
     if(distance < test2 && isClose == false) {
-        console.log("condition 1")
         console.log(step.nom)
         window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
@@ -330,6 +332,7 @@ function openShutter(element, rank) {
                 childNumber[3].firstChild.innerHTML = docNumber;
             }
         }
+        toggleCard(false);
     } else {
         document.querySelector('body').classList.add("overflow");
         element.classList.remove("open");
@@ -347,6 +350,9 @@ function openShutter(element, rank) {
             animate: true,
             duration: 1.5
         });
+
+        toggleCard(true);
+        console.log('passed');
     }
 }
 
@@ -509,3 +515,48 @@ function handlePermission() {
 function report(state) {
     console.log('Permission ' + state);
 }  
+
+function checkPopupState(popup) {
+    console.log(popup);
+    if(popup.isPopupOpen() == true) {
+        toggleCard(false);
+        header.classList.add('closed');
+    } else if (popup.isPopupOpen() == false) {
+        toggleCard(true);
+        header.classList.remove('closed');
+    }
+}
+
+function toggleCard(state) {
+    if(state == false) {
+        document.querySelectorAll('.dame-card').forEach((card,i) => 
+            setTimeout(() => {
+                card.style.bottom = "-175px";
+                // console.log(card);
+            }, i * 125)
+        )
+        setTimeout(() => {document.querySelector('.dame-slider-container').style.bottom = "-100%"}, 500);
+    } else if(state == true) {
+        document.querySelector('.dame-slider-container').style.bottom = "0";
+        document.querySelectorAll('.dame-card').forEach((card,i) => 
+            setTimeout(() => {
+                card.style.bottom = "0px";
+                // console.log(card);
+            }, i * 125)
+        )
+    }
+}
+
+function cardExtend(card) {
+    console.log(card.childNodes)
+    card.childNodes[5].style.display = "none";
+
+    card.style.cssText = "margin: 0; grid-template-columns: 100vw; bottom: 0;"
+
+    card.classList.add("card-extend");
+    let divCloseTo = document.createElement("div");
+    divCloseTo.classList.add('close-to');
+    card.append(divCloseTo);
+
+    card.childNodes[3].style.gridArea = "2 / 1 / 3 / 2";
+}
