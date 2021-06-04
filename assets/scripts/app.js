@@ -11,7 +11,8 @@ let sudOuest = L.latLng(48.815003, 2.227135),
     radius, positionUser, accuracy;
 
 let appUserInterface = document.querySelector('html'),
-    header = document.querySelector('header');
+    header = document.querySelector('header'),
+    layerBtn = document.querySelector('.layers-btn');
     locateBtn = document.querySelector('.locate-btn'),
     fullScreenBtn = document.querySelector('.fullScreen-btn'),
     range = document.querySelector(".range"),
@@ -35,6 +36,7 @@ let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
     zoom: 12,
     minZoom: 5,
+    zoomControl: false,
     maxBounds: bounds,
     maxBoundsViscosity: 0.5
 });
@@ -59,10 +61,12 @@ notchBtn.addEventListener('click', event => {
 closeBtn.addEventListener('click', event => {
     openShutter(shutter);
 });
+layerBtn.addEventListener('click', function() {
+    toggleLayers(this);
+});
 fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
 });
-
 locateBtn.addEventListener('click', event => {
     console.log('okay');
     mymap.locate({maxZoom: 16});
@@ -115,30 +119,41 @@ let paris19 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.pn
 });
 
 let fondsDeCarte = {
-    "Paris XVII": paris17,
-    "Paris XIX": paris19
+    "Paris17": paris17,
+    "Paris19": paris19,
 };
 
 paris19.on('click', function(e) {
     alert('I have been clicked ')
 });
 
-let control = L.control.layers(fondsDeCarte).addTo(mymap);
-let checkboxes = document.querySelectorAll(".leaflet-control-layers-selector"); 
+let checkboxes = document.querySelectorAll(".radio-layer"); 
+console.log(checkboxes);
 let enabledSettings = [];
 
 checkboxes.forEach(function(checkbox) {
     checkbox.addEventListener('change', function() {
-      enabledSettings = 
-        Array.from(checkboxes)
-        .filter(i => i.checked)
-        .map(i => i.value)
+        toggleLayers(layerBtn)
+        enabledSettings = 
+            Array.from(checkboxes)
+            .filter(i => i.checked)
+            .map(i => i.value)
         
-      if (enabledSettings == "on") {
-          range.classList.add("opacityCursor-reveal");
-      }
+        console.log(enabledSettings)
+        if (enabledSettings == "noLayer") {
+            range.style.left = "-140px";
+            for (const property in fondsDeCarte) {
+                mymap.removeLayer(fondsDeCarte[property])
+            }
+        } else {
+            range.style.left = "-78px";
+            for (const property in fondsDeCarte) {
+                mymap.removeLayer(fondsDeCarte[property])
+            }
+            fondsDeCarte[enabledSettings[0]].addTo(mymap);
+        }
     })
-  });
+});
 
 
 
@@ -188,10 +203,9 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
 
 setTimeout(() => {
     addStep(dataEtape);
-    // let stepDocument = document.querySelector(".step-document");
-    let stepAddress = document.querySelector(".address");
     addDocuments(dataDocument, dataDames);
     addDames(dataDames);
+    let stepAddress = document.querySelector(".address");
 
     let documentDiv = document.querySelectorAll(".document");
     documentDiv.forEach(function(i) {

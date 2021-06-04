@@ -305,16 +305,17 @@ function verifyPosition(step) {
 
 function updateOpacity(value) {
     for (const property in fondsDeCarte) {
-        // console.log(`${property}: ${fondsDeCarte[property]}`);
-        console.log(value);
+        // console.log(value);
         fondsDeCarte[property].setOpacity(value)
         document.querySelector('.range-value').innerHTML = value;
-      }
+    }
 }
 
 function openShutter(element, rank) {
     let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
     if(!element.classList.contains("open")) {
+        toggleControls(false);
+        toggleCard(false);
         document.querySelector('body').classList.remove("overflow");
         header.classList.add("closed");
         setTimeout(() => {
@@ -332,7 +333,6 @@ function openShutter(element, rank) {
                 childNumber[3].firstChild.innerHTML = docNumber;
             }
         }
-        toggleCard(false);
     } else {
         document.querySelector('body').classList.add("overflow");
         element.classList.remove("open");
@@ -352,7 +352,7 @@ function openShutter(element, rank) {
         });
 
         toggleCard(true);
-        console.log('passed');
+        toggleControls(true);
     }
 }
 
@@ -519,9 +519,11 @@ function report(state) {
 function checkPopupState(popup) {
     console.log(popup);
     if(popup.isPopupOpen() == true) {
+        toggleControls(false);
         toggleCard(false);
         header.classList.add('closed');
     } else if (popup.isPopupOpen() == false) {
+        toggleControls(true);
         toggleCard(true);
         header.classList.remove('closed');
     }
@@ -535,9 +537,14 @@ function toggleCard(state) {
                 // console.log(card);
             }, i * 125)
         )
-        setTimeout(() => {document.querySelector('.dame-slider-container').style.bottom = "-100%"}, 500);
+        setTimeout(() => {
+            document.querySelector('.dame-slider-container').style.bottom = "-100%";
+            setTimeout(() => {
+                document.querySelector('.dame-slider-container').style.display = "none";
+            }, 250);
+        }, 250);
     } else if(state == true) {
-        document.querySelector('.dame-slider-container').style.bottom = "0";
+        document.querySelector('.dame-slider-container').style.cssText = "display: grid; bottom: 0;";
         document.querySelectorAll('.dame-card').forEach((card,i) => 
             setTimeout(() => {
                 card.style.bottom = "0px";
@@ -559,4 +566,37 @@ function cardExtend(card) {
     card.append(divCloseTo);
 
     card.childNodes[3].style.gridArea = "2 / 1 / 3 / 2";
+}
+
+function toggleControls(state) {
+    if(state == false) {
+        document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
+            setTimeout(() => {
+                ctrl.style.transform = "translateX(-50px)";
+            }, i * 100)
+        )
+        setTimeout(() => {
+            document.querySelector('.controllers').style.display = "none";
+        }, 500);
+    } else if(state == true) {
+        document.querySelector('.controllers').style.display = "block";
+        document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
+            setTimeout(() => {
+                ctrl.style.transform = "translateX(0px)";
+            }, i * 100)
+        )
+    }
+}
+
+function toggleLayers(layers) {
+    // console.log(layers.childNodes)
+    if(!layers.childNodes[3].classList.contains("hidden")) {
+        document.querySelector('.layers-choice').classList.add("hidden");
+        layers.childNodes[1].classList.remove("hidden");
+        layers.classList.remove("layers-extend");
+    } else {
+        layers.classList.add("layers-extend");
+        layers.childNodes[1].classList.add("hidden");
+        document.querySelector('.layers-choice').classList.remove("hidden");
+    }
 }

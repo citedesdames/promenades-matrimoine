@@ -213,33 +213,20 @@ header h1 {
     text-decoration: none;
 }
 
-.fullScreen-btn {
-    /* display: flex; */
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    outline: none;
-    cursor: pointer;
-    background-color: white;
-    border: none;
-    border-radius: 4px;
+.controllers {
     position: fixed;
-    top: 165px;
-    left: 10px;
-    transition: 300ms ease;
     z-index: 400;
-    box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
+    top: 100px;
+    left: 10px;
 }
 
-.fullScreen-btn img {
-    width: 80%;
-    height: auto;
+.controllers button {
+    margin: 10px 0;
 }
 
-/*    À termes, combiner les styles du bouton fullscreen et le bouton locate     */
-
-.locate-btn {
+.locate-btn,
+.fullScreen-btn,
+.layers-btn {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -250,15 +237,59 @@ header h1 {
     background-color: white;
     border: none;
     border-radius: 4px;
-    position: fixed;
-    top: 115px;
-    left: 10px;
     transition: 300ms ease;
-    z-index: 1000;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
+} 
+
+.layers-btn {
+    transition: all var(--easing);
 }
 
-.locate-btn img {
+.layers-extend {
+    width: auto;
+    height: auto;
+    padding: 5px 10px;
+}
+
+.layers-choice {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-family: var(--font-fam);
+    font-weight: 400;
+}
+
+.layers-choice > div {
+    margin: 1.25px 0;
+}
+
+.layers-choice input[type="radio"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0 2px 0 0;
+    cursor: pointer;
+    border: 2px solid #bbbdc7;
+    border-radius: 50%;
+    background-color: #fff;
+    transform: translateY(4px);
+}
+
+.layers-choice input[type="radio"]:checked {
+    background-image: url("../images/checked.svg");
+    background-size: 10px;
+    background-color: #4acea3;
+    border-color: #38bb90;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.locate-btn img,
+.layers-btn img,
+.fullScreen-btn img {
     width: 80%;
     height: auto;
 }
@@ -268,30 +299,36 @@ header h1 {
 }
 
 .range {
-    display: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: fixed;
-    bottom: 37px;
-    left: 4%;
+    top: 50%;
+    left: -140px;
+    transform: rotate(-90deg);
     z-index: 400;
     width: 225px;
     height: auto;
     background: #fff;
     border-radius: 10px;
-    padding: 15px 20px;
+    padding: 15px 12px;
+    transition: left var(--easing);
     
 }
 
 .range-value {
+    width: 15%;
+    text-align: center;
     font-size: 0.875em;
     font-family: var(--font-fam);
     font-weight: 500;
     color: black;
+    transform: rotate(90deg);
 }
 
 .field {
-    width: 80%;
+    width: 85%;
     display: flex;
-    justify-content: center;
 }
 
 .opacityCursor {
@@ -301,6 +338,7 @@ header h1 {
     background: #ddd;
     outline: none;
     border: none;
+    position: relative;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
@@ -314,6 +352,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 input[type=range]::-webkit-slider-thumb {
+    position: relative;
     box-shadow: 0px 0px 0px #000000;
     height: 18px;
     width: 18px;
@@ -323,6 +362,13 @@ input[type=range]::-webkit-slider-thumb {
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -7px;
+}
+
+input[type=range]::-webkit-slider-thumb::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #000;
 }
 
 input[type=range]::-moz-range-track {
@@ -1437,12 +1483,6 @@ input[type=range]::-moz-range-thumb {
 
 .overflow {
     overflow: hidden;
-}
-
-.opacityCursor-reveal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .visible {
