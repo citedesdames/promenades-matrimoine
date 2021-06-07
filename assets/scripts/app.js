@@ -146,7 +146,7 @@ checkboxes.forEach(function(checkbox) {
                 mymap.removeLayer(fondsDeCarte[property])
             }
         } else {
-            range.style.left = "-78px";
+            range.style.left = "-81px";
             for (const property in fondsDeCarte) {
                 mymap.removeLayer(fondsDeCarte[property])
             }
@@ -203,7 +203,7 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
 
 setTimeout(() => {
     addStep(dataEtape);
-    addDocuments(dataDocument, dataDames);
+    // addDocuments(dataDocument, dataDames);
     addDames(dataDames);
     let stepAddress = document.querySelector(".address");
 
@@ -226,10 +226,15 @@ setTimeout(() => {
 
     handlePermission();
 
-    document.querySelector('.dame-btn').addEventListener('click', function() {
-        console.log(this.parentNode);
-        // cardExtend(this.parentNode);
-    })
+    // document.querySelector('.dame-btn').addEventListener('click', function() {
+    //     console.log(this.parentNode);
+    //     // cardExtend(this.parentNode);
+    // })
+
+    const cards = document.querySelectorAll('.dame-btn');
+    
+
+    cards.forEach(card => card.addEventListener('click', onCardClick));
 }, 2000)
 
 /*

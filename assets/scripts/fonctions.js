@@ -28,7 +28,7 @@ function addDames(damesArray) {
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
         cardContent.setAttribute("id_dames", `${dame.identifiant}`);
-        
+        // <img src="${dame.portrait}"></img>
         let dameCard = `
             <div class="dame-portrait">
                 <div style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
@@ -123,7 +123,7 @@ function addStep(stepArray) {
 
                 <div class="step-document" document_id_etape=${step.ordre}></div>
                 <a href="" class="augmented-reality-link">
-                    <div class="augmented-reality-btn">
+                    <div class="augmented-reality">
                         <img src="assets/images/photo-camera.svg" alt="">
                         <span>Appareil photo</span>
                     </div>
@@ -554,19 +554,22 @@ function toggleCard(state) {
     }
 }
 
-function cardExtend(card) {
-    console.log(card.childNodes)
-    card.childNodes[5].style.display = "none";
+// function cardExtend(card) {
+//     console.log(card.childNodes)
+//     card.childNodes[5].style.display = "none";
 
-    card.style.cssText = "margin: 0; grid-template-columns: 100vw; bottom: 0;"
+//     card.style.cssText = "margin: 0; grid-template-columns: 100vw; bottom: 0;"
+//     card.classList.add("card-extend");
 
-    card.classList.add("card-extend");
-    let divCloseTo = document.createElement("div");
-    divCloseTo.classList.add('close-to');
-    card.append(divCloseTo);
+//     let divCloseTo = document.createElement("div");
+//     divCloseTo.classList.add('close-to');
+//     card.append(divCloseTo);
 
-    card.childNodes[3].style.gridArea = "2 / 1 / 3 / 2";
-}
+//     card.childNodes[1].childNodes[1].classList.add("portrait");
+//     card.childNodes[3].style.gridArea = "2 / 1 / 3 / 2";
+// }
+
+
 
 function toggleControls(state) {
     if(state == false) {
@@ -576,9 +579,11 @@ function toggleControls(state) {
             }, i * 100)
         )
         setTimeout(() => {
+            range.style.left = "-100%";
             document.querySelector('.controllers').style.display = "none";
-        }, 500);
+        }, 350);
     } else if(state == true) {
+        range.style.left = "-81px";
         document.querySelector('.controllers').style.display = "block";
         document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
             setTimeout(() => {
@@ -600,3 +605,118 @@ function toggleLayers(layers) {
         document.querySelector('.layers-choice').classList.remove("hidden");
     }
 }
+
+const toggleExpansion = (element, to, duration = 350) => {
+    return new Promise((res) => {
+      element.animate([
+        {
+      top: to.top,
+      left: to.left,
+      width: to.width,
+      height: to.height
+        }
+      ], {duration, fill: 'forwards', ease: 'ease-in'})
+      setTimeout(res, duration);
+    })
+  }
+
+  const fadeContent = (element, opacity, duration = 300) => {
+      return new Promise(res => {
+          [...element.children].forEach((child) => {
+              requestAnimationFrame(() => {
+                  child.style.transition = `opacity ${duration}ms linear`;
+                  child.style.opacity = opacity;
+              });
+          })
+          setTimeout(res, duration);
+      })
+  }
+
+  const getCardContent = (damesArray) => {
+      return `
+        <div class="card-content">
+            <div class="pp"></div>
+            <p>Wikimedia Commons, Musée Condé, domaine public</p>
+            <div class="header">
+                <h1>Marguerite de Navarre</h1>
+                <div>
+                    <p><span>Née le</span><br>1492-04-20</p>
+                    <p><span>Décédée le</span><br>1492-04-20</p>
+                </div>
+            <div>
+        </div>
+      `;
+  }
+
+  const onCardClick = async (e) => {
+      const card = e.currentTarget.parentNode;
+      console.log(card);
+      // clone the card
+      const cardClone = card.cloneNode();
+      cardClone.classList.remove("card-dame");
+      cardClone.classList.add("card-extend");
+      
+      // get the location of the card in the view
+      const {top, left, width, height} = card.getBoundingClientRect();
+
+      // position the clone on top of the original
+      cardClone.style.position = 'fixed';
+      cardClone.style.top = top + 'px';
+      cardClone.style.left = left + 'px';
+      cardClone.style.width = width + 'px';
+      cardClone.style.height = height + 'px';
+
+      // hide the original card with opacity
+      card.style.opacity = '0';
+      // add card to the same container
+      card.parentNode.appendChild(cardClone);
+
+      // create a close button to handle the undo
+    //   const closeButton = document.createElement('button');
+      const closeButton = document.createElement("img");
+      closeButton.setAttribute("src", "./assets/images/close.svg");
+      // position the close button top corner
+      closeButton.style = `
+          position: fixed;
+          z-index: 10000;
+          top: 25px;
+          right: 25px;
+          width: 35px;
+          height: 35px;
+          padding: 10px;
+          border-radius: 12px;
+          background-color: #C9C9C9;
+      `;
+
+      // attach click event to the close button
+      closeButton.addEventListener('click', async () => {
+          // remove the button on close
+          closeButton.remove();
+          // remove the display style so the original content is displayed right
+          cardClone.style.removeProperty('display');
+          cardClone.style.removeProperty('padding');
+          // show original card content
+          [...cardClone.children].forEach(child => child.style.removeProperty('display'));
+          fadeContent(cardClone, '0');
+          // shrink the card back to the original position and size
+          await toggleExpansion(cardClone, {top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px`}, 300)
+          // show the original card again
+          card.style.removeProperty('opacity');
+          // remove the clone card
+          cardClone.remove();
+      });
+
+
+
+      // expand the clone card
+      await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
+      const content = getCardContent(card.textContent, card.dataset.type)
+
+      // set the display block so the content will follow the normal flow in case the original card is not display block
+      cardClone.style.display = 'block';
+      cardClone.style.padding = '0';
+      
+      // append the close button after the expansion is done
+      cardClone.appendChild(closeButton);
+      cardClone.insertAdjacentHTML('afterbegin', content);
+  };
