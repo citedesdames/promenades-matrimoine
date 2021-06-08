@@ -134,17 +134,16 @@ function addStep(stepArray) {
             let newStep = `
                 <div class="step-indicator"></div>
                 <div class="step-route-info">
-
-                        <div class="step-photo">
-                            <img src="assets/images/photo-camera.svg" alt="">
+                    <div class="step-photo">
+                        <img src="assets/images/photo-camera.svg" alt="">
+                    </div>
+                    <div class="step-route-address">
+                        <div>
+                            <span class="location">${step.nom}</span>
+                            <span class="distance"></span>
                         </div>
-                        <div class="step-route-address">
-                            <div>
-                                <span class="location">${step.nom}</span>
-                                <span class="distance"></span>
-                            </div>
-                            <p>${step.adresse}</p>
-                        </div>
+                        <p>${step.adresse}</p>
+                    </div>
                 </div>
             `;
 
@@ -575,7 +574,7 @@ function toggleControls(state) {
     if(state == false) {
         document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
             setTimeout(() => {
-                ctrl.style.transform = "translateX(-50px)";
+                ctrl.style.transform = "translateX(-125%)";
             }, i * 100)
         )
         setTimeout(() => {
@@ -583,7 +582,9 @@ function toggleControls(state) {
             document.querySelector('.controllers').style.display = "none";
         }, 350);
     } else if(state == true) {
-        range.style.left = "-81px";
+        if(!document.getElementById('noLayer').checked) {         
+            range.style.left = "-81px";
+        }
         document.querySelector('.controllers').style.display = "block";
         document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
             setTimeout(() => {
@@ -632,25 +633,56 @@ const toggleExpansion = (element, to, duration = 350) => {
       })
   }
 
-  const getCardContent = (damesArray) => {
-      return `
-        <div class="card-content">
-            <div class="pp"></div>
-            <p>Wikimedia Commons, Musée Condé, domaine public</p>
+  const getCardContent = (damesArray, id_dame) => {
+    //   console.log(damesArray);
+    //   console.log(id_dame);
+    let tmpDame = [];
+    damesArray.forEach(function(dame){
+        if(id_dame == dame.identifiant) {
+            console.log(dame);
+            tmpDame.push(dame);
+        }
+    });
+    console.log(tmpDame);
+    console.log(tmpDame[0].identifiant);
+    return `
+        <div class="card-header">
+            <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+            <p>${tmpDame[0].source}</p>
             <div class="header">
-                <h1>Marguerite de Navarre</h1>
+                <h1>${tmpDame[0].prenom} ${tmpDame[0].nom}</h1>
                 <div>
-                    <p><span>Née le</span><br>1492-04-20</p>
-                    <p><span>Décédée le</span><br>1492-04-20</p>
+                    <p><span>Née le</span><br>${tmpDame[0].dateNaissance.slice(0, 10)}</p>
+                    <p><span>Décédée le</span><br>${tmpDame[0].dateDeces.slice(0, 10)}</p>
                 </div>
-            <div>
+            </div>
         </div>
-      `;
+        <div class="card-content">
+            <p>${tmpDame[0].biographie}</p>
+            <p class="source">${tmpDame[0].sourceBio}</p>
+            <section>
+                <p>Apparait aux :<p>
+                <div class="step-route-info-2">
+                    <div class="step-photo-2">
+                        <img src="assets/images/photo-camera.svg" alt="">
+                    </div>
+                    <div class="step-route-address-2">
+                        <div>
+                            <span class="location">Palais du Louvre</span>
+                            <span class="distance">2 Km</span>
+                        </div>
+                        <p>107 Rue de Rivoli, 75001 Paris</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    `;
   }
-
   const onCardClick = async (e) => {
       const card = e.currentTarget.parentNode;
+      let id = card.getAttribute("id_dames");
       console.log(card);
+      
       // clone the card
       const cardClone = card.cloneNode();
       cardClone.classList.remove("card-dame");
@@ -710,7 +742,7 @@ const toggleExpansion = (element, to, duration = 350) => {
 
       // expand the clone card
       await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
-      const content = getCardContent(card.textContent, card.dataset.type)
+      const content = getCardContent(dataDames, id)
 
       // set the display block so the content will follow the normal flow in case the original card is not display block
       cardClone.style.display = 'block';

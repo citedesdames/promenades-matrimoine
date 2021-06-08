@@ -792,7 +792,8 @@ input[type=range]::-moz-range-thumb {
     line-height: 1.5;
     color: white;
     margin: 0;
-    background: #C9C9C9;
+    /* background: #C9C9C9; */
+    background: var(--cambridge-blue);
     border-radius: 8px;
     padding: 3px 12px;
 }
@@ -1053,11 +1054,16 @@ input[type=range]::-moz-range-thumb {
 }
 
 .source {
+    font-family: var(--font-fam);
     font-size: 0.875em;
     text-align: right;
     line-height: 1.5;
     color: #888888;
     text-transform: capitalize;
+}
+
+.source a {
+    color: inherit;
 }
 
 .informations p a {
@@ -1171,8 +1177,8 @@ input[type=range]::-moz-range-thumb {
 .route {
     width: 100%;
     height: auto;
-    background: #EFEDED;
-    /* background: #FBEAE2; */
+    /* background: #EFEDED; */
+    background: #FBEAE2;
     margin-top: 1.5rem;
     padding: 25px 20px;
     border-top-left-radius: 25px;
@@ -1200,10 +1206,9 @@ input[type=range]::-moz-range-thumb {
 
 .step-route-info {
     width: 94%;
-    height: inherit;
     min-height: inherit;
     display: flex;
-    align-items: center;
+    /* align-items: center; */
     background: #959595;
     border-radius: 10px;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
@@ -1211,7 +1216,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .step-route-address {
-    width: 78%;
+    width: 70%;
     height: inherit;
     padding: 10px;
     display: flex;
@@ -1219,13 +1224,16 @@ input[type=range]::-moz-range-thumb {
     justify-content: space-around;
 }
 
-.step-route-address > div {
+.step-route-address,
+.step-route-address-2 > div {
     display: flex;
     justify-content: space-between;
 }
 
 .step-route-address > div span,
-.step-route-address > p {
+.step-route-address-2  > div span,
+.step-route-address > p,
+.step-route-address-2 > p {
     line-height: 1.5;
 }
 
@@ -1236,7 +1244,9 @@ input[type=range]::-moz-range-thumb {
     color: #F0F0F0;
     font-family: 'Merriweather', serif;
 }
-.step-route-address > p {
+.step-route-address > p,
+.step-route-address-2 > p {
+    font-family: var(--font-fam);
     font-size: .9375em;
     color: #F8F8F8;
     margin: 4px 0 0 0;
@@ -1339,9 +1349,10 @@ input[type=range]::-moz-range-thumb {
 .card-extend {
     background: #F2F2F2;
     z-index: 1000;
+    overflow: auto;
 }
 
-.card-content {
+.card-header {
     background: #fff;
     position: relative;
     display: flex;
@@ -1362,13 +1373,18 @@ input[type=range]::-moz-range-thumb {
     margin: 1rem 0;
 }
 
-.card-content > p {
+.card-header > p {
+    margin: .5rem;
+    text-align: center;
+}
+
+.card-header > p a {
     font-family: var(--font-fam);
-    font-size: .75em;
+    font-size: .825em;
     color: #747474;
 }
 
-.card-content > .header {
+.card-header > .header {
     position: absolute;
     bottom: -3rem;
     /* transform: translateY(2rem); */
@@ -1385,7 +1401,7 @@ input[type=range]::-moz-range-thumb {
     grid-row-gap: 0px; */
 }
 
-.card-content > .header h1 {
+.card-header > .header h1 {
     display: block;
     /* grid-area: 1 / 1 / 2 / 3; */
     font-size: 1.25em;
@@ -1396,23 +1412,75 @@ input[type=range]::-moz-range-thumb {
     margin: 0 0 6px 0;
 }
 
-.card-content > .header div {
+.card-header > .header div {
     display: flex;
     justify-content: space-between;
     font-family: var(--font-fam);
 }
 
-.card-content > .header span {
+.card-header > .header span {
     font-size: .75em;
     color: #BCBCBC;
 }
 
-.card-content > .header p {
+.card-header > .header p {
     font-size: 1em;
     color: #fff;
     margin: 0;
     line-height: 1.5;
 }
+
+.card-content {
+    padding: 4rem 25px 25px 25px;
+}
+
+.card-content p:first-child {
+    font-family: var(--font-fam);
+    font-size: 1em;
+    line-height: 1.5;
+    margin: 0 0 15px 0;
+    color: #747474;
+} 
+
+.step-route-info-2 {
+    width: 100%;
+    min-height: inherit;
+    display: flex;
+    padding: 10px;
+    margin: 1rem 0;
+    align-items: center;
+    background: #959595;
+    border-radius: 7px;
+    box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
+    transition: height 1s ease;
+}
+
+.step-photo-2 {
+    width: 55px;
+    height: 55px;
+    background: #838383;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.step-photo-2 img {
+    width: 40%;
+    height: auto;
+    object-fit: cover;
+}
+
+.step-route-address-2 {
+    width: calc(100% - 40px);
+    height: inherit;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
 
 /* ------ HOME PAGE ------ */
 

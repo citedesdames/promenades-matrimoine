@@ -203,7 +203,7 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
 
 setTimeout(() => {
     addStep(dataEtape);
-    // addDocuments(dataDocument, dataDames);
+    addDocuments(dataDocument, dataDames);
     addDames(dataDames);
     let stepAddress = document.querySelector(".address");
 
