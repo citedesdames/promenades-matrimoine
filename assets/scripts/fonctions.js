@@ -27,7 +27,7 @@ function addDames(damesArray) {
     damesArray.map(dame => {
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
-        cardContent.setAttribute("id_dames", `${dame.identifiant}`);
+        cardContent.setAttribute("identifiant", `${dame.identifiant}`);
         // <img src="${dame.portrait}"></img>
         let dameCard = `
             <div class="dame-portrait">
@@ -125,7 +125,7 @@ function addStep(stepArray) {
                 <a href="" class="augmented-reality-link">
                     <div class="augmented-reality">
                         <img src="assets/images/photo-camera.svg" alt="">
-                        <span>Appareil photo</span>
+                        <span>Sortez l'appareil photo !</span>
                     </div>
                 </a>`;
 
@@ -199,6 +199,8 @@ function onLocationFound(e) {
 
     let distanceArray = [],
         allDstIndicator = document.querySelectorAll('.distance');
+    
+    console.log(allDstIndicator);
 
     radius = e.accuracy;
     accuracy = L.circle(e.latlng, radius, {
@@ -264,13 +266,15 @@ function verifyPosition(step) {
     let test1 = 5599;
     let test2 = 20000;
 
-    if(distance < test2 && isClose == false) {
+    if(distance < test1 && isClose == false) {
         console.log(step.nom)
         window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
         notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
+            console.log(i);
             i.style.display = "initial";
+            i.setAttribute('location', 'near')
         });
 
         Notification.requestPermission( function(status) {
@@ -288,14 +292,15 @@ function verifyPosition(step) {
             notif.style.top = "-24%";
         }, 5000)
         isClose = true;
-    } else if(distance < test2 && isClose == true) {
+    } else if(distance < test1 && isClose == true) {
         isClose = true;
         console.log("condition 2")
         // console.log('Already close to step no need to notif the user');
-    } else if(distance > test2) {
+    } else if(distance > test1) {
         isClose = false;
         allAugRealLinks.forEach(function(i) {
             i.style.display = "none";
+            i.setAttribute('location', 'away')
         });
     }
     
@@ -330,6 +335,12 @@ function openShutter(element, rank) {
                 let docNumber = elementList[7].childNodes.length;
                 let childNumber = elementList[5].childNodes;
                 childNumber[3].firstChild.innerHTML = docNumber;
+
+                setTimeout(() => {
+                    if(elementList[9].getAttribute('location') == 'near') {
+                        elementList[9].style.bottom = "25px";
+                    }
+                }, 600)
             }
         }
     } else {
@@ -337,6 +348,8 @@ function openShutter(element, rank) {
         element.classList.remove("open");
         setTimeout(() => {
             header.classList.remove("closed");
+            toggleCard(true);
+            toggleControls(true);
         }, 350)
         setTimeout(() => {
             for (let i = 0; i < stepDocumentChildrens.length; i++) {
@@ -349,9 +362,6 @@ function openShutter(element, rank) {
             animate: true,
             duration: 1.5
         });
-
-        toggleCard(true);
-        toggleControls(true);
     }
 }
 
@@ -374,7 +384,7 @@ function addDocuments(docArray, damesArray) {
                 let cardContent = `
                     <div>
                         <div class="dot"></div>
-                        <div class="photo-doc">
+                        <div class="photo-doc" identifiant="${damesArray[a].identifiant}">
                             <img src="${damesArray[a].portrait}" alt="">
                         </div>
                         <div class="doc-content">
@@ -458,6 +468,20 @@ function addDocuments(docArray, damesArray) {
     });
 }
 
+function onDocuemntClick(doc) {
+    if(doc.childNodes[3].classList.contains("hidden")) {
+        doc.childNodes[3].classList.remove("hidden");
+    } else if (doc.childNodes[3].classList.contains("video-type")) {
+        if (doc.childNodes[3].classList.contains("video-reveal")) { // rajouter condition && pour audio-type à l'avenir
+            doc.childNodes[3].classList.remove("video-reveal");
+        } else {
+            doc.childNodes[3].classList.add("video-reveal");
+        }
+    } else {
+        doc.childNodes[3].classList.add("hidden");
+    }
+}
+
 function openFullscreen() {
     if (appUserInterface.requestFullscreen) {
         console.log('ok');
@@ -506,13 +530,18 @@ function handlePermission() {
         }
 
         result.onchange = function() {
-        report(result.state);
+            report(result.state);
         }
     });
 }
 
 function report(state) {
     console.log('Permission ' + state);
+    // if(state == 'granted') {
+    //     return true;
+    // } else if (state == 'prompt' || state == 'denied') {
+    //     return false;
+    // }
 }  
 
 function checkPopupState(popup) {
@@ -553,22 +582,6 @@ function toggleCard(state) {
     }
 }
 
-// function cardExtend(card) {
-//     console.log(card.childNodes)
-//     card.childNodes[5].style.display = "none";
-
-//     card.style.cssText = "margin: 0; grid-template-columns: 100vw; bottom: 0;"
-//     card.classList.add("card-extend");
-
-//     let divCloseTo = document.createElement("div");
-//     divCloseTo.classList.add('close-to');
-//     card.append(divCloseTo);
-
-//     card.childNodes[1].childNodes[1].classList.add("portrait");
-//     card.childNodes[3].style.gridArea = "2 / 1 / 3 / 2";
-// }
-
-
 
 function toggleControls(state) {
     if(state == false) {
@@ -583,7 +596,7 @@ function toggleControls(state) {
         }, 350);
     } else if(state == true) {
         if(!document.getElementById('noLayer').checked) {         
-            range.style.left = "-81px";
+            range.style.left = "-82px";
         }
         document.querySelector('.controllers').style.display = "block";
         document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
@@ -633,18 +646,48 @@ const toggleExpansion = (element, to, duration = 350) => {
       })
   }
 
-  const getCardContent = (damesArray, id_dame) => {
-    //   console.log(damesArray);
-    //   console.log(id_dame);
+  const getCardContent = (damesArray, stepArray, id_dame, card) => {
+    // if(navigator.geolocation) {
+    //     console.log('allowed access');
+    //     console.log(card);
+    //     // dataEtape.map(step => {
+    //     //     let start = positionUser.getLatLng();
+    //     //     let end = {
+    //     //         lat: step.latitude,
+    //     //         lng: step.longitude
+    //     //     };
+    //     //     distance = Math.round(start.distanceTo(end));
+    //     //     console.log(distance);
+    //     //     // console.log(allDstIndicator[step.ordre]);
+    //     //     if(distance > 1000) {
+    //     //         allDstIndicator[step.ordre - 1].innerHTML = Math.round((distance/1000)*10)/10+ " Km";
+    //     //     } else if (distance < 1000) {
+    //     //         allDstIndicator[step.ordre - 1].innerHTML = distance + " m";
+    //     //     }
+    //     //     distanceArray.push(distance);
+    //     //     verifyPosition(step);
+    //     // });
+    // }
+
     let tmpDame = [];
+    let tmpStep = [];
     damesArray.forEach(function(dame){
         if(id_dame == dame.identifiant) {
             console.log(dame);
             tmpDame.push(dame);
         }
     });
+    stepArray.forEach(function(doc){
+        if(id_dame == doc.id_dame) {
+            tmpStep.push(doc);
+        }
+        // console.log(id_dame);
+        // console.log(doc.id_dame);
+    });
     console.log(tmpDame);
-    console.log(tmpDame[0].identifiant);
+    console.log(tmpStep);
+    console.log(tmpDame[0].nom);
+    console.log(new Date(tmpDame[0].dateNaissance).toUTCString());
     return `
         <div class="card-header">
             <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
@@ -652,8 +695,8 @@ const toggleExpansion = (element, to, duration = 350) => {
             <div class="header">
                 <h1>${tmpDame[0].prenom} ${tmpDame[0].nom}</h1>
                 <div>
-                    <p><span>Née le</span><br>${tmpDame[0].dateNaissance.slice(0, 10)}</p>
-                    <p><span>Décédée le</span><br>${tmpDame[0].dateDeces.slice(0, 10)}</p>
+                    <p><span>Née le :</span><br>${new Date(tmpDame[0].dateNaissance).toLocaleString().slice(0, 10)}</p>
+                    <p><span>Décédée le :</span><br>${new Date(tmpDame[0].dateDeces).toLocaleString().slice(0, 10)}</p>
                 </div>
             </div>
         </div>
@@ -680,7 +723,7 @@ const toggleExpansion = (element, to, duration = 350) => {
   }
   const onCardClick = async (e) => {
       const card = e.currentTarget.parentNode;
-      let id = card.getAttribute("id_dames");
+      let id = card.getAttribute("identifiant");
       console.log(card);
       
       // clone the card
@@ -742,7 +785,7 @@ const toggleExpansion = (element, to, duration = 350) => {
 
       // expand the clone card
       await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
-      const content = getCardContent(dataDames, id)
+      const content = getCardContent(dataDames, dataEtape, id, cardClone)
 
       // set the display block so the content will follow the normal flow in case the original card is not display block
       cardClone.style.display = 'block';
@@ -752,3 +795,24 @@ const toggleExpansion = (element, to, duration = 350) => {
       cardClone.appendChild(closeButton);
       cardClone.insertAdjacentHTML('afterbegin', content);
   };
+
+  function onPhotoDocClick(id) {
+    openShutter(shutter);
+    toggleControls(true);
+    toggleCard(true);
+    console.log(id);
+    setTimeout(() => {
+        document.querySelectorAll('.dame-card').forEach(function(card,i) {
+            if(card.getAttribute('identifiant') == id) {
+                document.querySelector('.dame-slider-container').scrollTo({
+                    left:  card.offsetLeft - 60,
+                    behavior: 'smooth'
+                })
+                card.classList.add('bounce');
+                setTimeout(() => {
+                    card.classList.remove('bounce');
+                }, 2000)
+            }
+        })
+    }, 1000);
+  }

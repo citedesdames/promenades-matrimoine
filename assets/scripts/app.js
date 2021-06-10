@@ -205,26 +205,13 @@ setTimeout(() => {
     addStep(dataEtape);
     addDocuments(dataDocument, dataDames);
     addDames(dataDames);
-    let stepAddress = document.querySelector(".address");
-
-    let documentDiv = document.querySelectorAll(".document");
-    documentDiv.forEach(function(i) {
-        i.addEventListener('click', event => {
-            if(i.childNodes[3].classList.contains("hidden")) {
-                i.childNodes[3].classList.remove("hidden");
-            } else if (i.childNodes[3].classList.contains("video-type")) {
-                if (i.childNodes[3].classList.contains("video-reveal")) { // rajouter condition && pour audio-type à l'avenir
-                    i.childNodes[3].classList.remove("video-reveal");
-                } else {
-                    i.childNodes[3].classList.add("video-reveal");
-                }
-            } else {
-                i.childNodes[3].classList.add("hidden");
-            }
-        });
-    });
-
     handlePermission();
+
+    let stepAddress = document.querySelector(".address");
+    let documentDiv = document.querySelectorAll(".document");
+    documentDiv.forEach(doc => doc.addEventListener('click', function() {
+        onDocuemntClick(doc)
+    }));
 
     // document.querySelector('.dame-btn').addEventListener('click', function() {
     //     console.log(this.parentNode);
@@ -232,9 +219,13 @@ setTimeout(() => {
     // })
 
     const cards = document.querySelectorAll('.dame-btn');
-    
-
     cards.forEach(card => card.addEventListener('click', onCardClick));
+
+    const photoDoc = document.querySelectorAll('.photo-doc');
+    photoDoc.forEach(photo => photo.addEventListener('click', function() {
+        onPhotoDocClick(photo.getAttribute('identifiant'));
+    }));
+
 }, 2000)
 
 /*
