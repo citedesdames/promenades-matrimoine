@@ -133,7 +133,7 @@ function addStep(stepArray) {
             stepRoute.classList.add('step-route');
             let newStep = `
                 <div class="step-indicator"></div>
-                <div class="step-route-info">
+                <div class="step-route-info" id_step="${step.ordre}">
                     <div class="step-photo">
                         <img src="assets/images/photo-camera.svg" alt="">
                     </div>
@@ -646,48 +646,25 @@ const toggleExpansion = (element, to, duration = 350) => {
       })
   }
 
-  const getCardContent = (damesArray, stepArray, id_dame, card) => {
-    // if(navigator.geolocation) {
-    //     console.log('allowed access');
-    //     console.log(card);
-    //     // dataEtape.map(step => {
-    //     //     let start = positionUser.getLatLng();
-    //     //     let end = {
-    //     //         lat: step.latitude,
-    //     //         lng: step.longitude
-    //     //     };
-    //     //     distance = Math.round(start.distanceTo(end));
-    //     //     console.log(distance);
-    //     //     // console.log(allDstIndicator[step.ordre]);
-    //     //     if(distance > 1000) {
-    //     //         allDstIndicator[step.ordre - 1].innerHTML = Math.round((distance/1000)*10)/10+ " Km";
-    //     //     } else if (distance < 1000) {
-    //     //         allDstIndicator[step.ordre - 1].innerHTML = distance + " m";
-    //     //     }
-    //     //     distanceArray.push(distance);
-    //     //     verifyPosition(step);
-    //     // });
-    // }
+  const getCardContent = (damesArray, docArray, stepArray, id_dame, card) => {
+    if(navigator.geolocation) {
+        console.log('allowed access');
+    }
 
     let tmpDame = [];
-    let tmpStep = [];
     damesArray.forEach(function(dame){
         if(id_dame == dame.identifiant) {
             console.log(dame);
             tmpDame.push(dame);
         }
     });
-    stepArray.forEach(function(doc){
-        if(id_dame == doc.id_dame) {
-            tmpStep.push(doc);
-        }
-        // console.log(id_dame);
-        // console.log(doc.id_dame);
-    });
-    console.log(tmpDame);
-    console.log(tmpStep);
-    console.log(tmpDame[0].nom);
-    console.log(new Date(tmpDame[0].dateNaissance).toUTCString());
+
+
+    // console.log(tmpDame);
+    // console.log(tmpStep);
+    // console.log(tmpDame[0].nom);
+    // console.log(new Date(tmpDame[0].dateNaissance).toUTCString());
+    
     return `
         <div class="card-header">
             <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
@@ -704,99 +681,128 @@ const toggleExpansion = (element, to, duration = 350) => {
             <p>${tmpDame[0].biographie}</p>
             <p class="source">${tmpDame[0].sourceBio}</p>
             <section>
-                <p>Apparait aux :<p>
-                <div class="step-route-info-2">
-                    <div class="step-photo-2">
-                        <img src="assets/images/photo-camera.svg" alt="">
-                    </div>
-                    <div class="step-route-address-2">
-                        <div>
-                            <span class="location">Palais du Louvre</span>
-                            <span class="distance">2 Km</span>
-                        </div>
-                        <p>107 Rue de Rivoli, 75001 Paris</p>
-                    </div>
-                </div>
+                <p>Apparait aux :</p>
             </section>
         </div>
     `;
   }
-  const onCardClick = async (e) => {
-      const card = e.currentTarget.parentNode;
-      let id = card.getAttribute("identifiant");
-      console.log(card);
+
+const onCardClick = async (e) => {
+    toggleControls(false);
+    header.classList.add('closed');
+    notchBtn.style.left = '0px';
+
+    const card = e.currentTarget.parentNode;
+    let id = card.getAttribute("identifiant");
+    console.log(card);
       
-      // clone the card
-      const cardClone = card.cloneNode();
-      cardClone.classList.remove("card-dame");
-      cardClone.classList.add("card-extend");
+    let tmpIdStep = [];
+    let tmpStep = [];
+    dataDocument.forEach(function(item){
+        if(id == item.id_dame) {
+            console.log(item.id_etape);
+            console.log(document.querySelector(`[id_step='${item.id_etape}']`))
+            if(!tmpIdStep.includes(`${item.id_etape}`)) {
+                tmpIdStep.push(`${item.id_etape}`);
+                tmpStep.push(document.querySelector(`[id_step='${item.id_etape}']`).cloneNode(true));
+                console.log('non')
+            } else if (tmpIdStep.includes(`${item.id_etape}`)) {
+                console.log('oui');
+            }
+        }
+    });
+    console.log(tmpStep);
+
+
+    // clone the card
+    const cardClone = card.cloneNode();
+    cardClone.classList.remove("card-dame");
+    cardClone.classList.add("card-extend");
       
-      // get the location of the card in the view
-      const {top, left, width, height} = card.getBoundingClientRect();
+    // get the location of the card in the view
+    const {top, left, width, height} = card.getBoundingClientRect();
 
-      // position the clone on top of the original
-      cardClone.style.position = 'fixed';
-      cardClone.style.top = top + 'px';
-      cardClone.style.left = left + 'px';
-      cardClone.style.width = width + 'px';
-      cardClone.style.height = height + 'px';
+    // position the clone on top of the original
+    cardClone.style.position = 'fixed';
+    cardClone.style.top = top + 'px';
+    cardClone.style.left = left + 'px';
+    cardClone.style.width = width + 'px';
+    cardClone.style.height = height + 'px';
 
-      // hide the original card with opacity
-      card.style.opacity = '0';
-      // add card to the same container
-      card.parentNode.appendChild(cardClone);
+    // hide the original card with opacity
+    card.style.opacity = '0';
+    // add card to the same container
+    card.parentNode.appendChild(cardClone);
 
-      // create a close button to handle the undo
-    //   const closeButton = document.createElement('button');
-      const closeButton = document.createElement("img");
-      closeButton.setAttribute("src", "./assets/images/close.svg");
-      // position the close button top corner
-      closeButton.style = `
-          position: fixed;
-          z-index: 10000;
-          top: 25px;
-          right: 25px;
-          width: 35px;
-          height: 35px;
-          padding: 10px;
-          border-radius: 12px;
-          background-color: #C9C9C9;
-      `;
+    // create a close button to handle the undo
+    // const closeButton = document.createElement('button');
+    const closeButton = document.createElement("img");
+    closeButton.setAttribute("src", "./assets/images/close.svg");
+    // position the close button top corner
+    closeButton.style = `
+        position: fixed;
+        z-index: 10000;
+        top: 25px;
+        right: 25px;
+        width: 35px;
+        height: 35px;
+        padding: 10px;
+        border-radius: 12px;
+        background-color: #C9C9C9;
+    `;
 
-      // attach click event to the close button
-      closeButton.addEventListener('click', async () => {
-          // remove the button on close
-          closeButton.remove();
-          // remove the display style so the original content is displayed right
-          cardClone.style.removeProperty('display');
-          cardClone.style.removeProperty('padding');
-          // show original card content
-          [...cardClone.children].forEach(child => child.style.removeProperty('display'));
-          fadeContent(cardClone, '0');
-          // shrink the card back to the original position and size
-          await toggleExpansion(cardClone, {top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px`}, 300)
-          // show the original card again
-          card.style.removeProperty('opacity');
-          // remove the clone card
-          cardClone.remove();
-      });
+    // attach click event to the close button
+    closeButton.addEventListener('click', async () => {
+        // remove the button on close
+        closeButton.remove();
+
+        // remove the display style so the original content is displayed right
+        cardClone.style.removeProperty('display');
+        cardClone.style.removeProperty('padding');
+
+        // show original card content
+        [...cardClone.children].forEach(child => child.style.removeProperty('display'));
+        fadeContent(cardClone, '0');
+
+        // shrink the card back to the original position and size
+        await toggleExpansion(cardClone, {top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px`}, 300)
+        // show the original card again
+        card.style.removeProperty('opacity');
+        // remove the clone card
+        cardClone.remove();
+
+        toggleControls(true);
+        header.classList.remove('closed');
+        notchBtn.style.left = '-30px';
+    });
 
 
 
-      // expand the clone card
-      await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
-      const content = getCardContent(dataDames, dataEtape, id, cardClone)
+    // expand the clone card
+    await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
+    const content = getCardContent(dataDames, dataDocument, dataEtape, id, cardClone)
 
-      // set the display block so the content will follow the normal flow in case the original card is not display block
-      cardClone.style.display = 'block';
-      cardClone.style.padding = '0';
+    // set the display block so the content will follow the normal flow in case the original card is not display block
+    cardClone.style.display = 'block';
+    cardClone.style.padding = '0';
       
-      // append the close button after the expansion is done
-      cardClone.appendChild(closeButton);
-      cardClone.insertAdjacentHTML('afterbegin', content);
-  };
+    // append the close button after the expansion is done
+    cardClone.appendChild(closeButton);
+    cardClone.insertAdjacentHTML('afterbegin', content);
+    // console.log(cardClone.childNodes[3]);
+    console.log(cardClone.childNodes[3].querySelector('section'));
+    tmpStep.forEach(function(item, i){
+        setTimeout(() => {
+            item.style = `
+                width: 100%;
+                margin: 15px 0;
+            `;
+            cardClone.childNodes[3].querySelector('section').append(item);
+        }, i * 200)
+    });
+};
 
-  function onPhotoDocClick(id) {
+function onPhotoDocClick(id) {
     openShutter(shutter);
     toggleControls(true);
     toggleCard(true);
@@ -805,14 +811,15 @@ const toggleExpansion = (element, to, duration = 350) => {
         document.querySelectorAll('.dame-card').forEach(function(card,i) {
             if(card.getAttribute('identifiant') == id) {
                 document.querySelector('.dame-slider-container').scrollTo({
-                    left:  card.offsetLeft - 60,
+                    left:  card.offsetLeft - 40,
                     behavior: 'smooth'
                 })
                 card.classList.add('bounce');
                 setTimeout(() => {
                     card.classList.remove('bounce');
-                }, 2000)
+                    card.lastChild.click();
+                }, 1700)
             }
         })
-    }, 1000);
+    }, 800);
   }

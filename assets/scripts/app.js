@@ -123,39 +123,6 @@ let fondsDeCarte = {
     "Paris19": paris19,
 };
 
-paris19.on('click', function(e) {
-    alert('I have been clicked ')
-});
-
-let checkboxes = document.querySelectorAll(".radio-layer"); 
-console.log(checkboxes);
-let enabledSettings = [];
-
-checkboxes.forEach(function(checkbox) {
-    checkbox.addEventListener('change', function() {
-        toggleLayers(layerBtn)
-        enabledSettings = 
-            Array.from(checkboxes)
-            .filter(i => i.checked)
-            .map(i => i.value)
-        
-        console.log(enabledSettings)
-        if (enabledSettings == "noLayer") {
-            range.style.left = "-140px";
-            for (const property in fondsDeCarte) {
-                mymap.removeLayer(fondsDeCarte[property])
-            }
-        } else {
-            range.style.left = "-81px";
-            for (const property in fondsDeCarte) {
-                mymap.removeLayer(fondsDeCarte[property])
-            }
-            fondsDeCarte[enabledSettings[0]].addTo(mymap);
-        }
-    })
-});
-
-
 
 /*
     Démarrage de l'application
@@ -200,10 +167,38 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
     }
 });
 
+let checkboxes = document.querySelectorAll(".radio-layer"); 
+console.log(checkboxes);
+let enabledSettings = [];
+
+checkboxes.forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+        toggleLayers(layerBtn)
+        enabledSettings = 
+            Array.from(checkboxes)
+            .filter(i => i.checked)
+            .map(i => i.value)
+        
+        console.log(enabledSettings)
+        if (enabledSettings == "noLayer") {
+            range.style.left = "-140px";
+            for (const property in fondsDeCarte) {
+                mymap.removeLayer(fondsDeCarte[property])
+            }
+        } else {
+            range.style.left = "-81px";
+            for (const property in fondsDeCarte) {
+                mymap.removeLayer(fondsDeCarte[property])
+            }
+            fondsDeCarte[enabledSettings[0]].addTo(mymap);
+        }
+    })
+});
+
 
 setTimeout(() => {
     addStep(dataEtape);
-    addDocuments(dataDocument, dataDames);
+    // addDocuments(dataDocument, dataDames);
     addDames(dataDames);
     handlePermission();
 
