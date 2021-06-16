@@ -37,7 +37,7 @@ let mymap = new L.Map('mapid', {
     zoom: 12,
     minZoom: 5,
     zoomControl: false,
-    maxBounds: bounds,
+    // maxBounds: bounds,
     maxBoundsViscosity: 0.5
 });
 
@@ -135,7 +135,48 @@ let dataEtape,
     dataDocument,
     dataDames;
 
-Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
+// Import des données depuis le fichier .JSON
+
+fetch('./promenades.json')
+  .then((response) => {
+    return response.json()
+  })
+  .then((data) => {
+    console.log(data.lesMarguerites);
+    Papa.parse(data.lesMarguerites[0], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            const items = results.data;
+            items.sort((a, b) => a.ordre - b.ordre);
+            dataEtape = items;
+            console.log(dataEtape);
+            // addStep(items);
+        }
+    });
+
+    Papa.parse(data.lesMarguerites[1], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            dataDocument = results.data;
+            console.log(dataDocument);
+            // dataDocument.push(results.data);
+        }
+    })
+    Papa.parse(data.lesMarguerites[2], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            dataDames = results.data;
+            console.log(dataDames);
+            // dataDocument.push(results.data);
+        }
+    })
+});
+
+
+/* Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
     download: true,
     header: true,
     complete: function (results) {
@@ -165,10 +206,9 @@ Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45
         console.log(dataDames);
         // dataDocument.push(results.data);
     }
-});
+}); */
 
 let checkboxes = document.querySelectorAll(".radio-layer"); 
-console.log(checkboxes);
 let enabledSettings = [];
 
 checkboxes.forEach(function(checkbox) {

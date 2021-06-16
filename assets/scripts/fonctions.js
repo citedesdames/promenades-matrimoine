@@ -25,6 +25,8 @@ function onMapClick(e) {
 
 function addDames(damesArray) {
     damesArray.map(dame => {
+        // console.log(dame.source);
+        // console.log(dame.source.split('">'));
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
         cardContent.setAttribute("identifiant", `${dame.identifiant}`);
@@ -32,7 +34,6 @@ function addDames(damesArray) {
         let dameCard = `
             <div class="dame-portrait">
                 <div style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
-                <span>${dame.source}</span>
             </div>
             <div class="dame-infos">
                 <h3>${dame.prenom} ${dame.nom}</h3>
@@ -122,7 +123,7 @@ function addStep(stepArray) {
                 </div>
 
                 <div class="step-document" document_id_etape=${step.ordre}></div>
-                <a href="" class="augmented-reality-link">
+                <a href="" class="augmented-reality-link" target="_blank">
                     <div class="augmented-reality">
                         <img src="assets/images/photo-camera.svg" alt="">
                         <span>Sortez l'appareil photo !</span>
@@ -366,13 +367,14 @@ function openShutter(element, rank) {
 }
 
 function addDocuments(docArray, damesArray) {
+    console.log(damesArray)
     let shutterChildrens = document.querySelectorAll(".step-document");
     let docContent = docArray.map(doc => {
         // console.log(`${doc.id_dame}`);
         let a = damesArray.map(e => { 
             return e.identifiant; 
         }).indexOf(`${doc.id_dame}`);
-        // console.log(a);
+        console.log(a);
 
         for (let i = 0; i < shutterChildrens.length; i++) {
 
@@ -400,11 +402,20 @@ function addDocuments(docArray, damesArray) {
                     <article class="informations hidden">
                         <div class="main-information">
                             <p>${doc.texte}</p>
-                            <p class="source">${doc.source}</p>
+                            <p class="source">${addHref(doc.source)}</p>
                             <span>${doc.licence}</span>
                         </div>
                     </article>`;
-                } else if(`${doc.type}` == 'vidéo'){
+                } else if(`${doc.type}` == 'extrait') {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="main-information">
+                            <p>${doc.description}</p>
+                            <p class="source">${addHref(doc.source)}</p>
+                            <span>${doc.licence}</span>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("dailymotion")){
                     mainContent = `
                     <article class="informations video-type">
                         <div class="touch-bar"></div>
@@ -422,13 +433,31 @@ function addDocuments(docArray, damesArray) {
                             <p class="source">${doc.source}</p>
                         </div>
                     </article>`;
-                } else if (`${doc.type}` == 'article') {
+                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
+                    mainContent = `
+                    <article class="informations video-type">
+                        <div class="touch-bar"></div>
+                        <div class="embed-vid">
+                            <iframe frameborder="0" width="640" height="360" 
+                                src="https://www.youtube.com/embed/${youtube_parser(doc.URL)}" 
+                                allow="autoplay; fullscreen">
+                            </iframe>
+                        </div>
+                        <div class="additional-infos">
+                            <div class="marquee-rtl">
+                                <div><span>${doc.licence}</span></div>
+                            </div>
+                            <p>${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                        </div>
+                    </article>`;
+                } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
                     mainContent = `
                     <article class="informations hidden">
                         <div class="card-preview">
                             <div>
                                 <h3>${doc.description}</h3>
-                                <span class="source">${doc.licence}</span>
+                                <span class="source">${addHref(doc.source)}</span>
                             </div>
                             <div class="preview">
                                 <div class="shadow">
@@ -437,6 +466,7 @@ function addDocuments(docArray, damesArray) {
                                 <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
                                 </iframe>
                             </div>
+                            <span>${doc.licence}</span>
                         </div>
                     </article>`;
                 } else if(`${doc.type}` == 'image') {
@@ -445,7 +475,7 @@ function addDocuments(docArray, damesArray) {
                     <div class="main-information">
                         <img src="${doc.URL}"></img>
                             <p>${doc.description}</p>
-                            <p class="source">${doc.source}</p>
+                            <p class="source">${addHref(doc.source)}</p>
                             <span>${doc.licence}</span>
                         </div>
                     </article>`;
@@ -455,7 +485,7 @@ function addDocuments(docArray, damesArray) {
                         <div class="main-information">
                             <p>${doc.description}</p>
                             <p class="source">${doc.source}</p>
-                            <span>${doc.licence}</span>
+                            <span>${addHref(doc.licence)}</span>
                         </div>
                     </article>`;
                 }
@@ -668,7 +698,7 @@ const toggleExpansion = (element, to, duration = 350) => {
     return `
         <div class="card-header">
             <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
-            <p>${tmpDame[0].source}</p>
+            <p>${addHref(tmpDame[0].source)}</p>
             <div class="header">
                 <h1>${tmpDame[0].prenom} ${tmpDame[0].nom}</h1>
                 <div>
@@ -679,7 +709,7 @@ const toggleExpansion = (element, to, duration = 350) => {
         </div>
         <div class="card-content">
             <p>${tmpDame[0].biographie}</p>
-            <p class="source">${tmpDame[0].sourceBio}</p>
+            <p class="source">${addHref(tmpDame[0].sourceBio)}</p>
             <section>
                 <p>Apparait aux :</p>
             </section>
@@ -823,3 +853,38 @@ function onPhotoDocClick(id) {
         })
     }, 800);
   }
+
+function addHref(str) {
+    if(str.includes("a href")) {
+        let link = str.split('">');
+        return link[0] + ' "target="_blank">' + link[1];
+    } else {
+        return str;
+    }
+}
+
+function callDad(src, dest, sort) {
+    if(sort == true) {
+        Papa.parse(src, {
+            download: true,
+            header: true,
+            complete: function (results) {
+                const items = results.data;
+                items.sort((a, b) => a.ordre - b.ordre);
+                dest = items;
+                console.log(dest);
+                // addStep(items);
+            }
+        });
+    } else {
+        Papa.parse(src, {
+            download: true,
+            header: true,
+            complete: function (results) {
+                dest = results.data;
+                console.log(dest);
+                // dataDocument.push(results.data);
+            }
+        });
+    }
+}
