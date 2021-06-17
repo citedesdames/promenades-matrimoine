@@ -27,10 +27,39 @@ let appUserInterface = document.querySelector('html'),
 let isClose = false; 
 let firstGeoloc = true;
 
+let dataEtape,
+    dataDocument,
+    dataDames;
+
+let fondsDeCarte; // Peut être provisoire
+let enabledSettings = [];
+
 
 document.documentElement.style.setProperty('--inner-width', window.innerWidth + "px");
 document.documentElement.style.setProperty('--inner-height', window.innerHeight + "px");
 
+
+
+/*
+    Icônes, tiles et carte Leaflet.
+*/
+
+
+var stepIcon = L.icon({
+    iconUrl: 'assets/images/marker-leaflet.png',
+
+    iconSize:     [25, 39.1], // size of the icon
+    iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+});
+
+var userIcon = L.icon({
+    iconUrl: 'assets/images/user-marker-leaflet.png',
+
+    iconSize:     [25, 28], // size of the icon
+    iconAnchor:   [12.5, 27], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -24] // point from which the popup should open relative to the iconAnchor
+});
 
 let mymap = new L.Map('mapid', {
     center: bounds.getCenter(),
@@ -41,18 +70,17 @@ let mymap = new L.Map('mapid', {
     maxBoundsViscosity: 0.5
 });
 
-// let ytURL = 'https://www.youtube.com/watch?v=7CeXNGArs54';
-// console.log(ytURL);
-// console.log(ytURL.replace(/.*id=([^\/]+)[\&]*.*]/, "$1"));
+let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    // maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(mymap);
 
-// let id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54');
-// console.log(id); 
-// id = youtube_parser('https://youtu.be/7CeXNGArs54');
-// console.log(id); 
-// id = youtube_parser('https://youtu.be/7CeXNGArs54?t=787');
-// console.log(id); 
-// id = youtube_parser('https://www.youtube.com/watch?v=7CeXNGArs54&list=TLPQMjEwNTIwMjF2pXxMAZt5_w&index=1');
-// console.log(id); 
+
+
+
+/*
+    Principales fonctionnalités liés à des écouteurs d'évènement
+*/
 
 
 notchBtn.addEventListener('click', event => {
@@ -74,54 +102,8 @@ locateBtn.addEventListener('click', event => {
     mymap.on('locationerror', onLocationError);
 });
 
-/*
-    Chargements des tiles, déclaration des fonds de cartes via calques Leaflet
-    et initialisation du bouton de contrôle des calques historiques.
-*/
 
-// L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//     attribution: '',
-//     maxZoom: 18,
-//     id: 'mapbox/streets-v11',
-// }).addTo(mymap);
 
-var stepIcon = L.icon({
-    iconUrl: 'assets/images/marker-leaflet.png',
-
-    iconSize:     [25, 39.1], // size of the icon
-    iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
-});
-
-var userIcon = L.icon({
-    iconUrl: 'assets/images/user-marker-leaflet.png',
-
-    iconSize:     [25, 28], // size of the icon
-    iconAnchor:   [12.5, 27], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -24] // point from which the popup should open relative to the iconAnchor
-});
-
-let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-    // maxZoom: 20,
-    subdomains:['mt0','mt1','mt2','mt3']
-}).addTo(mymap);
-
-let paris17 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
-    attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
-    // maxZoom: 20,
-    minZoom: 1
-});
-
-let paris19 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.png', {
-    attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
-    // maxZoom: 20,
-    minZoom: 1
-});
-
-let fondsDeCarte = {
-    "Paris17": paris17,
-    "Paris19": paris19,
-};
 
 
 /*
@@ -131,114 +113,121 @@ let fondsDeCarte = {
     de l'utilisateur et test provisoire de distance entre celle-ci et un marqueur donné
 */
 
-let dataEtape,
-    dataDocument,
-    dataDames;
+
+
+
+let url = window.location.href.split('?');
+let url2;
+let params;
+
+if(typeof url[1] == "undefined") {
+    window.history.pushState({promenade: 0}, '', "?promenade=lesMarguerites");
+    url2 = window.location.href.split('?');
+  
+    params = {
+        "promenade": url2[1].split("=")[1],
+    }
+} else {
+    url = url[1].split("&");
+    if(url.length>1) {
+        etape = url[1].split("=")[1];
+    }
+    params = {
+        "promenade": url[0].split("=")[1],
+    }
+}
 
 // Import des données depuis le fichier .JSON
-
-fetch('./promenades.json')
+fetch('./config.json')
   .then((response) => {
     return response.json()
   })
   .then((data) => {
-    console.log(data.lesMarguerites);
-    Papa.parse(data.lesMarguerites[0], {
-        download: true,
-        header: true,
-        complete: function (results) {
-            const items = results.data;
-            items.sort((a, b) => a.ordre - b.ordre);
-            dataEtape = items;
-            console.log(dataEtape);
-            // addStep(items);
-        }
-    });
-
-    Papa.parse(data.lesMarguerites[1], {
-        download: true,
-        header: true,
-        complete: function (results) {
-            dataDocument = results.data;
-            console.log(dataDocument);
-            // dataDocument.push(results.data);
-        }
-    })
-    Papa.parse(data.lesMarguerites[2], {
-        download: true,
-        header: true,
-        complete: function (results) {
-            dataDames = results.data;
-            console.log(dataDames);
-            // dataDocument.push(results.data);
-        }
-    })
-});
-
-
-/* Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=2098688852&single=true&output=csv', {
-    download: true,
-    header: true,
-    complete: function (results) {
-        const items = results.data;
-        items.sort((a, b) => a.ordre - b.ordre);
-        dataEtape = items;
-        console.log(dataEtape);
-        // addStep(items);
-    }
-});
-
-Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=954920506&single=true&output=csv', {
-    download: true,
-    header: true,
-    complete: function (results) {
-        dataDocument = results.data;
-        console.log(dataDocument);
-        // dataDocument.push(results.data);
-    }
-});
-
-Papa.parse('https://docs.google.com/spreadsheets/d/e/2PACX-1vTMejdM_tVXKPm0vpS45-8CnHVQCtjGPUCl_G_7OoCm9uXhZY7TS7EnfBokrf-LQMyEgKMuR91MEGui/pub?gid=0&single=true&output=csv', {
-    download: true,
-    header: true,
-    complete: function (results) {
-        dataDames = results.data;
-        console.log(dataDames);
-        // dataDocument.push(results.data);
-    }
-}); */
-
-let checkboxes = document.querySelectorAll(".radio-layer"); 
-let enabledSettings = [];
-
-checkboxes.forEach(function(checkbox) {
-    checkbox.addEventListener('change', function() {
-        toggleLayers(layerBtn)
-        enabledSettings = 
-            Array.from(checkboxes)
-            .filter(i => i.checked)
-            .map(i => i.value)
+    
+        console.log(data[params.promenade]);
+        Papa.parse(data[params.promenade][0], {
+            download: true,
+            header: true,
+            complete: function (results) {
+                const items = results.data;
+                items.sort((a, b) => a.ordre - b.ordre);
+                dataEtape = items;
+                console.log(dataEtape);
+                // addStep(items);
+            }
+        });
+    
+        Papa.parse(data[params.promenade][1], {
+            download: true,
+            header: true,
+            complete: function (results) {
+                dataDocument = results.data;
+                console.log(dataDocument);
+                // dataDocument.push(results.data);
+            }
+        })
         
-        console.log(enabledSettings)
-        if (enabledSettings == "noLayer") {
-            range.style.left = "-140px";
-            for (const property in fondsDeCarte) {
-                mymap.removeLayer(fondsDeCarte[property])
+        Papa.parse(data[params.promenade][2], {
+            download: true,
+            header: true,
+            complete: function (results) {
+                dataDames = results.data;
+                console.log(dataDames);
+                // dataDocument.push(results.data);
             }
-        } else {
-            range.style.left = "-81px";
-            for (const property in fondsDeCarte) {
-                mymap.removeLayer(fondsDeCarte[property])
-            }
-            fondsDeCarte[enabledSettings[0]].addTo(mymap);
-        }
-    })
+        })
+
+    if(params.promenade == "lesMarguerites") {
+        let paris17 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
+            attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
+            minZoom: 1
+        });
+
+        let paris19 =  L.tileLayer('https://mapwarper.net/maps/tile/42383/{z}/{x}/{y}.png', {
+            attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
+            minZoom: 1
+        });
+
+        fondsDeCarte = {
+            "Paris17": paris17,
+            "Paris19": paris19,
+        };
+
+        document.querySelector("header h1").textContent = "Promenade des Marguerite";
+        document.querySelector(".premonade-rank").textContent = "01";
+        
+    } else if (params.promenade == "marcelineADouai") {
+        let douais1824 =  L.tileLayer('https://mapwarper.net/maps/tile/57306/{z}/{x}/{y}.png', {
+            attribution: 'Tiles by <a href="http://mapwarper.net/maps/57306">Map Warper user Gambette</a>',
+            minZoom: 1
+        });
+
+        let douais1850 =  L.tileLayer('https://mapwarper.net/maps/tile/57303/{z}/{x}/{y}.png', {
+            attribution: 'Tiles by <a href="http://mapwarper.net/maps/57303">Map Warper user Gambette</a>',
+            minZoom: 1
+        });
+
+        fondsDeCarte = {
+            "Douai en 1824": douais1824,
+            "Douai en 1850": douais1850,
+        };
+
+        document.querySelector("header h1").textContent = "Sur les pas de Marceline Desbordes";
+        document.querySelector(".premonade-rank").textContent = "02";
+    }
+
+    console.log(fondsDeCarte);
+    addFdC(fondsDeCarte);
+    let checkboxes = document.querySelectorAll(".radio-layer"); 
+    checkboxes.forEach(checkbox => checkbox.addEventListener('change', function() {
+        onCheckboxClick(checkboxes, enabledSettings, fondsDeCarte)
+    }));
 });
 
 
 setTimeout(() => {
     addStep(dataEtape);
-    addDocuments(dataDocument, dataDames);
+    // addDocuments(dataDocument, dataDames);
     addDames(dataDames);
     handlePermission();
 

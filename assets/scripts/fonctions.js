@@ -57,8 +57,8 @@ function addStep(stepArray) {
         let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
             .bindPopup(`
                 <div class="popup-photo">
-                    <img src="./assets/images/paris-min.jpeg" alt="">
-                    <span class="source-photo">${step.sourcePhoto}<span>
+                    <img src="${step.photo}" alt="">
+                    <span><a href="${step.sourcePhoto}" target="_blank">Aller à la source</a><span>
                 </div>
                 <div class="step">
                     <div class="popup-header">
@@ -367,14 +367,13 @@ function openShutter(element, rank) {
 }
 
 function addDocuments(docArray, damesArray) {
-    console.log(damesArray)
     let shutterChildrens = document.querySelectorAll(".step-document");
     let docContent = docArray.map(doc => {
         // console.log(`${doc.id_dame}`);
         let a = damesArray.map(e => { 
             return e.identifiant; 
         }).indexOf(`${doc.id_dame}`);
-        console.log(a);
+        // console.log(a);
 
         for (let i = 0; i < shutterChildrens.length; i++) {
 
@@ -526,7 +525,7 @@ function openFullscreen() {
 function youtube_parser(url){
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     var match = url.match(regExp);
-    console.log(match);
+    // console.log(match);
     return (match&&match[7].length==11)? match[7] : false;
 }
 
@@ -876,7 +875,7 @@ function callDad(src, dest, sort) {
                 // addStep(items);
             }
         });
-    } else {
+    } else if(sort == false || sort == 'undefined') {
         Papa.parse(src, {
             download: true,
             header: true,
@@ -886,5 +885,43 @@ function callDad(src, dest, sort) {
                 // dataDocument.push(results.data);
             }
         });
+    }
+}
+
+function onCheckboxClick(checkboxes, settings, layers) {
+    toggleLayers(layerBtn)
+    settings = 
+        Array.from(checkboxes)
+        .filter(i => i.checked)
+        .map(i => i.value)
+        
+    console.log(settings)
+    if (settings == "noLayer") {
+        range.style.left = "-140px";
+        for (const property in layers) {
+            mymap.removeLayer(layers[property])
+        }
+    } else {
+        range.style.left = "-81px";
+        for (const property in layers) {
+            mymap.removeLayer(layers[property])
+        }
+        layers[settings[0]].addTo(mymap);
+    }
+}
+
+
+function addFdC(layers) {
+    for (const property in layers) {
+        mymap.removeLayer(fondsDeCarte[property])
+        let layerContainer = document.createElement("div");
+
+        let layer = `
+                <input type="radio" id="${property}" class="radio-layer" name="layer" value="${property}">
+                <label for="${property}">${property}<sup>è</sup></label>
+        `;
+
+        layerContainer.innerHTML = layer;
+        document.querySelector('.layers-choice').append(layerContainer);
     }
 }
