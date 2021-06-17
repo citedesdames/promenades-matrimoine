@@ -227,7 +227,7 @@ fetch('./config.json')
 
 setTimeout(() => {
     addStep(dataEtape);
-    // addDocuments(dataDocument, dataDames);
+    addDocuments(dataDocument, dataDames);
     addDames(dataDames);
     handlePermission();
 
