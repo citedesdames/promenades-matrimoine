@@ -1048,20 +1048,10 @@ input[type=range]::-moz-range-thumb {
     background: #ada4a0;
     border-top-left-radius: inherit;
     border-bottom-left-radius: inherit;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
 }
 
 .photo-doc img {
     width: 140%;
-    height: auto;
-    object-fit: cover;
-}
-
-.step-photo img {
-    width: 30%;
     height: auto;
     object-fit: cover;
 }

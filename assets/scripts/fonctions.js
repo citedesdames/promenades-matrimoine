@@ -135,8 +135,8 @@ function addStep(stepArray) {
             let newStep = `
                 <div class="step-indicator"></div>
                 <div class="step-route-info" id_step="${step.ordre}">
-                    <div class="step-photo">
-                        <img src="assets/images/photo-camera.svg" alt="">
+                    <div class="step-photo"  style="background-image: url('${step.photo}'); background-repeat: no-repeat; background-size: cover; center;">
+
                     </div>
                     <div class="step-route-address">
                         <div>
