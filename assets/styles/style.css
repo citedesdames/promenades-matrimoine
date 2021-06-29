@@ -852,7 +852,6 @@ input[type=range]::-moz-range-thumb {
 .premonade-rank {
     font-weight: 700;
     color: #676767;
-    ;
 }
 
 .step-address {
@@ -863,22 +862,26 @@ input[type=range]::-moz-range-thumb {
 
 .current-address {
     display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
+    width: 92%;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding: 7px 8px;
+    background: #ececec;
+    border-radius: 10px;
 }
 
 .address {
     font-size: 1em;
     font-family: var(--font-fam);
     color: #838383;
-    margin-top: 0;
     margin-left: 5px;
 }
 
 .step-address img,
 .current-address img {
-    width: 20px;
+    width: 18px;
     height: auto;
+    padding: 1px 0;
 }
 
 .shutter-content {
@@ -1555,6 +1558,7 @@ input[type=range]::-moz-range-thumb {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
 }
 
 /* .home {
@@ -1569,8 +1573,8 @@ input[type=range]::-moz-range-thumb {
 }
 
 .intro {
-    margin-bottom: 2rem;
-    padding: 0px 32px;
+    margin-bottom: 1rem;
+    padding: 0px 2rem;
 }
 
 .home section:last-child {
@@ -1595,7 +1599,7 @@ input[type=range]::-moz-range-thumb {
     font-weight: 700;
     line-height: 1.5;
     color: #4E4B4B;
-    margin: 0;
+    margin: 1rem 0;
 }
 
 .welcome h1 {
@@ -1621,7 +1625,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .intro p {
-    margin: 1em 0 0 0;
+    margin: .75rem 0;
     font-size: 1em;
 }
 
@@ -1662,6 +1666,22 @@ input[type=range]::-moz-range-thumb {
     background: #457363;
 }
 
+/* ---------- SWIPER JS HOME PAGE ---------- */
+
+.swiper-container {
+    width: 100vw;
+    height: auto;
+}
+
+.swiper-container .swiper-wrapper {
+    padding: 15px 0;
+}  
+
+.swiper-container .swiper-slide {
+    width: 270px;
+    height: 362px;
+}
+
 .slider-container {
     width: 100%;
     height: auto;
@@ -1679,26 +1699,43 @@ input[type=range]::-moz-range-thumb {
 }
 
 .card-promenade {
-    width: 260px;
-    height: 402px;
-    margin-right: 15px;
-    background: #d6d6d6;
-    border-radius: 22px;
+    width: inherit;
+    height: inherit;
+    padding: 12px;
+    margin: 0 10px;
+    background: #ececec;
+    border-radius: 28px;
     position: relative;
+    -webkit-box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-promenade > img {
+    width: 100%;
+    /* height: inherit; */
+    height: 338px;
+    object-fit: cover;
+    border-radius: 20px;
 }
 
 .promenade-info {
     position: absolute;
-    left: 12px;
+    /* left: 12px; */
+    left: 50%;
+    transform: translateX(-50%);
     bottom: 12px;
-    width: 236px;
-    height: 72px;
+    width: calc(100% - 24px);
+    /* width: 236px; */
+    /* height: 72px; */
     margin: 0 auto;
-    padding: 13px 24px;
-    background: var(--cambridge-blue);
-    border-radius: 22px;
+    padding: 10px 18px;
+    background: rgba(161, 198, 185, .75);
+    border-radius: 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    /* box-shadow: 0px 0px 0px 3px rgb(161 198 185 / 25%); */
 }
 
 .promenade-info h2 {
@@ -1707,6 +1744,7 @@ input[type=range]::-moz-range-thumb {
     font-weight: 700;
     line-height: 1.5;
     color: #fff;
+    padding-right: 5px;
     margin: 0;
 }
 
@@ -1723,6 +1761,23 @@ input[type=range]::-moz-range-thumb {
 .start img {
     width: 50%;
     height: auto;
+}
+
+.footer {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.footer span {
+    font-size: .75em;
+    font-family: 'Merriweather', serif;
+    font-weight: 300;
+    color: #5e5e5e;
+    background: rgba(221, 208, 203, .5);
+    border-radius: 6px;
+    padding: 3px 4px;
 }
 
 .hidden {

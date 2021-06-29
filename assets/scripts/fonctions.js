@@ -158,17 +158,17 @@ function addStep(stepArray) {
 
     console.log(markerArray);
     
-    for (let i = 0; i < stepArray.length - 1; i++) {
-        var latlngs = [
-            [`${stepArray[i].latitude}`, stepArray[i].longitude],
-            [`${stepArray[i+1].latitude}`, stepArray[i+1].longitude],
-        ];
+    // for (let i = 0; i < stepArray.length - 1; i++) {
+    //     var latlngs = [
+    //         [`${stepArray[i].latitude}`, stepArray[i].longitude],
+    //         [`${stepArray[i+1].latitude}`, stepArray[i+1].longitude],
+    //     ];
 
-        L.polyline(latlngs, {
-            color: '#DD6262',
-            // color: '#B55050'
-        }).addTo(mymap);
-    }
+    //     L.polyline(latlngs, {
+    //         color: '#DD6262',
+    //         // color: '#B55050'
+    //     }).addTo(mymap);
+    // }
 
     markerArray.forEach((i) => {
         i.addEventListener('click', function() {
@@ -185,6 +185,7 @@ function addStep(stepArray) {
 }
 
 function onLocationFound(e) {
+    console.log(e)
     if(radius && positionUser && accuracy) {
         radius = 0;
         mymap.removeLayer(positionUser);
@@ -201,13 +202,14 @@ function onLocationFound(e) {
     let distanceArray = [],
         allDstIndicator = document.querySelectorAll('.distance');
     
-    console.log(allDstIndicator);
+    // console.log(allDstIndicator);
 
     radius = e.accuracy;
     accuracy = L.circle(e.latlng, radius, {
         weight: 0,
         fillOpacity: 0.35
     }).addTo(mymap);
+
     positionUser = L.marker(e.latlng, {icon: userIcon}).addTo(mymap);
     // positionUser = L.circle(e.latlng, {
     //     stroke: false,
@@ -226,8 +228,8 @@ function onLocationFound(e) {
             lng: step.longitude
         };
         distance = Math.round(start.distanceTo(end));
-        console.log(distance);
-        // console.log(allDstIndicator[step.ordre]);
+        // console.log(distance);
+
         if(distance > 1000) {
             allDstIndicator[step.ordre - 1].innerHTML = Math.round((distance/1000)*10)/10+ " Km";
         } else if (distance < 1000) {
@@ -243,7 +245,7 @@ function onLocationFound(e) {
             <h2> Vous êtes ici !</h2>
             <p>Étape la plus proche : ${dataEtape[closest].nom}.</p>
         </div>
-    `).openPopup();
+    `);
     firstGeoloc = false;
 }
 
@@ -261,10 +263,11 @@ function locateUser() {
 }
 
 function verifyPosition(step) {
+    console.log(isClose);
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
     let stepAddress = document.querySelector('.position');
 
-    let test1 = 5599;
+    let test1 = 30;
     let test2 = 20000;
 
     if(distance < test1 && isClose == false) {
@@ -273,13 +276,12 @@ function verifyPosition(step) {
         stepAddress.innerHTML = step.nom;
         notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
-            console.log(i);
             i.style.display = "initial";
             i.setAttribute('location', 'near')
         });
 
         Notification.requestPermission( function(status) {
-            console.log(status); // les notifications ne seront affichées que si "autorisées"
+            // console.log(status); // les notifications ne seront affichées que si "autorisées"
             var n = new Notification(`À proximité de : ${step.nom}`, {
                 body: "Accedez à des documents exclusifs via l'appareil photo de votre smartphone !"
             }); // this also shows the notification
@@ -525,7 +527,6 @@ function openFullscreen() {
 function youtube_parser(url){
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     var match = url.match(regExp);
-    // console.log(match);
     return (match&&match[7].length==11)? match[7] : false;
 }
 
@@ -924,4 +925,53 @@ function addFdC(layers) {
         layerContainer.innerHTML = layer;
         document.querySelector('.layers-choice').append(layerContainer);
     }
+}
+
+function setPromenades(dataProm) {
+    // console.log(dataProm);
+    for (const promenade in dataProm) {
+        console.log(dataProm[promenade][0]);
+        let cardContent = document.createElement("div");
+        console.log(Object.keys(dataProm));
+        cardContent.setAttribute("stroll", `${promenade}`);
+        cardContent.classList.add('swiper-slide');
+        cardContent.classList.add('card-promenade');
+
+        let promCard = `
+            <img src="${dataProm[promenade][0].visuel}" alt="">
+            <div class="promenade-info">
+                <h2>${dataProm[promenade][0].titre}</h2>
+                <a href="./promenade.html?stroll=${cardContent.getAttribute("stroll")}">
+                    <div class="start">
+                        <img src="assets/images/start.svg" alt="">
+                    </div>
+                </a>
+            </div>`
+
+        cardContent.innerHTML = promCard;
+        document.querySelector('.swiper-wrapper').append(cardContent);
+    }
+    // for (const property in dataProm) {
+    //     // console.log(value);
+    //     console.log(dataProm[property])
+    // }
+}
+
+function addSkeleton() {
+    const strollSkeleton = document.createElement("div");
+    strollSkeleton.classList.add('swiper-slide');
+    strollSkeleton.classList.add('skeleton-div');
+
+    let skelContent = `
+        <div class="skeleton-container-last-news"> 
+            <div class="a loading">
+            </div>
+            <div class="b loading">
+            </div>
+            <div class="c loading">
+            </div>
+        </div>`
+
+    strollSkeleton.innerHTML = skelContent;
+    document.querySelector('.swiper-wrapper').append(strollSkeleton);
 }

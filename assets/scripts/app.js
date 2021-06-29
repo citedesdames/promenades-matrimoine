@@ -71,10 +71,18 @@ let mymap = new L.Map('mapid', {
 });
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-    // maxZoom: 20,
+    maxZoom: 19,
     subdomains:['mt0','mt1','mt2','mt3']
 }).addTo(mymap);
 
+
+fetch('./assets/scripts/itineraire-marguerite.geojson')
+    .then(function (response) {
+        return response.json();
+    })
+    .then(function (data) {
+        L.geoJSON(data).addTo(mymap);
+    });
 
 
 
@@ -96,10 +104,16 @@ fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
 });
 locateBtn.addEventListener('click', event => {
-    console.log('okay');
-    mymap.locate({maxZoom: 16});
-    mymap.on('locationfound', onLocationFound);
-    mymap.on('locationerror', onLocationError);
+    console.log(firstGeoloc);
+    if(firstGeoloc == true) {
+        mymap.locate({maxZoom: 16});
+        mymap.on('locationfound', onLocationFound);
+        mymap.on('locationerror', onLocationError);
+    } else if (firstGeoloc == false) {
+        setInterval(function(){ 
+           locateUser();
+        }, 6000);
+    }
 });
 
 
@@ -121,11 +135,11 @@ let url2;
 let params;
 
 if(typeof url[1] == "undefined") {
-    window.history.pushState({promenade: 0}, '', "?promenade=lesMarguerites");
+    window.history.pushState({stroll: 0}, '', "?stroll=lesMarguerites");
     url2 = window.location.href.split('?');
   
     params = {
-        "promenade": url2[1].split("=")[1],
+        "stroll": url2[1].split("=")[1],
     }
 } else {
     url = url[1].split("&");
@@ -133,7 +147,7 @@ if(typeof url[1] == "undefined") {
         etape = url[1].split("=")[1];
     }
     params = {
-        "promenade": url[0].split("=")[1],
+        "stroll": url[0].split("=")[1],
     }
 }
 
@@ -143,9 +157,9 @@ fetch('./config.json')
     return response.json()
   })
   .then((data) => {
-    
-        console.log(data[params.promenade]);
-        Papa.parse(data[params.promenade][0], {
+      console.log(data);
+        console.log(data[params.stroll][0]);
+        Papa.parse(data[params.stroll][0].data[0], {
             download: true,
             header: true,
             complete: function (results) {
@@ -157,7 +171,7 @@ fetch('./config.json')
             }
         });
     
-        Papa.parse(data[params.promenade][1], {
+        Papa.parse(data[params.stroll][0].data[1], {
             download: true,
             header: true,
             complete: function (results) {
@@ -167,7 +181,7 @@ fetch('./config.json')
             }
         })
         
-        Papa.parse(data[params.promenade][2], {
+        Papa.parse(data[params.stroll][0].data[2], {
             download: true,
             header: true,
             complete: function (results) {
@@ -177,7 +191,7 @@ fetch('./config.json')
             }
         })
 
-    if(params.promenade == "lesMarguerites") {
+    if(params.stroll == "lesMarguerites") {
         let paris17 =  L.tileLayer('https://mapwarper.net/maps/tile/26642/{z}/{x}/{y}.png', {
             attribution: 'Tiles by <a href="http://mapwarper.net/maps/20531">Map Warper user sarahsimpkin</a>',
             minZoom: 1
@@ -196,7 +210,7 @@ fetch('./config.json')
         document.querySelector("header h1").textContent = "Promenade des Marguerite";
         document.querySelector(".premonade-rank").textContent = "01";
         
-    } else if (params.promenade == "marcelineADouai") {
+    } else if (params.stroll == "marcelineADouai") {
         let douais1824 =  L.tileLayer('https://mapwarper.net/maps/tile/57306/{z}/{x}/{y}.png', {
             attribution: 'Tiles by <a href="http://mapwarper.net/maps/57306">Map Warper user Gambette</a>',
             minZoom: 1

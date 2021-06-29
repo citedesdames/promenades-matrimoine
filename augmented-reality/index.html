@@ -9,13 +9,13 @@
     <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script>
-      AFRAME.registerComponent('clicker', {
-        init: function() {
-          this.el.addEventListener('click', e => {
-            alert('Box clicked!');
-          });
-        }
-      });
+      // AFRAME.registerComponent('clicker', {
+      //   init: function() {
+      //     this.el.addEventListener('click', e => {
+      //       alert('Box clicked!');
+      //     });
+      //   }
+      // });
 
       document.addEventListener('DOMContentLoaded', function() {
         let lat, lng, coords, pst, attr;
@@ -27,25 +27,25 @@
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
             };
-            pst = {
-              x: Number(-3),
-              y: Number(0),
-              z: Number(-3)
-            }
-            attrCoord = 'latitude: '+ coords.latitude +'; longitude: '+ coords.longitude +''; 
-            attrPst = ''+pst.x+' '+pst.y+' '+pst.z+'';
-            console.log(attrPst);
+            // pst = {
+            //   x: Number(-3),
+            //   y: Number(0),
+            //   z: Number(-3)
+            // }
+            // attrCoord = 'latitude: '+ coords.latitude +'; longitude: '+ coords.longitude +''; 
+            // attrPst = ''+pst.x+' '+pst.y+' '+pst.z+'';
+            // console.log(attrPst);
           })
-          setTimeout(() => {
-            alert(attrCoord);
-            let box = document.querySelector('a-box');
-            box.setAttribute('gps-entity-place', `${attrCoord}`);
-            box.setAttribute('position', `${attrPst}`);
-            console.log(box.getAttribute('gps-entity-place'));
-            console.log(box.getAttribute('position'));
-            console.log(box);
+        //   setTimeout(() => {
+        //     alert(attrCoord);
+        //     let box = document.querySelector('a-box');
+        //     box.setAttribute('gps-entity-place', `${attrCoord}`);
+        //     box.setAttribute('position', `${attrPst}`);
+        //     console.log(box.getAttribute('gps-entity-place'));
+        //     console.log(box.getAttribute('position'));
+        //     console.log(box);
             
-          }, 4000)
+        //   }, 4000)
         }
       })
 
@@ -81,27 +81,37 @@
         position="0 90 0"
         scale="20 20 20"
         gps-entity-place="latitude: 48.850884; longitude: 2.426954;"
-      ></a-entity>
-
-      <a-entity 
-        clicker
-        gltf-model="./assets/portrait-marguerite/portraitMarguerite.gltf"
-        rotation="0 0 0" 
-        position="15 90 0"
-        scale="3 3 3"
-        gps-entity-place="latitude: 48.850950; longitude: 2.426600;"
-      ></a-entity>
-
+      ></a-entity> 
+    
       <a-box 
         gps-entity-place='latitude: 48.851092; longitude: 2.426203'
         color='red'
         scale='7 7 7'
         position="0 70 0"
       ></a-box> -->
+      
+      <!-- <a-entity 
+        clicker
+        gltf-model="./assets/portrait-marguerite/portraitMarguerite.gltf"
+        rotation="0 0 0" 
+        position="15 90 0"
+        scale="3 3 3"
+        gps-entity-place="latitude: 48.850950; longitude: 2.426600;"
+      ></a-entity> -->
+
+      <a-entity 
+        clicker
+        gltf-model="./assets/portait-rembrandt/sceneRembrandt.gltf"
+        rotation="0 90 0" 
+        position="-14 3 0"
+        scale="1 1 1"
+        gps-entity-place="latitude: 48.8168; longitude: 2.488;"
+      ></a-entity>
 
 
       <!-- 48.851363, 2.426493 // TESTS 27 MAI -->
 
+      <!-- 48.8168, 2.488 // COORDS GPS LOUVRE -->
       
       <a-box 
         color='red'

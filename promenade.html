@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Les Promenades du matrimoine.</title>
+    <!-- Leaflet.JS --> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+    <!-- PapaParse.JS for CSV data -->
+    <script src="assets/scripts/papaparse.min.js"></script>
+
+    <!-- CSS Style --> 
+    <link rel="stylesheet" href="assets/styles/style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body class="overflow">
+    <div class="notification">
+        <div class="notif-icon">
+            <div class="icon">
+                <img src="assets/images/marker-leaflet.png" alt="">
+            </div>
+        </div>
+        <div class="notif-text">
+            <h3>Vous êtes arrivé à proximité de : <span class="position"></span>.</h3>
+            <p>Accedez à des documents exclusifs via l'appareil photo de votre smartphone !</p>
+        </div>
+        <div class="notif-close">
+            <button class="btn-close">
+                <img src="assets/images/close.svg" alt="Clore la notification">
+            </button>
+        </div>
+    </div>
+
+    <header>
+        <div class="main-indicator">
+            <h3>Promenade <span class="premonade-rank">01</span></h3>
+        </div>
+        <h1>Promenade des Marguerite</h1>
+    </header>
+
+    <main>
+        <div id="mapid"></div>
+
+        <div class="controllers">
+            <button class="layers-btn">
+                <img src="assets/images/layers.svg" alt="Locaslise moi">
+                <div class="layers-choice hidden">
+                    <div>
+                        <input type="radio" id="noLayer" class="radio-layer" name="layer" value="noLayer"
+                            checked>
+                        <label for="noLayer">Aucun</label>
+                    </div>
+                    <!-- <div>
+                        <input type="radio" id="Paris17" class="radio-layer" name="layer" value="Paris17">
+                        <label for="Paris17">Paris 17<sup>è</sup></label>
+                    </div>
+                    <div>
+                        <input type="radio" id="Paris19" class="radio-layer" name="layer" value="Paris19">
+                        <label for="Paris19">Paris 19<sup>è</sup></label>
+                    </div> -->
+                </div>
+            </button>
+    
+            <button class="fullScreen-btn">
+                <img src="assets/images/fullscreen.svg" alt="Mode plein écran">
+            </button>
+    
+            <button class="locate-btn">
+                <img src="assets/images/gps.svg" alt="Locaslise moi">
+            </button>
+        </div>
+
+        <div class="range">
+            <div class="range-value">1</div>
+            <div class="field">
+                <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
+            </div>
+        </div>
+    
+        <button class="btn" id="btn">
+            <span><a href="augmented-reality/index.html">Photo</a></span>
+        </button>
+
+
+        <div class="dame-slider-container">
+            <div class="dame-slider"></div>
+        </div>
+    </main>
+
+    <section class="shutter">
+        <div class="notch">
+            <!-- <div class="arrow"></div> -->
+            <img class="arrow" src="assets/images/right-arrow-grey.svg" alt="Ouvrir le volet d'information">
+        </div>
+
+        <div class="shutter-header">
+            <div class="notch-close">
+                <img class="close" src="assets/images/right-arrow-grey.svg" alt="Clore le volet d'information">
+            </div>
+            <div class="premoneade-indicator">
+                <h3>Promenade <span class="premonade-rank">01</span></h3>
+            </div>
+        </div>
+
+
+        <div class="shutter-page"></div>
+
+        <div class="route-section">
+            <div class="intro-promenade">
+                <h2>Promenade des Marguerites</h2>
+                <p>La première promenade, allant du Louvre jusqu’à Notre-Dame de Paris, en passant par le quartier latin ; se base sur les écrivaines prénommées Marguerite.</p>
+            </div>
+            <div class="route">
+                <h3>Mon itinéraire</h2>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- JS app --> 
+    <script src="assets/scripts/fonctions.js"></script>
+    <script src="assets/scripts/app.js" ></script>
+</body>
+</html>
