@@ -33,7 +33,8 @@ function addDames(damesArray) {
         // <img src="${dame.portrait}"></img>
         let dameCard = `
             <div class="dame-portrait">
-                <div style="background-image: url('${dame.portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+                
+                <img src="${dame.portrait}" alt=""></img>
             </div>
             <div class="dame-infos">
                 <h3>${dame.prenom} ${dame.nom}</h3>
@@ -75,7 +76,7 @@ function addStep(stepArray) {
                         <div class="author">${step.auteur}</div>
                     </div>
 
-                    <button class="know-more" ordre="${step.ordre}">En savoir plus</button>
+                    <button class="know-more" ordre="${step.ordre}">En savoir plus<img src="./assets/images/exit-top-right.svg" alt=""></img></button>
                 </div>
             `, {closeOnClick: false}).on("click", function(coord) {
                 // if(innerHeight < 500) {
@@ -135,8 +136,8 @@ function addStep(stepArray) {
             let newStep = `
                 <div class="step-indicator"></div>
                 <div class="step-route-info" id_step="${step.ordre}">
-                    <div class="step-photo"  style="background-image: url('${step.photo}'); background-repeat: no-repeat; background-size: cover; center;">
-
+                    <div class="step-photo">
+                        <img src="${step.photo}" alt=""></img>
                     </div>
                     <div class="step-route-address">
                         <div>
@@ -258,19 +259,26 @@ function locateUser() {
         // mymap.removeLayer(positionUser);
         // mymap.removeLayer(accuracy);
         mymap.locate({maxZoom: 16});
+        mymap.on('locationfound', onLocationFound);
+        mymap.on('locationerror', onLocationError);
         console.log("Position utilisateur mise à jour")
     }
 }
 
 function verifyPosition(step) {
-    console.log(isClose);
+    // console.log(isCloseArray);
+    let pst = dataEtape.indexOf(step);
+    console.log(pst);
+    // console.log(isCloseArray[pst])
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
     let stepAddress = document.querySelector('.position');
 
     let test1 = 30;
     let test2 = 20000;
 
-    if(distance < test1 && isClose == false) {
+    if(distance < test1 && isCloseArray[pst] == false) {
+        console.log("condition 1");
+
         console.log(step.nom)
         window.navigator.vibrate(300);
         stepAddress.innerHTML = step.nom;
@@ -294,13 +302,16 @@ function verifyPosition(step) {
         setTimeout(() => {
             notif.style.top = "-24%";
         }, 5000)
-        isClose = true;
-    } else if(distance < test1 && isClose == true) {
-        isClose = true;
-        console.log("condition 2")
+        isCloseArray[pst] = true;
+    } else if(distance < test1 && isCloseArray[pst] == true) {
+        console.log("condition 2");
+
+        isCloseArray[pst] = true;
         // console.log('Already close to step no need to notif the user');
     } else if(distance > test1) {
-        isClose = false;
+        console.log("condition 3");
+
+        isCloseArray[pst] = false;
         allAugRealLinks.forEach(function(i) {
             i.style.display = "none";
             i.setAttribute('location', 'away')
@@ -615,7 +626,7 @@ function toggleCard(state) {
 
 function toggleControls(state) {
     if(state == false) {
-        document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
+        document.querySelectorAll('[class*="-ctrl-btn"]').forEach((ctrl,i) => 
             setTimeout(() => {
                 ctrl.style.transform = "translateX(-125%)";
             }, i * 100)
@@ -629,7 +640,7 @@ function toggleControls(state) {
             range.style.left = "-82px";
         }
         document.querySelector('.controllers').style.display = "block";
-        document.querySelectorAll('[class*="-btn"]').forEach((ctrl,i) => 
+        document.querySelectorAll('[class*="-ctrl-btn"]').forEach((ctrl,i) => 
             setTimeout(() => {
                 ctrl.style.transform = "translateX(0px)";
             }, i * 100)
@@ -650,7 +661,7 @@ function toggleLayers(layers) {
     }
 }
 
-const toggleExpansion = (element, to, duration = 350) => {
+const toggleExpansion = (element, to, duration = 250) => {
     return new Promise((res) => {
       element.animate([
         {
@@ -688,16 +699,12 @@ const toggleExpansion = (element, to, duration = 350) => {
             tmpDame.push(dame);
         }
     });
-
-
-    // console.log(tmpDame);
-    // console.log(tmpStep);
-    // console.log(tmpDame[0].nom);
-    // console.log(new Date(tmpDame[0].dateNaissance).toUTCString());
     
     return `
         <div class="card-header">
-            <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;"></div>
+            <div class="pp" style="background-image: url('${tmpDame[0].portrait}'); background-repeat: no-repeat; background-size: cover; center;">
+                <img src="${tmpDame[0].portrait}" alt=""></img>
+            </div>
             <p>${addHref(tmpDame[0].source)}</p>
             <div class="header">
                 <h1>${tmpDame[0].prenom} ${tmpDame[0].nom}</h1>
@@ -725,6 +732,7 @@ const onCardClick = async (e) => {
     const card = e.currentTarget.parentNode;
     let id = card.getAttribute("identifiant");
     console.log(card);
+    console.log(id);
       
     let tmpIdStep = [];
     let tmpStep = [];
@@ -734,6 +742,7 @@ const onCardClick = async (e) => {
             console.log(document.querySelector(`[id_step='${item.id_etape}']`))
             if(!tmpIdStep.includes(`${item.id_etape}`)) {
                 tmpIdStep.push(`${item.id_etape}`);
+                console.log('passed')
                 tmpStep.push(document.querySelector(`[id_step='${item.id_etape}']`).cloneNode(true));
                 console.log('non')
             } else if (tmpIdStep.includes(`${item.id_etape}`)) {

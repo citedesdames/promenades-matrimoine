@@ -12,9 +12,9 @@ let sudOuest = L.latLng(48.815003, 2.227135),
 
 let appUserInterface = document.querySelector('html'),
     header = document.querySelector('header'),
-    layerBtn = document.querySelector('.layers-btn');
-    locateBtn = document.querySelector('.locate-btn'),
-    fullScreenBtn = document.querySelector('.fullScreen-btn'),
+    layerBtn = document.querySelector('.layers-ctrl-btn');
+    locateBtn = document.querySelector('.locate-ctrl-btn'),
+    fullScreenBtn = document.querySelector('.fullScreen-ctrl-btn'),
     range = document.querySelector(".range"),
     shutter = document.querySelector(".shutter"),
     notchBtn = document.querySelector(".notch"),
@@ -25,6 +25,7 @@ let appUserInterface = document.querySelector('html'),
     notif = document.querySelector('.notification');
 
 let isClose = false; 
+let isCloseArray = [];
 let firstGeoloc = true;
 
 let dataEtape,
@@ -73,8 +74,27 @@ let mymap = new L.Map('mapid', {
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
     maxZoom: 19,
     subdomains:['mt0','mt1','mt2','mt3']
-}).addTo(mymap);
+});
 
+let Jawg_Streets = L.tileLayer('https://{s}.tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+	attribution: '<a href="http://jawg.io" title="Tiles Courtesy of Jawg Maps" target="_blank">&copy; <b>Jawg</b>Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	minZoom: 0,
+	maxZoom: 22,
+	subdomains: 'abcd',
+	accessToken: 'PyTJUlEU1OPJwCJlW1k0NC8JIt2CALpyuj7uc066O7XbdZCjWEL3WYJIk6dnXtps'
+});
+
+let CartoDB_Voyager = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 19
+});
+
+let CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 19
+}).addTo(mymap);
 
 fetch('./assets/scripts/itineraire-marguerite.geojson')
     .then(function (response) {
@@ -104,16 +124,23 @@ fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
 });
 locateBtn.addEventListener('click', event => {
-    console.log(firstGeoloc);
-    if(firstGeoloc == true) {
+    // console.log(firstGeoloc);
+    // if(firstGeoloc == true) {
+    //     mymap.locate({maxZoom: 16});
+    //     mymap.on('locationfound', onLocationFound);
+    //     mymap.on('locationerror', onLocationError);
+    // } else if (firstGeoloc == false) {
+    //     setInterval(function(){ 
+    //         mymap.locate({maxZoom: 16});
+    //         mymap.on('locationfound', onLocationFound);
+    //         mymap.on('locationerror', onLocationError);
+    //     }, 5000);
+    // }
+    setInterval(function(){ 
         mymap.locate({maxZoom: 16});
         mymap.on('locationfound', onLocationFound);
         mymap.on('locationerror', onLocationError);
-    } else if (firstGeoloc == false) {
-        setInterval(function(){ 
-           locateUser();
-        }, 6000);
-    }
+    }, 5000);
 });
 
 
@@ -240,6 +267,10 @@ fetch('./config.json')
 
 
 setTimeout(() => {
+    for (var i = 0; i < dataEtape.length; ++i) { 
+        isCloseArray.push(false);
+    }
+    // console.log(isCloseArray);
     addStep(dataEtape);
     addDocuments(dataDocument, dataDames);
     addDames(dataDames);
@@ -250,11 +281,6 @@ setTimeout(() => {
     documentDiv.forEach(doc => doc.addEventListener('click', function() {
         onDocuemntClick(doc)
     }));
-
-    // document.querySelector('.dame-btn').addEventListener('click', function() {
-    //     console.log(this.parentNode);
-    //     // cardExtend(this.parentNode);
-    // })
 
     const cards = document.querySelectorAll('.dame-btn');
     cards.forEach(card => card.addEventListener('click', onCardClick));
