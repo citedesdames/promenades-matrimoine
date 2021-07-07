@@ -1,12 +1,11 @@
 const promenades = document.querySelector('.swiper-wrapper')
 
-fetch('./config.json')
+fetch('./config-save.json')
   .then((response) => {
-    console.log('okay');
     return response.json()
   })
   .then((data) => {
-    console.log('okay2');
+      console.log(data)
     setPromenades(data);
 
     const swiper = new Swiper('.swiper-container', {

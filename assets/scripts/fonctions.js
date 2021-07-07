@@ -3,34 +3,98 @@ function onMapClick(e) {
         .bindPopup("Vous avez clické sur la carte à " + e.latlng.toString()).openPopup()
 }
 
-// function onMarkerClick(coord) {
-//     let GPSMark = L.latLng(coord.latlng.lat + .005, coord.latlng.lng);
-    
-//     mymap.flyTo(GPSMark, 16, {
-//         animate: true,
-//         duration: 0.5
-//     });
 
-//     let knowMore = document.querySelector(".know-more");
-//     knowMore.addEventListener('click', event => {
-//         this.closePopup();
-//         let markerRankNumber = markerArray.indexOf(mark);
+// ================================================================
+//
+// *IMPORTANT* Démarrage de l'application selon la promenade choisi
+//
+// ================================================================
+
+
+function startApp(strollData) {
+    // console.log(strollData[0].chemin_geojson)
+    L.geoJSON(strollData[0].chemin_geojson).addTo(mymap);
+
+    PROMENADE = [];
+    PROMENADE.push(strollData[0])
+    savePromenadeToStorage(PROMENADE);
+
+    let currentStroll = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    console.log(currentStroll);
+
+    Papa.parse(currentStroll[0].data[0], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            const items = results.data;
+            items.sort((a, b) => a.ordre - b.ordre);
+            etapeData = items;
+            // console.log(etapeData);
+        }
+    });
+            
+    Papa.parse(currentStroll[0].data[1], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            documentData = results.data;
+            // console.log(documentData);
+        }
+    });
+    
+    Papa.parse(currentStroll[0].data[2], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            damesData = results.data;
+            // console.log(damesData);
+        }
+    });
+
+    console.log(fondsDeCarte)
+    console.log(currentStroll[0].fonds_de_carte)
+    
+    if(currentStroll[0].fonds_de_carte != 'undefined') {
+        let tmpObj = currentStroll[0].fonds_de_carte;
+        for (const [key, value] of Object.entries(tmpObj)) {
+            tmpObj[key] = L.tileLayer(value.src, {
+                attribution: value.attribution,
+                minZoom: 1
+            });
+        }
         
-//         // console.log(knowMore.getAttribute("ordre"));
-//         // console.log(markerArray.indexOf(mark));
-//         openShutter(shutter, markerRankNumber);
-//     });
-// }
+        // console.log(tmpObj);
+        Object.assign(fondsDeCarte, tmpObj);
+    }
+
+    document.querySelector("header h1").textContent = currentStroll[0].titre;
+    document.querySelector(".route-section h2").textContent = currentStroll[0].titre;
+    document.querySelector(".route-section p").textContent = currentStroll[0].description;
+    document.querySelectorAll(".premonade-rank").forEach(rank => {
+        currentStroll[0].id < 10 ? rank.textContent = '0' + currentStroll[0].id : rank.textContent = currentStroll[0].id;
+    })
+    
+    // console.log(fondsDeCarte)
+}
+
+function catchStrollDataFromStorage() {
+
+}
+
+
+// ==========================================================
+//
+// Fonctions génétrices des Étapes, des Documents et des Daes
+//
+// ==========================================================
 
 
 function addDames(damesArray) {
-    damesArray.map(dame => {
-        // console.log(dame.source);
-        // console.log(dame.source.split('">'));
+    damesArray.forEach(dame => {
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
         cardContent.setAttribute("identifiant", `${dame.identifiant}`);
-        // <img src="${dame.portrait}"></img>
+
         let dameCard = `
             <div class="dame-portrait">
                 
@@ -54,7 +118,7 @@ function addDames(damesArray) {
 function addStep(stepArray) {
     let markerArray = [];
 
-    stepArray.map(step => {
+    stepArray.forEach(step => {
         let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
             .bindPopup(`
                 <div class="popup-photo">
@@ -116,10 +180,10 @@ function addStep(stepArray) {
                     <img src="assets/images/gps.svg" alt="">
                     <div class="address">${step.adresse}</div>
                 </div>
-                <h2>L’<span>héritage</span> culturel du <span>${step.nom}</span>.</h2>
+                <h2>${step.ordre == 1 ? `${step.ordre}<sup>ère</sup>` : `${step.ordre}<sup>e</sup>`} étape : <span>${step.nom}</span>.</h2>
 
                 <div class="doc-header">
-                    <h3>Documents sur ce lieu</h3>
+                    <h3>Documents sur ce lieu :</h3>
                     <div class="doc-list"><span class="doc-number"></span></div>
                 </div>
 
@@ -157,20 +221,6 @@ function addStep(stepArray) {
             markerArray.push(mark);
     });
 
-    console.log(markerArray);
-    
-    // for (let i = 0; i < stepArray.length - 1; i++) {
-    //     var latlngs = [
-    //         [`${stepArray[i].latitude}`, stepArray[i].longitude],
-    //         [`${stepArray[i+1].latitude}`, stepArray[i+1].longitude],
-    //     ];
-
-    //     L.polyline(latlngs, {
-    //         color: '#DD6262',
-    //         // color: '#B55050'
-    //     }).addTo(mymap);
-    // }
-
     markerArray.forEach((i) => {
         i.addEventListener('click', function() {
             checkPopupState(i);
@@ -178,12 +228,145 @@ function addStep(stepArray) {
                 checkPopupState(i);
             })
         })
-        // document.querySelector('#mapid').addEventListener('click', function() {
-        //     // checkPopupState(i);
-        //     console.log(3)
-        // })
     })
 }
+
+function addDocuments(docArray, damesArray) {
+    let shutterChildrens = document.querySelectorAll(".step-document");
+    let docContent = docArray.forEach(doc => {
+        let a = damesArray.map(e => { 
+            return e.identifiant; 
+        }).indexOf(`${doc.id_dame}`);
+
+        for (let i = 0; i < shutterChildrens.length; i++) {
+
+            if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
+                let docContent = document.createElement("div");
+                docContent.classList.add('document');
+                docContent.setAttribute("id_etape", `${doc.id_etape}`);
+        
+                let cardContent = `
+                    <div>
+                        <div class="dot"></div>
+                        <div class="photo-doc" identifiant="${damesArray[a].identifiant}">
+                            <img src="${damesArray[a].portrait}" alt="">
+                        </div>
+                        <div class="doc-content">
+                            <span>${doc.type}</span>
+                            <p>${doc.titre}</p>
+                        </div>
+                    </div>`;
+
+                let mainContent;
+
+                if(`${doc.type}` == 'citation') {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="main-information">
+                            <p class="desc">${doc.texte}</p>
+                            <p class="source">${addHref(doc.source)}</p>
+                            <span>${doc.licence}</span>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'extrait') {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="main-information">
+                            <p class="desc">${doc.description}</p>
+                            <p class="source">${addHref(doc.source)}</p>
+                            <span>${doc.licence}</span>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("dailymotion")){
+                    mainContent = `
+                    <article class="informations video-type">
+                        <div class="touch-bar"></div>
+                        <div class="embed-vid">
+                            <iframe frameborder="0" width="640" height="360" 
+                                src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
+                                allow="autoplay; fullscreen">
+                            </iframe>
+                        </div>
+                        <div class="additional-infos">
+                            <div class="marquee-rtl">
+                                <div><span>${doc.licence}</span></div>
+                            </div>
+                            <p class="desc">${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
+                    mainContent = `
+                    <article class="informations video-type">
+                        <div class="touch-bar"></div>
+                        <div class="embed-vid">
+                            <iframe frameborder="0" width="640" height="360" 
+                                src="https://www.youtube.com/embed/${youtube_parser(doc.URL)}" 
+                                allow="autoplay; fullscreen">
+                            </iframe>
+                        </div>
+                        <div class="additional-infos">
+                            <div class="marquee-rtl">
+                                <div><span>${doc.licence}</span></div>
+                            </div>
+                            <p class="desc">${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                        </div>
+                    </article>`;
+                } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="card-preview">
+                            <div>
+                                <h3>${doc.description}</h3>
+                                <span class="source">${addHref(doc.source)}</span>
+                            </div>
+                            <div class="preview">
+                                <div class="shadow">
+                                    <a href="${doc.URL}" target="_blank">Clickez pour poursuivre vers le site</a>
+                                </div>
+                                <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
+                                </iframe>
+                            </div>
+                            <span>${doc.licence}</span>
+                        </div>
+                    </article>`;
+                } else if(`${doc.type}` == 'image') {
+                    mainContent = `
+                    <article class="informations hidden">
+                    <div class="main-information">
+                        <img src="${doc.URL}"></img>
+                            <p class="desc">${doc.description}</p>
+                            <p class="source">${addHref(doc.source)}</p>
+                            <span>${doc.licence}</span>
+                        </div>
+                    </article>`;
+                } else {
+                    mainContent = `
+                    <article class="informations hidden">
+                        <div class="main-information">
+                            <p class="desc">${doc.description}</p>
+                            <p class="source">${doc.source}</p>
+                            <span>${addHref(doc.licence)}</span>
+                        </div>
+                    </article>`;
+                }
+
+                let newContent = cardContent + mainContent;
+                docContent.innerHTML = newContent;
+                shutterChildrens[i].append(docContent);
+            }
+        }
+    });
+}
+
+
+// ==================================================================================
+//
+// Fonctions retives au positionnement de l'utilisateur, coordonnées GPS et distances
+//
+// ==================================================================================
+
 
 function onLocationFound(e) {
     console.log(e)
@@ -222,7 +405,7 @@ function onLocationFound(e) {
         i.style.display = "block";
     });
 
-    dataEtape.map(step => {
+    etapeData.map(step => {
         let start = positionUser.getLatLng();
         let end = {
             lat: step.latitude,
@@ -244,7 +427,7 @@ function onLocationFound(e) {
     positionUser.bindPopup(`
         <div class="user-location">
             <h2> Vous êtes ici !</h2>
-            <p>Étape la plus proche : ${dataEtape[closest].nom}.</p>
+            <p>Étape la plus proche : ${etapeData[closest].nom}.</p>
         </div>
     `);
     firstGeoloc = false;
@@ -267,11 +450,11 @@ function locateUser() {
 
 function verifyPosition(step) {
     // console.log(isCloseArray);
-    let pst = dataEtape.indexOf(step);
+    let pst = etapeData.indexOf(step);
     console.log(pst);
     // console.log(isCloseArray[pst])
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
-    let stepAddress = document.querySelector('.position');
+    let stepAddressInNotif = document.querySelector('.position');
 
     let test1 = 30;
     let test2 = 20000;
@@ -281,7 +464,7 @@ function verifyPosition(step) {
 
         console.log(step.nom)
         window.navigator.vibrate(300);
-        stepAddress.innerHTML = step.nom;
+        stepAddressInNotif.innerHTML = step.nom;
         notif.style.top = "12px";
         allAugRealLinks.forEach(function(i) {
             i.style.display = "initial";
@@ -321,6 +504,14 @@ function verifyPosition(step) {
     // console.log(isClose);
 }
 
+
+// =======================================================
+//
+// Mise à jour de l'opacité des fonds de carte historiques
+//
+// =======================================================
+
+
 function updateOpacity(value) {
     for (const property in fondsDeCarte) {
         // console.log(value);
@@ -328,6 +519,13 @@ function updateOpacity(value) {
         document.querySelector('.range-value').innerHTML = value;
     }
 }
+
+// ==============================================================
+//
+// Ouverture du volet latéral droit contenant étapes ou documnets
+//
+// ==============================================================
+
 
 function openShutter(element, rank) {
     let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
@@ -379,136 +577,13 @@ function openShutter(element, rank) {
     }
 }
 
-function addDocuments(docArray, damesArray) {
-    let shutterChildrens = document.querySelectorAll(".step-document");
-    let docContent = docArray.map(doc => {
-        // console.log(`${doc.id_dame}`);
-        let a = damesArray.map(e => { 
-            return e.identifiant; 
-        }).indexOf(`${doc.id_dame}`);
-        // console.log(a);
 
-        for (let i = 0; i < shutterChildrens.length; i++) {
+// ==================================
+//
+// Déploiement des documents au click
+//
+// ==================================
 
-            if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
-                let docContent = document.createElement("div");
-                docContent.classList.add('document');
-                docContent.setAttribute("id_etape", `${doc.id_etape}`);
-        
-                let cardContent = `
-                    <div>
-                        <div class="dot"></div>
-                        <div class="photo-doc" identifiant="${damesArray[a].identifiant}">
-                            <img src="${damesArray[a].portrait}" alt="">
-                        </div>
-                        <div class="doc-content">
-                            <span>${doc.type}</span>
-                            <p>${doc.titre}</p>
-                        </div>
-                    </div>`;
-
-                let mainContent;
-
-                if(`${doc.type}` == 'citation') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="main-information">
-                            <p>${doc.texte}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'extrait') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="main-information">
-                            <p>${doc.description}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("dailymotion")){
-                    mainContent = `
-                    <article class="informations video-type">
-                        <div class="touch-bar"></div>
-                        <div class="embed-vid">
-                            <iframe frameborder="0" width="640" height="360" 
-                                src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
-                                allow="autoplay; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="additional-infos">
-                            <div class="marquee-rtl">
-                                <div><span>${doc.licence}</span></div>
-                            </div>
-                            <p>${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
-                    mainContent = `
-                    <article class="informations video-type">
-                        <div class="touch-bar"></div>
-                        <div class="embed-vid">
-                            <iframe frameborder="0" width="640" height="360" 
-                                src="https://www.youtube.com/embed/${youtube_parser(doc.URL)}" 
-                                allow="autoplay; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="additional-infos">
-                            <div class="marquee-rtl">
-                                <div><span>${doc.licence}</span></div>
-                            </div>
-                            <p>${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                        </div>
-                    </article>`;
-                } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="card-preview">
-                            <div>
-                                <h3>${doc.description}</h3>
-                                <span class="source">${addHref(doc.source)}</span>
-                            </div>
-                            <div class="preview">
-                                <div class="shadow">
-                                    <a href="${doc.URL}" target="_blank">Poursuivre vers le site</a>
-                                </div>
-                                <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
-                                </iframe>
-                            </div>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'image') {
-                    mainContent = `
-                    <article class="informations hidden">
-                    <div class="main-information">
-                        <img src="${doc.URL}"></img>
-                            <p>${doc.description}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="main-information">
-                            <p>${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                            <span>${addHref(doc.licence)}</span>
-                        </div>
-                    </article>`;
-                }
-
-                let newContent = cardContent + mainContent;
-                docContent.innerHTML = newContent;
-                shutterChildrens[i].append(docContent);
-            }
-        }
-    });
-}
 
 function onDocuemntClick(doc) {
     if(doc.childNodes[3].classList.contains("hidden")) {
@@ -523,6 +598,14 @@ function onDocuemntClick(doc) {
         doc.childNodes[3].classList.add("hidden");
     }
 }
+
+
+// =================================
+//
+// Mode plein écran de l'application
+//
+// =================================
+
 
 function openFullscreen() {
     if (appUserInterface.requestFullscreen) {
@@ -547,12 +630,10 @@ function handlePermission() {
         if (result.state == 'granted') {
             report(result.state);
             if(firstGeoloc == true) {
-                console.log('non effectuée');
                 allDstIndicator.forEach(function(i) {
                     i.style.display = "none";
                 });
             } else if (firstGeoloc == false) {
-                console.log('effectuée');
                 allDstIndicator.forEach(function(i) {
                     i.style.display = "block";
                 });
@@ -661,7 +742,15 @@ function toggleLayers(layers) {
     }
 }
 
-const toggleExpansion = (element, to, duration = 250) => {
+
+// ===========================================================================
+//
+// Fonctions relatives à l'extension et au rétrécissement des cartes des Dames 
+//
+// ===========================================================================
+
+
+const toggleExpansion = (element, to, duration = 300) => {
     return new Promise((res) => {
       element.animate([
         {
@@ -736,17 +825,13 @@ const onCardClick = async (e) => {
       
     let tmpIdStep = [];
     let tmpStep = [];
-    dataDocument.forEach(function(item){
+    documentData.forEach(function(item){
         if(id == item.id_dame) {
             console.log(item.id_etape);
             console.log(document.querySelector(`[id_step='${item.id_etape}']`))
             if(!tmpIdStep.includes(`${item.id_etape}`)) {
                 tmpIdStep.push(`${item.id_etape}`);
-                console.log('passed')
                 tmpStep.push(document.querySelector(`[id_step='${item.id_etape}']`).cloneNode(true));
-                console.log('non')
-            } else if (tmpIdStep.includes(`${item.id_etape}`)) {
-                console.log('oui');
             }
         }
     });
@@ -816,10 +901,9 @@ const onCardClick = async (e) => {
     });
 
 
-
     // expand the clone card
     await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
-    const content = getCardContent(dataDames, dataDocument, dataEtape, id, cardClone)
+    const content = getCardContent(damesData, documentData, etapeData, id, cardClone)
 
     // set the display block so the content will follow the normal flow in case the original card is not display block
     cardClone.style.display = 'block';
@@ -892,7 +976,7 @@ function callDad(src, dest, sort) {
             complete: function (results) {
                 dest = results.data;
                 console.log(dest);
-                // dataDocument.push(results.data);
+                // documentData.push(results.data);
             }
         });
     }
@@ -936,20 +1020,28 @@ function addFdC(layers) {
     }
 }
 
+
+// =========================================================
+//
+// Génération du carousel de promenade sur la page d'accueil
+//
+// =========================================================
+
+
 function setPromenades(dataProm) {
     // console.log(dataProm);
     for (const promenade in dataProm) {
-        console.log(dataProm[promenade][0]);
+        // console.log(dataProm[promenade]);
         let cardContent = document.createElement("div");
-        console.log(Object.keys(dataProm));
+        // console.log(Object.keys(dataProm));
         cardContent.setAttribute("stroll", `${promenade}`);
         cardContent.classList.add('swiper-slide');
         cardContent.classList.add('card-promenade');
 
         let promCard = `
-            <img src="${dataProm[promenade][0].visuel}" alt="">
+            <img src="${dataProm[promenade].visuel}" alt="">
             <div class="promenade-info">
-                <h2>${dataProm[promenade][0].titre}</h2>
+                <h2>${dataProm[promenade].titre}</h2>
                 <a href="./promenade.html?stroll=${cardContent.getAttribute("stroll")}">
                     <div class="start">
                         <img src="assets/images/start.svg" alt="">
@@ -960,27 +1052,48 @@ function setPromenades(dataProm) {
         cardContent.innerHTML = promCard;
         document.querySelector('.swiper-wrapper').append(cardContent);
     }
-    // for (const property in dataProm) {
-    //     // console.log(value);
-    //     console.log(dataProm[property])
-    // }
 }
 
-function addSkeleton() {
-    const strollSkeleton = document.createElement("div");
-    strollSkeleton.classList.add('swiper-slide');
-    strollSkeleton.classList.add('skeleton-div');
 
-    let skelContent = `
-        <div class="skeleton-container-last-news"> 
-            <div class="a loading">
-            </div>
-            <div class="b loading">
-            </div>
-            <div class="c loading">
-            </div>
-        </div>`
+// =======================
+//
+// Local Storage utilities
+//
+// =======================
 
-    strollSkeleton.innerHTML = skelContent;
-    document.querySelector('.swiper-wrapper').append(strollSkeleton);
+
+function getPromenadeFromStorage() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
+
+function savePromenadeToStorage(promenadeArray = []) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(promenadeArray));
+}
+
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+function convertToJson(strollArray) {
+    strollArray.forEach(function(item) {
+        for (const [key, value] of Object.entries(item)) {
+            let isJSON = IsJsonString(value)
+            if(isJSON == true) {
+                item[key] = JSON.parse(item[key]);
+            } 
+        }
+    })
+
+    return strollArray;
+}
+
+Papa.parsePromise = function(file) {
+    return new Promise(function(complete, error) {
+      Papa.parse(file, {download: true, header: true, complete, error});
+    });
+};

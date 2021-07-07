@@ -57,13 +57,17 @@
 }
 
 
-/* @supports (-moz-backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) or (backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) {
+@supports (-moz-backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) or (backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%)) {
     .leaflet-popup-content-wrapper {
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        /* background-color: rgba(255, 255, 255, 0.2) !important;
         backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%);
-        -webkit-backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%);
+        -webkit-backdrop-filter: blur(10px) saturate(160%) contrast(45%) brightness(140%); */
+
+        background-color: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(10.0px);
+        -webkit-backdrop-filter: blur(10.0px);
     }
-} */
+}
 
 *,
 *::before,
@@ -194,8 +198,8 @@ header {
     /* height: 88px; */
     padding: 12px 18px;
     background: var(--second-color);
-    border-bottom-left-radius: 18px;
-    border-bottom-right-radius: 18px;
+    border-bottom-left-radius: 22px;
+    border-bottom-right-radius: 22px;
     -webkit-box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
     -moz-box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
     box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
@@ -244,7 +248,7 @@ header h1 {
 .controllers {
     position: fixed;
     z-index: 400;
-    top: 100px;
+    top: 125px;
     left: 10px;
 }
 
@@ -561,9 +565,6 @@ input[type=range]::-moz-range-thumb {
     margin: 0;
     padding: 0;
     position: relative;
-    background-color: rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(10.0px);
-    -webkit-backdrop-filter: blur(10.0px);
 }
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
@@ -946,6 +947,7 @@ input[type=range]::-moz-range-thumb {
     font-family: var(--font-fam);
     font-weight: 600;
     color: #589CF8;
+    text-shadow: 0px 4px 32px rgba(0, 0, 0, .7);
     margin: auto;
 }
 
@@ -1103,13 +1105,25 @@ input[type=range]::-moz-range-thumb {
     font-family: 'Merriweather', serif;
 }
 
-.main-information p:first-child,
+.main-information p:first-child {
+    font-size: 0.9375em;
+    line-height: 1.6;
+    margin: 0 0 10px 0;
+}
+
+/* .main-information p:first-child,
 .additional-infos p:nth-child(2n) {
     font-size: 0.9375em;
     line-height: 1.6;
     margin: 0 0 15px 0;
-    /* color: #fff; */
+} */
+
+.desc {
+    font-size: 0.9375em;
+    line-height: 1.6;
+    margin: 0 0 15px 0;
 }
+
 
 .source {
     font-family: var(--font-fam);
