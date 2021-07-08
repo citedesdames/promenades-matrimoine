@@ -624,14 +624,41 @@ function onDocuemntClick(doc) {
 // =================================
 
 
-function openFullscreen() {
-    if (appUserInterface.requestFullscreen) {
-        console.log('ok');
-        appUserInterface.requestFullscreen();
-    } else if (appUserInterface.webkitRequestFullscreen) { /* Safari */
-        appUserInterface.webkitRequestFullscreen();
-    } else if (appUserInterface.msRequestFullscreen) { /* IE11 */
-        appUserInterface.msRequestFullscreen();
+
+function isFullScreen() {
+    return (document.fullScreenElement && document.fullScreenElement !== null)
+         || document.mozFullScreen
+         || document.webkitIsFullScreen;
+}
+
+
+function requestFullScreen(element) {
+    if (element.requestFullscreen)
+        element.requestFullscreen();
+    else if (element.msRequestFullscreen)
+        element.msRequestFullscreen();
+    else if (element.mozRequestFullScreen)
+        element.mozRequestFullScreen();
+    else if (element.webkitRequestFullscreen)
+        element.webkitRequestFullscreen();
+}
+
+function exitFullScreen() {
+    if (document.exitFullscreen)
+        document.exitFullscreen();
+    else if (document.msExitFullscreen)
+        document.msExitFullscreen();
+    else if (document.mozCancelFullScreen)
+        document.mozCancelFullScreen();
+    else if (document.webkitExitFullscreen)
+        document.webkitExitFullscreen();
+}
+
+function toggleFullScreen(element) {
+    if (isFullScreen()) {
+        exitFullScreen();
+    } else {
+        requestFullScreen(element || document.documentElement);
     }
 }
 
@@ -676,11 +703,6 @@ function handlePermission() {
 
 function report(state) {
     console.log('Permission ' + state);
-    // if(state == 'granted') {
-    //     return true;
-    // } else if (state == 'prompt' || state == 'denied') {
-    //     return false;
-    // }
 }  
 
 function checkPopupState(popup) {
@@ -695,6 +717,17 @@ function checkPopupState(popup) {
         header.classList.remove('closed');
     }
 }
+
+
+
+// =============================================================
+//
+// Fonctions liés à l'affichage des Cards, des contrôles, et des
+// boutons radios pour les fonds de cartes
+//
+// =============================================================
+
+
 
 function toggleCard(state) {
     if(state == false) {
@@ -1038,11 +1071,11 @@ function addFdC(layers) {
 }
 
 
-// =========================================================
+// ======================================================================
 //
-// Génération du carousel de promenade sur la page d'accueil
+// Génération du carousel présentant les promenades sur la page d'accueil
 //
-// =========================================================
+// ======================================================================
 
 
 function setPromenades(dataProm) {
@@ -1072,11 +1105,11 @@ function setPromenades(dataProm) {
 }
 
 
-// =======================
+// ====================================
 //
-// Local Storage utilities
+// Local Storage & other JSON utilities
 //
-// =======================
+// ====================================
 
 
 function getPromenadeFromStorage() {

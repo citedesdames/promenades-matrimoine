@@ -106,17 +106,30 @@ layerBtn.addEventListener('click', function() {
     toggleLayers(this);
 });
 fullScreenBtn.addEventListener('click', event => {
-    openFullscreen();
+    // openFullscreen();
+    toggleFullScreen(appUserInterface);
 });
 locateBtn.addEventListener('click', event => {
     mymap.locate({maxZoom: 16});
     mymap.on('locationfound', onLocationFound);
     mymap.on('locationerror', onLocationError);
-    setInterval(function(){ 
-        mymap.locate({maxZoom: 16});
-        mymap.on('locationfound', onLocationFound);
-        mymap.on('locationerror', onLocationError);
-    }, 4000);
+    if (positionUser) {
+        mymap.setView(positionUser._latlng, 16, {
+            "animate": true,
+            "pan": {
+              "duration": 10
+            }
+        });
+        // console.log(positionUser._latlng);
+    }
+    if(firstGeoloc == true) {
+        console.log('passed');
+        setInterval(function(){ 
+            mymap.locate({maxZoom: 16});
+            mymap.on('locationfound', onLocationFound);
+            mymap.on('locationerror', onLocationError);
+        }, 4000);
+    }
 });
 
 
@@ -175,7 +188,7 @@ setTimeout(() => {
     }
 
     addStep(etapeData);
-    // addDocuments(documentData, damesData);
+    addDocuments(documentData, damesData);
     addDames(damesData);
     handlePermission();
     addFdC(fondsDeCarte);
