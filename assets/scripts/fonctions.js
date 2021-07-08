@@ -13,14 +13,35 @@ function onMapClick(e) {
 
 function startApp(strollData) {
     // console.log(strollData[0].chemin_geojson)
-    L.geoJSON(strollData[0].chemin_geojson).addTo(mymap);
-
     PROMENADE = [];
     PROMENADE.push(strollData[0])
     savePromenadeToStorage(PROMENADE);
-
     let currentStroll = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    console.log(currentStroll);
+    
+    sudOuest = L.latLng(currentStroll[0].bounds.sudOuest[0], currentStroll[0].bounds.sudOuest[1]);
+    nordEst = L.latLng(currentStroll[0].bounds.nordEst[0], currentStroll[0].bounds.nordEst[1]);
+    bounds = L.latLngBounds(sudOuest, nordEst);
+    mymap = new L.Map('mapid', {
+        center: bounds.getCenter(),
+        zoom: 12,
+        minZoom: 5,
+        zoomControl: false,
+        maxBounds: bounds,
+        maxBoundsViscosity: 0.5
+    });
+    stepIcon = L.icon({
+        iconUrl: PROMENADE[0].icone_marqueur,
+    
+        iconSize:     [32, 32], // size of the icon
+        iconAnchor:   [16, 38], // point of the icon which will correspond to marker's location
+        popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+    });
+    CartoDB_Positron.addTo(mymap);
+    L.geoJSON(strollData[0].chemin_geojson, {
+        style: function(){
+            return { color: '#A1C6B9' }
+        }
+    }).addTo(mymap);
 
     Papa.parse(currentStroll[0].data[0], {
         download: true,
@@ -29,7 +50,6 @@ function startApp(strollData) {
             const items = results.data;
             items.sort((a, b) => a.ordre - b.ordre);
             etapeData = items;
-            // console.log(etapeData);
         }
     });
             
@@ -38,7 +58,6 @@ function startApp(strollData) {
         header: true,
         complete: function (results) {
             documentData = results.data;
-            // console.log(documentData);
         }
     });
     
@@ -47,12 +66,11 @@ function startApp(strollData) {
         header: true,
         complete: function (results) {
             damesData = results.data;
-            // console.log(damesData);
         }
     });
 
-    console.log(fondsDeCarte)
-    console.log(currentStroll[0].fonds_de_carte)
+    // console.log(fondsDeCarte)
+    // console.log(currentStroll[0].fonds_de_carte)
     
     if(currentStroll[0].fonds_de_carte != 'undefined') {
         let tmpObj = currentStroll[0].fonds_de_carte;
@@ -451,7 +469,6 @@ function locateUser() {
 function verifyPosition(step) {
     // console.log(isCloseArray);
     let pst = etapeData.indexOf(step);
-    console.log(pst);
     // console.log(isCloseArray[pst])
     let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
     let stepAddressInNotif = document.querySelector('.position');
@@ -487,12 +504,12 @@ function verifyPosition(step) {
         }, 5000)
         isCloseArray[pst] = true;
     } else if(distance < test1 && isCloseArray[pst] == true) {
-        console.log("condition 2");
+        // console.log("condition 2");
 
         isCloseArray[pst] = true;
         // console.log('Already close to step no need to notif the user');
     } else if(distance > test1) {
-        console.log("condition 3");
+        // console.log("condition 3");
 
         isCloseArray[pst] = false;
         allAugRealLinks.forEach(function(i) {
@@ -983,13 +1000,13 @@ function callDad(src, dest, sort) {
 }
 
 function onCheckboxClick(checkboxes, settings, layers) {
-    toggleLayers(layerBtn)
+    toggleLayers(layerBtn);
     settings = 
         Array.from(checkboxes)
         .filter(i => i.checked)
-        .map(i => i.value)
+        .map(i => i.value);
         
-    console.log(settings)
+    console.log(settings);
     if (settings == "noLayer") {
         range.style.left = "-140px";
         for (const property in layers) {
@@ -1012,7 +1029,7 @@ function addFdC(layers) {
 
         let layer = `
                 <input type="radio" id="${property}" class="radio-layer" name="layer" value="${property}">
-                <label for="${property}">${property}<sup>è</sup></label>
+                <label for="${property}">${property}</label>
         `;
 
         layerContainer.innerHTML = layer;

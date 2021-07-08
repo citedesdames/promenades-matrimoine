@@ -9,11 +9,15 @@
 //
 // =============================================================
 
+const STORAGE_KEY = 'matrimoine:promenade';
+let PROMENADE = getPromenadeFromStorage();
 
 
-let sudOuest = L.latLng(48.815003, 2.227135),
-    nordEst = L.latLng(48.902724, 2.488421),
-    bounds = L.latLngBounds(sudOuest, nordEst),
+let sudOuest,
+    nordEst,
+    stepIcon,
+    bounds,
+    mymap,
     radius, positionUser, accuracy;
 
 let appUserInterface = document.querySelector('html'),
@@ -30,9 +34,9 @@ let appUserInterface = document.querySelector('html'),
     routeSection = document.querySelector(".route-section"),
     notif = document.querySelector('.notification');
 
-let isClose = false; 
-let isCloseArray = [];
-let firstGeoloc = true;
+let isClose = false,
+    isCloseArray = [],
+    firstGeoloc = true;
 
 let etapeData,
     documentData,
@@ -41,9 +45,6 @@ let etapeData,
 
 let fondsDeCarte = {};
 let enabledSettings = [];
-
-const STORAGE_KEY = 'matrimoine:promenade';
-let PROMENADE = getPromenadeFromStorage();
 
 
 document.documentElement.style.setProperty('--inner-width', window.innerWidth + "px");
@@ -59,15 +60,7 @@ document.documentElement.style.setProperty('--inner-height', window.innerHeight 
 
 
 
-var stepIcon = L.icon({
-    iconUrl: 'assets/images/marker-leaflet.png',
-
-    iconSize:     [25, 39.1], // size of the icon
-    iconAnchor:   [13, 38], // point of the icon which will correspond to marker's location
-    popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
-});
-
-var userIcon = L.icon({
+let userIcon = L.icon({
     iconUrl: 'assets/images/user-marker-leaflet.png',
 
     iconSize:     [25, 28], // size of the icon
@@ -75,14 +68,6 @@ var userIcon = L.icon({
     popupAnchor:  [0, -24] // point from which the popup should open relative to the iconAnchor
 });
 
-let mymap = new L.Map('mapid', {
-    center: bounds.getCenter(),
-    zoom: 12,
-    minZoom: 5,
-    zoomControl: false,
-    // maxBounds: bounds,
-    maxBoundsViscosity: 0.5
-});
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
     maxZoom: 19,
@@ -99,8 +84,7 @@ let CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
 	maxZoom: 19
-}).addTo(mymap);
-
+});
 
 
 
@@ -125,11 +109,14 @@ fullScreenBtn.addEventListener('click', event => {
     openFullscreen();
 });
 locateBtn.addEventListener('click', event => {
+    mymap.locate({maxZoom: 16});
+    mymap.on('locationfound', onLocationFound);
+    mymap.on('locationerror', onLocationError);
     setInterval(function(){ 
         mymap.locate({maxZoom: 16});
         mymap.on('locationfound', onLocationFound);
         mymap.on('locationerror', onLocationError);
-    }, 5000);
+    }, 4000);
 });
 
 
@@ -188,7 +175,7 @@ setTimeout(() => {
     }
 
     addStep(etapeData);
-    addDocuments(documentData, damesData);
+    // addDocuments(documentData, damesData);
     addDames(damesData);
     handlePermission();
     addFdC(fondsDeCarte);
