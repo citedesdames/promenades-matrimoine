@@ -39,9 +39,11 @@ let isClose = false,
     firstGeoloc = true;
 
 let etapeData,
+    etapeDataReverse,
     documentData,
     damesData,
-    strollData;
+    strollData,
+    markerArray;
 
 let fondsDeCarte = {};
 let enabledSettings = [];
@@ -97,10 +99,10 @@ let CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/
 
 
 notchBtn.addEventListener('click', event => {
-    openShutter(shutter);
+    toggleShutter(shutter);
 });
 closeBtn.addEventListener('click', event => {
-    openShutter(shutter);
+    toggleShutter(shutter);
 });
 layerBtn.addEventListener('click', function() {
     toggleLayers(this);
@@ -175,18 +177,32 @@ fetch('./config.json')
         download: true,
         header: true,
         complete: function (results) {
+            console.log(PROMENADE[0]);
             strollData = convertToJson(results.data);
             startApp(strollData);
         }
     });
 });
 
+// fetchDataFromConfig()
+//     .then((data) => {
+//         console.log('c bueno');
+//         // console.log(data)
+//         startApp(data);
+//         console.log(etapeData)
+//     })
+    
+
 
 setTimeout(() => {
+    console.log(etapeData);
+    console.log(etapeDataReverse);
+    
     for (var i = 0; i < etapeData.length; ++i) { 
         isCloseArray.push(false);
     }
 
+    addStepRoute(etapeDataReverse);
     addStep(etapeData);
     addDocuments(documentData, damesData);
     addDames(damesData);
@@ -194,21 +210,26 @@ setTimeout(() => {
     addFdC(fondsDeCarte);
 
     const checkboxes = document.querySelectorAll(".radio-layer"); 
-    checkboxes.forEach(checkbox => checkbox.addEventListener('change', function() {
+    checkboxes.forEach(checkbox => checkbox.addEventListener('change', () => {
         onCheckboxClick(checkboxes, enabledSettings, fondsDeCarte)
     }));
 
     const documentDiv = document.querySelectorAll(".document");
-    documentDiv.forEach(doc => doc.addEventListener('click', function() {
-        onDocuemntClick(doc)
+    documentDiv.forEach(doc => doc.addEventListener('click', () => {
+        onDocumentClick(doc)
     }));
 
     const cards = document.querySelectorAll('.dame-btn');
     cards.forEach(card => card.addEventListener('click', onCardClick));
+
+    const routeStep = document.querySelectorAll('.step-route-info');
+    routeStep.forEach(step => step.addEventListener('click', () => {
+        onRouteStepClick(step)
+    }));
 
     const photoDoc = document.querySelectorAll('.photo-doc');
     photoDoc.forEach(photo => photo.addEventListener('click', function() {
         onPhotoDocClick(photo.getAttribute('identifiant'));
     }));
 
-}, 2250)
+}, 2500)

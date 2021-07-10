@@ -47,9 +47,16 @@ function startApp(strollData) {
         download: true,
         header: true,
         complete: function (results) {
-            const items = results.data;
-            items.sort((a, b) => a.ordre - b.ordre);
-            etapeData = items;
+            let items = results.data;
+            etapeDataReverse = items.sort((a, b) => a.ordre - b.ordre);
+        }
+    });
+
+    Papa.parse(currentStroll[0].data[0], {
+        download: true,
+        header: true,
+        complete: function (results) {
+            etapeData = results.data;
         }
     });
             
@@ -95,9 +102,29 @@ function startApp(strollData) {
     // console.log(fondsDeCarte)
 }
 
-function catchStrollDataFromStorage() {
-
+function fetchDataFromConfig() {
+    console.log('passed');
+    return new Promise(function(resolve, reject) {
+        fetch('./config.json')
+            .then((response) => {
+                return response.json()
+            })
+            .then((data) => {
+                Papa.parsePromise(data[params.stroll])
+                    .then(function(results) { 
+                        strollData = convertToJson(results.data);
+                        resolve(strollData);
+                    });
+            });
+    })
 }
+
+// function callDadForParsing(url) {
+//     // console.log('passed');
+//     return new Promise(function(resolve, reject) {
+
+//     })
+// }
 
 
 // ==========================================================
@@ -134,7 +161,8 @@ function addDames(damesArray) {
 
 
 function addStep(stepArray) {
-    let markerArray = [];
+    // console.log(stepArray)
+    markerArray = [];
 
     stepArray.forEach(step => {
         let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
@@ -161,12 +189,12 @@ function addStep(stepArray) {
                     <button class="know-more" ordre="${step.ordre}">En savoir plus<img src="./assets/images/exit-top-right.svg" alt=""></img></button>
                 </div>
             `, {closeOnClick: false}).on("click", function(coord) {
-                // if(innerHeight < 500) {
-                //     header.classList.add("closed");
-                //     console.log(document.querySelector('.popup-description'));
-                // }
-
-                let GPSMark = L.latLng(coord.latlng.lat + .0046, coord.latlng.lng);
+                let GPSMark;
+                if(coord.latlng) {
+                    GPSMark = L.latLng(coord.latlng.lat + .0046, coord.latlng.lng);
+                } else {
+                    GPSMark = L.latLng(coord.target._latlng.lat + .0046, coord.target._latlng.lng);
+                }
     
                 mymap.flyTo(GPSMark, 16, {
                     animate: true,
@@ -177,21 +205,21 @@ function addStep(stepArray) {
                 knowMore.addEventListener('click', event => {
                     this.closePopup();
                     toggleCard(false);
-                    let markerRankNumber = markerArray.indexOf(mark);
-                    openShutter(shutter, markerRankNumber);
+                    let markerRankNumber;
+                    markerArray.forEach(item => {
+                        if(item['marker'] == mark) {
+                            markerRankNumber = markerArray.indexOf(item);
+                            console.log(markerRankNumber);
+                            console.log(item['position']);
+                        }
+                    })
+                    toggleShutter(shutter, markerRankNumber);
                 });
-                // setTimeout(() => {
-                //     document.querySelector("*:not([leaflet-popup])").addEventListener('click', function() {
-                //         console.log("lkhlkusd");
-                //         header.classList.remove("closed");
-                //         document.querySelector("*:not([leaflet-popup])").removeEventListener('click', function() {})
-                //     })
-                // }, 100)
             });
 
             let shutterContent = document.createElement("div");
             shutterContent.classList.add('shutter-content');
-            shutterContent.setAttribute("shuter_id_etape", `${step.ordre}`);
+            shutterContent.setAttribute("shutter_id_etape", `${step.identifiant}`);
 
             let newContent = `
                 <div class="step-address">
@@ -205,7 +233,7 @@ function addStep(stepArray) {
                     <div class="doc-list"><span class="doc-number"></span></div>
                 </div>
 
-                <div class="step-document" document_id_etape=${step.ordre}></div>
+                <div class="step-document" document_id_etape=${step.identifiant}></div>
                 <a href="" class="augmented-reality-link" target="_blank">
                     <div class="augmented-reality">
                         <img src="assets/images/photo-camera.svg" alt="">
@@ -213,11 +241,43 @@ function addStep(stepArray) {
                     </div>
                 </a>`;
 
+            shutterContent.innerHTML = newContent;
+            shutterPage.append(shutterContent);
+        
+            let obj = {
+                'marker': mark,
+                'position': step.ordre
+            }
+            
+            // console.log(obj);
+            markerArray.push(obj);
+    });
+
+    console.log(markerArray);
+    // console.log(markerArray.sort())
+
+    markerArray.forEach((i) => {
+        i['marker'].addEventListener('click', function() {
+            checkPopupState(i['marker']);
+            document.querySelector('.leaflet-popup-close-button').addEventListener('click', function() {
+                checkPopupState(i['marker']);
+            })
+        })
+    })
+}
+
+function addStepRoute(stepArrayReverse) {
+    // const tmpItems = stepArray;
+    // tmpItems.sort((a, b) => a.ordre - b.ordre);
+    // stepArray = tmpItems;
+    // console.log(stepArrayReverse);
+
+    stepArrayReverse.forEach(step => {
             let stepRoute = document.createElement("div");
             stepRoute.classList.add('step-route');
             let newStep = `
                 <div class="step-indicator"></div>
-                <div class="step-route-info" id_step="${step.ordre}">
+                <div class="step-route-info" id_step="${step.identifiant}">
                     <div class="step-photo">
                         <img src="${step.photo}" alt=""></img>
                     </div>
@@ -230,23 +290,9 @@ function addStep(stepArray) {
                     </div>
                 </div>
             `;
-
-            shutterContent.innerHTML = newContent;
-            shutterPage.append(shutterContent);
             stepRoute.innerHTML = newStep;
             route.append(stepRoute);
-        
-            markerArray.push(mark);
     });
-
-    markerArray.forEach((i) => {
-        i.addEventListener('click', function() {
-            checkPopupState(i);
-            document.querySelector('.leaflet-popup-close-button').addEventListener('click', function() {
-                checkPopupState(i);
-            })
-        })
-    })
 }
 
 function addDocuments(docArray, damesArray) {
@@ -544,11 +590,14 @@ function updateOpacity(value) {
 // ==============================================================
 
 
-function openShutter(element, rank) {
+function toggleShutter(element, rank, option) {
     let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
+    console.log(option);
     if(!element.classList.contains("open")) {
-        toggleControls(false);
-        toggleCard(false);
+        if(option == true || option == undefined) {
+            toggleControls(false);
+            toggleCard(false);
+        }
         document.querySelector('body').classList.remove("overflow");
         header.classList.add("closed");
         setTimeout(() => {
@@ -556,7 +605,7 @@ function openShutter(element, rank) {
         }, 350)
         
         for (let i = 0; i < stepDocumentChildrens.length; i++) {
-            if(stepDocumentChildrens[i].getAttribute("shuter_id_etape") == rank + 1) {
+            if(stepDocumentChildrens[i].getAttribute("shutter_id_etape") == rank + 1) {
                 routeSection.classList.add("hidden");
                 stepDocumentChildrens[i].classList.add("reveal");
                 
@@ -576,9 +625,11 @@ function openShutter(element, rank) {
         document.querySelector('body').classList.add("overflow");
         element.classList.remove("open");
         setTimeout(() => {
-            header.classList.remove("closed");
-            toggleCard(true);
-            toggleControls(true);
+            if(option == true || option == undefined) {
+                header.classList.remove("closed");
+                toggleCard(true);
+                toggleControls(true);
+            }
         }, 350)
         setTimeout(() => {
             for (let i = 0; i < stepDocumentChildrens.length; i++) {
@@ -602,7 +653,7 @@ function openShutter(element, rank) {
 // ==================================
 
 
-function onDocuemntClick(doc) {
+function onDocumentClick(doc) {
     if(doc.childNodes[3].classList.contains("hidden")) {
         doc.childNodes[3].classList.remove("hidden");
     } else if (doc.childNodes[3].classList.contains("video-type")) {
@@ -615,6 +666,56 @@ function onDocuemntClick(doc) {
         doc.childNodes[3].classList.add("hidden");
     }
 }
+
+
+// =========================================
+//
+// CLique sur une des étapes de l'itinéraire
+//
+// =========================================
+
+
+function onRouteStepClick(step) {
+    let isOffsetNull = false;
+    console.log(step);
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    let routeDiv = step;
+    checkFlag(routeDiv);
+}
+
+function checkFlag(step) {
+    // console.log(step)
+    if(!window.pageYOffset == 0) {
+       window.setTimeout(checkFlag(step), 300); /* this checks the flag every 100 milliseconds*/
+    } else {
+        toggleShutter(shutter, 0, false);
+
+        setTimeout(() => {
+            let target = step.getAttribute('id_step');
+            // console.log(target);
+    
+            markerArray.forEach(item => {
+                if(item['position'] == target) {
+                    // console.log(item['position']);
+                    item['marker'].fire('click');
+                }
+            })
+        }, 350)
+    }
+}
+
+// function scrollToTop(time) {
+//     return new Promise((resolve, reject) => {
+//         window.scrollTo({
+//             top: 0,
+//             behavior: 'smooth'
+//         });
+//         setTimeout(resolve, time)
+//     })
+// }
 
 
 // =================================
@@ -976,7 +1077,7 @@ const onCardClick = async (e) => {
 };
 
 function onPhotoDocClick(id) {
-    openShutter(shutter);
+    toggleShutter(shutter);
     toggleControls(true);
     toggleCard(true);
     console.log(id);
