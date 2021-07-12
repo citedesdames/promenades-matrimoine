@@ -1,14 +1,8 @@
 :root {
-    --font-fam: "Inter", sans-serif;
-    --orange: #FA7762;
-    --cambridge-blue: #A1C6B9;
+    --interFont-fam: 'Inter', sans-serif;
+    --merriweatherFont-family: 'Merriweather', serif;
     --color-font: #ffffff;
     --easing: 400ms cubic-bezier(.694, .048, .335, 1);
-    
-    --main-color: #DDD0CB;
-    --second-color: #FFF3F3;
-    --third-color: #A1C6B9;
-    --fourth-color: #FA7762;
 }
 
 @keyframes defilement-rtl {
@@ -153,7 +147,7 @@ main {
 
 .notif-text h3 {
     font-size: 1em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     line-height: 1.5;
     color: white;
@@ -162,7 +156,7 @@ main {
 
 .notif-text p {
     font-size: .75em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
     line-height: 1.5;
     color: white;
@@ -197,7 +191,7 @@ header {
     width: 100%;
     /* height: 88px; */
     padding: 12px 18px;
-    background: var(--second-color);
+    background: var(--secondColor);
     border-bottom-left-radius: 22px;
     border-bottom-right-radius: 22px;
     -webkit-box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
@@ -208,7 +202,7 @@ header {
 
 header h1 {
     font-size: 1.25em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 600;
     color: #3f3f3f;
     margin: 10px 0 0 0;
@@ -227,7 +221,7 @@ header h1 {
     height: 60px;
     outline: none;
     cursor: pointer;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     background-color: cornflowerblue;
     border: none;
     border-radius: 0.25rem;
@@ -254,6 +248,7 @@ header h1 {
 
 .controllers button {
     margin: 10px 0;
+    transform: translateX(-125%);
 }
 
 .locate-ctrl-btn,
@@ -290,7 +285,7 @@ header h1 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
 }
 
@@ -325,7 +320,7 @@ header h1 {
 }
 
 .layers-choice label {
-    /* font-family: 'Merriweather', serif; */
+    /* font-family: var(--merriweatherFont-family); */
     font-size: 1.125em;
 }
 
@@ -346,7 +341,7 @@ header h1 {
     justify-content: space-between;
     align-items: center;
     position: fixed;
-    top: 50%;
+    top: 52%;
     left: -140px;
     transform: rotate(-90deg);
     z-index: 400;
@@ -364,7 +359,7 @@ header h1 {
     width: 15%;
     text-align: center;
     font-size: 0.875em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     color: black;
     transform: rotate(90deg);
@@ -403,7 +398,7 @@ input[type=range]::-webkit-slider-thumb {
     width: 18px;
     border: none;
     border-radius: 25px;
-    background: var(--fourth-color);
+    background: var(--fourthColor);
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -7px;
@@ -432,7 +427,7 @@ input[type=range]::-moz-range-thumb {
     width: 18px;
     border: none;
     border-radius: 25px;
-    background: var(--fourth-color);
+    background: var(--fourthColor);
     cursor: pointer;
     -webkit-appearance: none;
     margin-top: -7px;
@@ -452,7 +447,6 @@ input[type=range]::-moz-range-thumb {
 }
 
 .dame-slider {
-    width: 2600px;
     padding: 35px 0;
     display: flex;
     justify-content: space-between;
@@ -527,7 +521,7 @@ input[type=range]::-moz-range-thumb {
 .dame-infos h3 {
     margin: 0;
     font-size: 0.875em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 500;
     color: #696969;
 }
@@ -535,7 +529,7 @@ input[type=range]::-moz-range-thumb {
 .dame-infos p {
     margin: 0;
     font-size: 0.75em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
     line-height: 1.25;
     color: #8D8D8D;
@@ -548,8 +542,8 @@ input[type=range]::-moz-range-thumb {
     text-decoration: none;
     color: #fff;
     font-weight: 300;
-    font-family: var(--font-fam);
-    background: var(--fourth-color);
+    font-family: var(--interFont-fam);
+    background: var(--fourthColor);
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
     display: flex;
@@ -661,7 +655,7 @@ input[type=range]::-moz-range-thumb {
     bottom: 12px;
     left: 12px;
     color: white;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
 }
 
 .popup-photo span a {
@@ -682,7 +676,7 @@ input[type=range]::-moz-range-thumb {
 
 .step-icon {
     width: 20%;
-    background-color: var(--third-color);
+    background-color: var(--thirdColor);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -704,7 +698,7 @@ input[type=range]::-moz-range-thumb {
 
 .step-name h3 {
     padding: 0 20px;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
 }
 
 .leaflet-container a.leaflet-popup-close-button {
@@ -715,7 +709,7 @@ input[type=range]::-moz-range-thumb {
     padding: 0;
     font-size: 1.75em;
     border-radius: 8px;
-    background-color: var(--third-color);
+    background-color: var(--thirdColor);
     color: white;
     display: flex;
     justify-content: center;
@@ -753,7 +747,7 @@ input[type=range]::-moz-range-thumb {
     padding: 16px 0px;
     text-align: center;
     margin-bottom: 20px;
-    background-color: var(--third-color);
+    background-color: var(--thirdColor);
     border-radius: 16px;
 
     -webkit-box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
@@ -775,7 +769,7 @@ input[type=range]::-moz-range-thumb {
     top: 0;
     left: 100%;
     z-index: 1000;
-    background: var(--main-color);
+    background: var(--mainColor);
     transition: left var(--easing);
 }
 
@@ -793,7 +787,7 @@ input[type=range]::-moz-range-thumb {
     align-items: center;
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
-    background: var(--main-color);
+    background: var(--mainColor);
     transition: left var(--easing);
 }
 
@@ -835,13 +829,13 @@ input[type=range]::-moz-range-thumb {
 .main-indicator h3 {
     display: inline-block;
     font-size: 1em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     line-height: 1.5;
     color: white;
     margin: 0;
     /* background: #C9C9C9; */
-    background: var(--third-color);
+    background: var(--thirdColor);
     border-radius: 8px;
     padding: 3px 12px;
     box-shadow: 0px 0px 0px 3px rgba(161, 198, 185, .25);
@@ -849,12 +843,12 @@ input[type=range]::-moz-range-thumb {
 
 .premoneade-indicator h3 {
     font-size: 1em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     line-height: 1.5;
     color: white;
     margin: 0;
-    background: var(--third-color);
+    background: var(--thirdColor);
     margin-left: 15px;
     border-radius: 8px;
     padding: 5px 12px;
@@ -884,7 +878,7 @@ input[type=range]::-moz-range-thumb {
 
 .address {
     font-size: 1em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     color: #838383;
     margin-left: 5px;
 }
@@ -902,7 +896,7 @@ input[type=range]::-moz-range-thumb {
 
 .shutter-content h2 {
     font-size: 1.625em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 500;
     line-height: 1.5;
     color: white;
@@ -924,7 +918,7 @@ input[type=range]::-moz-range-thumb {
 
 .doc-header h3 {
     font-size: 1.125em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     line-height: 1.5;
     color: white;
@@ -944,7 +938,7 @@ input[type=range]::-moz-range-thumb {
 
 .doc-number {
     font-size: 1em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 600;
     color: #589CF8;
     text-shadow: 0px 4px 32px rgba(0, 0, 0, .7);
@@ -952,7 +946,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .shutter-page {
-    margin: 20% 0 25% 0;
+    margin: 22% 0 25% 0;
     padding: 0 20px;
 }
 
@@ -976,7 +970,7 @@ input[type=range]::-moz-range-thumb {
 .informations {
     width: 100%;
     height: auto;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     color: #fff;
 }
 
@@ -997,7 +991,7 @@ input[type=range]::-moz-range-thumb {
     /* width: 100%; */
     min-width: 100%;
     min-height: 90px;
-    background: var(--second-color);
+    background: var(--secondColor);
     border-radius: 18px;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
     padding: 10px 14px;
@@ -1086,7 +1080,7 @@ input[type=range]::-moz-range-thumb {
 
 .doc-content p,
 .doc-content span {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     ;
     font-size: 0.75em;
     line-height: 1.5;
@@ -1102,7 +1096,7 @@ input[type=range]::-moz-range-thumb {
     text-transform: capitalize;
     font-weight: 600;
     color: #76ACF4;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
 }
 
 .main-information p:first-child {
@@ -1126,7 +1120,7 @@ input[type=range]::-moz-range-thumb {
 
 
 .source {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-size: 0.875em;
     text-align: right;
     line-height: 1.5;
@@ -1175,7 +1169,7 @@ input[type=range]::-moz-range-thumb {
     margin: 1rem auto;
     padding: 12px;
     border-radius: 6px;
-    background: var(--second-color);
+    background: var(--secondColor);
 }
 
 .preview {
@@ -1197,7 +1191,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .shadow a {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 500;
     font-size: 1em;
     color: #fff;
@@ -1205,7 +1199,7 @@ input[type=range]::-moz-range-thumb {
 
 .card-preview>div h3 {
     font-size: .875em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
     color: #76ACF4;
     margin: 0;
@@ -1217,7 +1211,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .card-preview>div span a {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     /* font-size: .75em; */
     color: #B7B6B6;
 }
@@ -1229,7 +1223,7 @@ input[type=range]::-moz-range-thumb {
     transform: translateX(-50%);
     color: #646464;
     text-decoration: none;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     ;
     font-size: 1.125em;
     font-weight: 400;
@@ -1239,7 +1233,7 @@ input[type=range]::-moz-range-thumb {
 
 .route-section h2 {
     font-size: 1.625em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 600;
     line-height: 1.5;
     color: #676767;
@@ -1248,7 +1242,7 @@ input[type=range]::-moz-range-thumb {
 
 .route-section p {
     font-size: 1.125em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
     line-height: 1.6;
     color: #676767;
@@ -1261,7 +1255,7 @@ input[type=range]::-moz-range-thumb {
 .route {
     width: 100%;
     height: auto;
-    background: var(--second-color);
+    background: var(--secondColor);
     margin-top: 1.5rem;
     padding: 25px 20px;
     border-top-left-radius: 25px;
@@ -1270,7 +1264,7 @@ input[type=range]::-moz-range-thumb {
 
 .route h3 {
     font-size: 1.375em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 600;
     line-height: 1.5;
     color: #676767;
@@ -1292,7 +1286,7 @@ input[type=range]::-moz-range-thumb {
     min-height: inherit;
     display: flex;
     cursor: pointer;
-    background: var(--main-color);
+    background: var(--mainColor);
     border-radius: 16px;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
     transition: height 1s ease;
@@ -1326,12 +1320,12 @@ input[type=range]::-moz-range-thumb {
     font-weight: 700;
     line-height: 1.25;
     color: #676767;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
 }
 
 .step-route-address>p,
 .step-route-address-2>p {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-size: .9375em;
     font-weight: 400;
     line-height: 1.5;
@@ -1340,9 +1334,9 @@ input[type=range]::-moz-range-thumb {
 }
 
 .distance {
-    background: var(--third-color);
+    background: var(--thirdColor);
     ;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     border-radius: 5px;
     max-height: 21px;
     font-size: 0.75em;
@@ -1378,7 +1372,7 @@ input[type=range]::-moz-range-thumb {
     left: 0;
     height: auto;
     padding: 0;
-    background: var(--third-color);
+    background: var(--thirdColor);
     border-top-left-radius: 22px;
     border-top-right-radius: 22px;
     transition: bottom var(--easing);
@@ -1403,7 +1397,7 @@ input[type=range]::-moz-range-thumb {
 .additional-infos>span,
 .main-information>span,
 .informations .card-preview>span {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     padding: 1px 5px;
     border-radius: 5px;
     background: #838383;
@@ -1416,7 +1410,7 @@ input[type=range]::-moz-range-thumb {
 .additional-infos>span,
 .main-information>span,
 .main-information>span a {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-size: 0.875em;
     color: #fff;
 }
@@ -1426,13 +1420,13 @@ input[type=range]::-moz-range-thumb {
 }
 
 .user-location h2 {
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     margin: 4px 0;
 }
 
 .user-location p {
     font-size: 1.125em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 400;
     line-height: 1.5;
     margin: 12px 0;
@@ -1445,7 +1439,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .card-header {
-    background: var(--second-color);
+    background: var(--secondColor);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -1481,7 +1475,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .card-header>p a {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-size: .825em;
     color: #747474;
 }
@@ -1490,7 +1484,7 @@ input[type=range]::-moz-range-thumb {
     position: absolute;
     bottom: -3rem;
     min-width: 270px;
-    background: var(--fourth-color);
+    background: var(--fourthColor);
     border-radius: 20px;
     padding: 15px 35px;
     -webkit-box-shadow: 0px 3px 20px rgba(0, 0, 0, 0.25);
@@ -1507,7 +1501,7 @@ input[type=range]::-moz-range-thumb {
     display: block;
     /* grid-area: 1 / 1 / 2 / 3; */
     font-size: 1.25em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 500;
     line-height: 1.5;
     color: #fff;
@@ -1517,13 +1511,13 @@ input[type=range]::-moz-range-thumb {
 .card-header>.header div {
     display: flex;
     justify-content: space-between;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
 }
 
 .card-header>.header span {
     font-size: .875em;
     color: #545454;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
 }
 
 .card-header>.header p {
@@ -1531,7 +1525,7 @@ input[type=range]::-moz-range-thumb {
     color: #fff;
     margin: 0;
     line-height: 1.5;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
 }
 
 .card-content {
@@ -1539,7 +1533,7 @@ input[type=range]::-moz-range-thumb {
 }
 
 .card-content p:first-child {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-size: 1em;
     line-height: 1.5;
     margin: 0 0 15px 0;
@@ -1553,7 +1547,7 @@ input[type=range]::-moz-range-thumb {
     padding: 10px;
     margin: 1rem 0;
     align-items: center;
-    background: var(--main-color);
+    background: var(--mainColor);
     border-radius: 10px;
     box-shadow: 0px 0px 16px rgba(0, 0, 0, .15);
     transition: height 1s ease;
@@ -1631,7 +1625,7 @@ input[type=range]::-moz-range-thumb {
 
 .welcome h1,
 .intro h1 {
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 700;
     line-height: 1.5;
     color: #4E4B4B;
@@ -1650,7 +1644,7 @@ input[type=range]::-moz-range-thumb {
 .welcome p,
 .intro p,
 .intro span {
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 300;
     line-height: 1.5;
     color: black;
@@ -1679,7 +1673,7 @@ input[type=range]::-moz-range-thumb {
 
 .home-btn a {
     font-size: 1.125em;
-    font-family: var(--font-fam);
+    font-family: var(--interFont-fam);
     font-weight: 600;
     text-decoration: none;
     padding: 20px 30px;
@@ -1695,7 +1689,7 @@ input[type=range]::-moz-range-thumb {
 
 .home-btn a:first-child {
     color: #fff;
-    background: var(--third-color);
+    background: var(--thirdColor);
 }
 
 .home-btn a:last-child {
@@ -1777,7 +1771,7 @@ input[type=range]::-moz-range-thumb {
 
 .promenade-info h2 {
     font-size: 1em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 700;
     line-height: 1.5;
     color: #fff;
@@ -1809,7 +1803,7 @@ input[type=range]::-moz-range-thumb {
 
 .footer span {
     font-size: .75em;
-    font-family: 'Merriweather', serif;
+    font-family: var(--merriweatherFont-family);
     font-weight: 300;
     color: #5e5e5e;
     background: rgba(221, 208, 203, .5);

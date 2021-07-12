@@ -108,7 +108,6 @@ layerBtn.addEventListener('click', function() {
     toggleLayers(this);
 });
 fullScreenBtn.addEventListener('click', event => {
-    // openFullscreen();
     toggleFullScreen(appUserInterface);
 });
 locateBtn.addEventListener('click', event => {

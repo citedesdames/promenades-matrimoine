@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <header>
+    <header class="closed">
         <div class="main-indicator">
             <h3>Promenade <span class="premonade-rank"></span></h3>
         </div>
@@ -59,14 +59,6 @@
                             checked>
                         <label for="noLayer">Aucun</label>
                     </div>
-                    <!-- <div>
-                        <input type="radio" id="Paris17" class="radio-layer" name="layer" value="Paris17">
-                        <label for="Paris17">Paris 17<sup>è</sup></label>
-                    </div>
-                    <div>
-                        <input type="radio" id="Paris19" class="radio-layer" name="layer" value="Paris19">
-                        <label for="Paris19">Paris 19<sup>è</sup></label>
-                    </div> -->
                 </div>
             </button>
     
@@ -78,25 +70,19 @@
                 <img src="assets/images/gps.svg" alt="Locaslise moi">
             </button>
         </div>
-
         <div class="range">
             <div class="range-value">1</div>
             <div class="field">
                 <input class="opacityCursor" id="opacityCursor" type="range" min="0" max="1" step="0.05" value="1" onchange="updateOpacity(this.value)">
             </div>
         </div>
-    
-        <button class="btn" id="btn">
-            <span><a href="augmented-reality/index.html">Photo</a></span>
-        </button>
-
 
         <div class="dame-slider-container">
             <div class="dame-slider"></div>
         </div>
     </main>
 
-    <section class="shutter">
+    <section class="shutter" id="shutter">
         <div class="notch">
             <!-- <div class="arrow"></div> -->
             <img class="arrow" src="assets/images/right-arrow-grey.svg" alt="Ouvrir le volet d'information">

@@ -95,11 +95,17 @@ function startApp(strollData) {
     document.querySelector("header h1").textContent = currentStroll[0].titre;
     document.querySelector(".route-section h2").textContent = currentStroll[0].titre;
     document.querySelector(".route-section p").textContent = currentStroll[0].description;
-    document.querySelectorAll(".premonade-rank").forEach(rank => {
-        currentStroll[0].id < 10 ? rank.textContent = '0' + currentStroll[0].id : rank.textContent = currentStroll[0].id;
-    })
+    document.querySelectorAll(".premonade-rank").forEach(rank => { rank.textContent = currentStroll[0]["id"].toString().padStart(2, '0') })
     
-    // console.log(fondsDeCarte)
+    for (const [key, value] of Object.entries(currentStroll[0].palette)) {
+        document.documentElement.style.setProperty(`--${key}`,`#${value}`);
+    }
+
+    if(header.classList.contains("closed")) {
+        console.log("passed")
+        header.classList.remove("closed");
+    }
+    toggleControls(true);
 }
 
 function fetchDataFromConfig() {
@@ -135,6 +141,23 @@ function fetchDataFromConfig() {
 
 
 function addDames(damesArray) {
+    let sliderWidth
+    if (damesArray.length == 1) {
+        sliderWidth = "100%";
+        document.querySelector('.dame-slider').style.justifyContent = "center";
+    } else if (damesArray.length == 2) {
+        sliderWidth = damesArray.length * 300 + 60;
+    } else if (damesArray.length == 3) {
+        sliderWidth = damesArray.length * 300 + 85;
+    } else if (damesArray.length <= 5) {
+        sliderWidth = damesArray.length * 300 + 125;
+    } else {
+        sliderWidth = damesArray.length * 300 + 200;
+    }
+
+    document.querySelector('.dame-slider').style.width = `${sliderWidth}px`;
+    console.log(sliderWidth);
+    
     damesArray.forEach(dame => {
         let cardContent = document.createElement("div");
         cardContent.classList.add('dame-card');
@@ -142,7 +165,6 @@ function addDames(damesArray) {
 
         let dameCard = `
             <div class="dame-portrait">
-                
                 <img src="${dame.portrait}" alt=""></img>
             </div>
             <div class="dame-infos">
@@ -675,48 +697,44 @@ function onDocumentClick(doc) {
 // =========================================
 
 
-function onRouteStepClick(step) {
+async function onRouteStepClick(step) {
     let isOffsetNull = false;
     console.log(step);
     window.scrollTo({
         top: 0,
         behavior: 'smooth'
     });
-    let routeDiv = step;
-    checkFlag(routeDiv);
-}
 
-function checkFlag(step) {
-    // console.log(step)
-    if(!window.pageYOffset == 0) {
-       window.setTimeout(checkFlag(step), 300); /* this checks the flag every 100 milliseconds*/
-    } else {
-        toggleShutter(shutter, 0, false);
-
-        setTimeout(() => {
-            let target = step.getAttribute('id_step');
-            // console.log(target);
-    
-            markerArray.forEach(item => {
-                if(item['position'] == target) {
-                    // console.log(item['position']);
-                    item['marker'].fire('click');
+    const waitUntil = (condition) => {
+        return new Promise((resolve) => {
+            let interval = setInterval(() => {
+                if (!condition()) {
+                    return
                 }
-            })
-        }, 350)
+    
+                clearInterval(interval)
+                resolve()
+            }, 100)
+        })
     }
+
+    await waitUntil(() => window.pageYOffset == 0)
+        .then(() => {
+            toggleShutter(shutter, 0, false);
+    
+            setTimeout(() => {
+                let target = step.getAttribute('id_step');
+                // console.log(target);
+        
+                markerArray.forEach(item => {
+                    if(item['position'] == target) {
+                        // console.log(item['position']);
+                        item['marker'].fire('click');
+                    }
+                })
+            }, 350)
+        })
 }
-
-// function scrollToTop(time) {
-//     return new Promise((resolve, reject) => {
-//         window.scrollTo({
-//             top: 0,
-//             behavior: 'smooth'
-//         });
-//         setTimeout(resolve, time)
-//     })
-// }
-
 
 // =================================
 //
