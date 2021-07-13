@@ -12,7 +12,6 @@
 const STORAGE_KEY = 'matrimoine:promenade';
 let PROMENADE = getPromenadeFromStorage();
 
-
 let sudOuest,
     nordEst,
     stepIcon,
@@ -69,7 +68,6 @@ let userIcon = L.icon({
     iconAnchor:   [12.5, 27], // point of the icon which will correspond to marker's location
     popupAnchor:  [0, -24] // point from which the popup should open relative to the iconAnchor
 });
-
 
 let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
     maxZoom: 19,
@@ -190,16 +188,13 @@ fetch('./config.json')
 //         startApp(data);
 //         console.log(etapeData)
 //     })
-    
 
 
 setTimeout(() => {
     console.log(etapeData);
     console.log(etapeDataReverse);
     
-    for (var i = 0; i < etapeData.length; ++i) { 
-        isCloseArray.push(false);
-    }
+    for (var i = 0; i < etapeData.length; ++i) { isCloseArray.push(false); }
 
     addStepRoute(etapeDataReverse);
     addStep(etapeData);

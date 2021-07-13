@@ -17,33 +17,78 @@ function startApp(strollData) {
     PROMENADE.push(strollData[0])
     savePromenadeToStorage(PROMENADE);
     let currentStroll = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    
-    sudOuest = L.latLng(currentStroll[0].bounds.sudOuest[0], currentStroll[0].bounds.sudOuest[1]);
-    nordEst = L.latLng(currentStroll[0].bounds.nordEst[0], currentStroll[0].bounds.nordEst[1]);
-    bounds = L.latLngBounds(sudOuest, nordEst);
-    mymap = new L.Map('mapid', {
-        center: bounds.getCenter(),
-        zoom: 12,
-        minZoom: 5,
-        zoomControl: false,
-        maxBounds: bounds,
-        maxBoundsViscosity: 0.5
-    });
-    stepIcon = L.icon({
-        iconUrl: PROMENADE[0].icone_marqueur,
-    
-        iconSize:     [32, 32], // size of the icon
-        iconAnchor:   [16, 38], // point of the icon which will correspond to marker's location
-        popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
-    });
-    CartoDB_Positron.addTo(mymap);
-    L.geoJSON(strollData[0].chemin_geojson, {
-        style: function(){
-            return { color: '#A1C6B9' }
-        }
-    }).addTo(mymap);
 
-    Papa.parse(currentStroll[0].data[0], {
+    try {
+        for (const [key, value] of Object.entries(currentStroll[0].palette)) {
+            document.documentElement.style.setProperty(`--${key}`,`#${value}`);
+        }
+    } catch(error) {
+        console.log(`Aucune palette de couleurs n'a été trouvée dans les données. ${error}`);
+        document.documentElement.style = `
+            --mainColor: #DDD0CB;
+            --secondColor: #FFF3F3;
+            --thirdColor: #A1C6B9;
+            --fourthColor: #FA7762;
+        `;
+    }
+    
+    try {
+        sudOuest = L.latLng(currentStroll[0].bounds.sudOuest[0], currentStroll[0].bounds.sudOuest[1]);
+        nordEst = L.latLng(currentStroll[0].bounds.nordEst[0], currentStroll[0].bounds.nordEst[1]);
+        bounds = L.latLngBounds(sudOuest, nordEst);
+        mymap = new L.Map('mapid', {
+            center: bounds.getCenter(),
+            zoom: 12,
+            minZoom: 5,
+            zoomControl: false,
+            maxBounds: bounds,
+            maxBoundsViscosity: 0.5
+        });
+    } catch(error) {
+        console.log(`Aucune limite n'a été trouvée dans les données. ${error}`);
+        mymap = new L.Map('mapid', {
+            zoom: 6,
+            minZoom: 5,
+            zoomControl: false,
+        });
+        mymap.setView([48, 2]);
+    }
+    
+    try {
+        // Icône présente dans les données du fichier JSON
+        stepIcon = L.icon({
+            iconUrl: PROMENADE[0].icone_marqueur,
+        
+            iconSize:     [32, 32], // size of the icon
+            iconAnchor:   [16, 38], // point of the icon which will correspond to marker's location
+            popupAnchor:  [0, -34] // point from which the popup should open relative to the iconAnchor
+        });
+    } catch(error) {
+        console.log(`Aucune icône n'a été trouvée dans les données. ${error}`);
+
+        // Icône par défaut lorsque aucune donnée n'a été trouvée
+        stepIcon = L.icon({
+            iconUrl: './assets/images/marker-leaflet.png',
+        
+            iconSize:     [25, 39.1], // size of the icon
+            iconAnchor:   [16, 38], // point of the icon which will correspond to marker's location
+            popupAnchor:  [-3, -30] // point from which the popup should open relative to the iconAnchor
+        });
+    }
+
+    CartoDB_Positron.addTo(mymap);
+
+    try {
+        L.geoJSON(strollData[0].chemin_geojson, {
+            style: function(){
+                return { color: '#A1C6B9' }
+            }
+        }).addTo(mymap);
+    } catch(error) {
+        console.log(`Aucune donnée géoJSON n'a été trouvée. ${error}`);
+    }
+
+    Papa.parse(currentStroll[0].data.etapes, {
         download: true,
         header: true,
         complete: function (results) {
@@ -52,7 +97,7 @@ function startApp(strollData) {
         }
     });
 
-    Papa.parse(currentStroll[0].data[0], {
+    Papa.parse(currentStroll[0].data.etapes, {
         download: true,
         header: true,
         complete: function (results) {
@@ -60,7 +105,7 @@ function startApp(strollData) {
         }
     });
             
-    Papa.parse(currentStroll[0].data[1], {
+    Papa.parse(currentStroll[0].data.documents, {
         download: true,
         header: true,
         complete: function (results) {
@@ -68,7 +113,7 @@ function startApp(strollData) {
         }
     });
     
-    Papa.parse(currentStroll[0].data[2], {
+    Papa.parse(currentStroll[0].data.dames, {
         download: true,
         header: true,
         complete: function (results) {
@@ -76,10 +121,7 @@ function startApp(strollData) {
         }
     });
 
-    // console.log(fondsDeCarte)
-    // console.log(currentStroll[0].fonds_de_carte)
-    
-    if(currentStroll[0].fonds_de_carte != 'undefined') {
+    try {
         let tmpObj = currentStroll[0].fonds_de_carte;
         for (const [key, value] of Object.entries(tmpObj)) {
             tmpObj[key] = L.tileLayer(value.src, {
@@ -87,24 +129,29 @@ function startApp(strollData) {
                 minZoom: 1
             });
         }
-        
-        // console.log(tmpObj);
         Object.assign(fondsDeCarte, tmpObj);
+    } catch(error) {
+        console.log(`Une erreur s'est produite lors de l'assignation des fonds de carte historique. ${error}`);
     }
 
-    document.querySelector("header h1").textContent = currentStroll[0].titre;
-    document.querySelector(".route-section h2").textContent = currentStroll[0].titre;
-    document.querySelector(".route-section p").textContent = currentStroll[0].description;
-    document.querySelectorAll(".premonade-rank").forEach(rank => { rank.textContent = currentStroll[0]["id"].toString().padStart(2, '0') })
-    
-    for (const [key, value] of Object.entries(currentStroll[0].palette)) {
-        document.documentElement.style.setProperty(`--${key}`,`#${value}`);
+
+    try {
+        document.querySelector("header h1").textContent = currentStroll[0].titre;
+        document.querySelector(".route-section h2").textContent = currentStroll[0].titre;
+        document.querySelector(".route-section p").textContent = currentStroll[0].description;
+        document.querySelectorAll(".premonade-rank").forEach(rank => { rank.textContent = currentStroll[0]["id"].toString().padStart(2, '0') })
+
+        if(header.classList.contains("closed")) {
+            header.classList.remove("closed");
+        }
+    } catch(error) {
+        console.log(`Données indicatives sur la promenades manquantes. ${error}`);
+        document.querySelector("header h1").textContent = "Titre de la promenade non défini";
+        document.querySelector(".route-section h2").textContent = "Titre de la promenade non défini";
+        document.querySelector(".route-section p").textContent = "Désolé, la description de la promenade est manquante ou momentanément indisponible. Nous vous invitons à patienter ou à recharger la page.";
+        document.querySelectorAll(".premonade-rank").forEach(rank => { rank.textContent = "non défini" })
     }
 
-    if(header.classList.contains("closed")) {
-        console.log("passed")
-        header.classList.remove("closed");
-    }
     toggleControls(true);
 }
 
@@ -141,44 +188,48 @@ function fetchDataFromConfig() {
 
 
 function addDames(damesArray) {
-    let sliderWidth
-    if (damesArray.length == 1) {
-        sliderWidth = "100%";
-        document.querySelector('.dame-slider').style.justifyContent = "center";
-    } else if (damesArray.length == 2) {
-        sliderWidth = damesArray.length * 300 + 60;
-    } else if (damesArray.length == 3) {
-        sliderWidth = damesArray.length * 300 + 85;
-    } else if (damesArray.length <= 5) {
-        sliderWidth = damesArray.length * 300 + 125;
-    } else {
-        sliderWidth = damesArray.length * 300 + 200;
-    }
-
-    document.querySelector('.dame-slider').style.width = `${sliderWidth}px`;
-    console.log(sliderWidth);
+    let sliderWidth;
+    try {
+        if (damesArray.length == 1) {
+            sliderWidth = "100%";
+            document.querySelector('.dame-slider').style.justifyContent = "center";
+        } else if (damesArray.length == 2) {
+            sliderWidth = damesArray.length * 300 + 60;
+        } else if (damesArray.length == 3) {
+            sliderWidth = damesArray.length * 300 + 85;
+        } else if (damesArray.length <= 5) {
+            sliderWidth = damesArray.length * 300 + 125;
+        } else {
+            sliderWidth = damesArray.length * 300 + 200;
+        }
     
-    damesArray.forEach(dame => {
-        let cardContent = document.createElement("div");
-        cardContent.classList.add('dame-card');
-        cardContent.setAttribute("identifiant", `${dame.identifiant}`);
-
-        let dameCard = `
-            <div class="dame-portrait">
-                <img src="${dame.portrait}" alt=""></img>
-            </div>
-            <div class="dame-infos">
-                <h3>${dame.prenom} ${dame.nom}</h3>
-                <p>${dame.biographie.slice(0,100)}...</p>
-            </div>
-            <button class="dame-btn">
-                    <span>En savoir plus</span>
-            </button>`
-
-        cardContent.innerHTML = dameCard;
-        document.querySelector('.dame-slider').append(cardContent);
-    })
-    toggleCard(true);
+        document.querySelector('.dame-slider').style.width = `${sliderWidth}px`;
+        console.log(sliderWidth);
+        
+        damesArray.forEach(dame => {
+            const cardContent = document.createElement("div");
+            cardContent.classList.add('dame-card');
+            cardContent.setAttribute("identifiant", `${dame.identifiant}`);
+    
+            let dameCard = `
+                <div class="dame-portrait">
+                    <img src="${dame.portrait}" alt=""></img>
+                </div>
+                <div class="dame-infos">
+                    <h3>${dame.prenom} ${dame.nom}</h3>
+                    <p>${dame.biographie.slice(0,100)}...</p>
+                </div>
+                <button class="dame-btn">
+                        <span>En savoir plus</span>
+                </button>`
+    
+            cardContent.innerHTML = dameCard;
+            document.querySelector('.dame-slider').append(cardContent);
+        })
+        toggleCard(true);
+    } catch(error) {
+        console.log(`Une erreur s'est produute lors de la création des cartes sur les Dames. ${error}`);
+    }
 }
 
 
@@ -186,264 +237,272 @@ function addStep(stepArray) {
     // console.log(stepArray)
     markerArray = [];
 
-    stepArray.forEach(step => {
-        let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
-            .bindPopup(`
-                <div class="popup-photo">
-                    <img src="${step.photo}" alt="">
-                    <span><a href="${step.sourcePhoto}" target="_blank">Aller à la source</a><span>
-                </div>
-                <div class="step">
-                    <div class="popup-header">
-                        <div class="step-icon">
-                            <img src="./assets/images/maps-and-flags.svg" alt="">
-                        </div>
-                        <div class="step-name">
-                            <h3>${step.nom}</h3>
-                        </div>
+    try {
+        stepArray.forEach(step => {
+            let mark = L.marker([`${step.latitude}`, `${step.longitude}`], {icon: stepIcon}).addTo(mymap)
+                .bindPopup(`
+                    <div class="popup-photo">
+                        <img src="${step.photo}" alt="">
+                        <span><a href="${step.sourcePhoto}" target="_blank">Aller à la source</a><span>
                     </div>
-                    
-                    <div class="popup-description">
-                        <p>${step.description}</p>
-                        <div class="author">${step.auteur}</div>
-                    </div>
-
-                    <button class="know-more" ordre="${step.ordre}">En savoir plus<img src="./assets/images/exit-top-right.svg" alt=""></img></button>
-                </div>
-            `, {closeOnClick: false}).on("click", function(coord) {
-                let GPSMark;
-                if(coord.latlng) {
-                    GPSMark = L.latLng(coord.latlng.lat + .0046, coord.latlng.lng);
-                } else {
-                    GPSMark = L.latLng(coord.target._latlng.lat + .0046, coord.target._latlng.lng);
-                }
+                    <div class="step">
+                        <div class="popup-header">
+                            <div class="step-icon">
+                                <img src="./assets/images/maps-and-flags.svg" alt="">
+                            </div>
+                            <div class="step-name">
+                                <h3>${step.nom}</h3>
+                            </div>
+                        </div>
+                        
+                        <div class="popup-description">
+                            <p>${step.description}</p>
+                            <div class="author">${step.auteur}</div>
+                        </div>
     
-                mymap.flyTo(GPSMark, 16, {
-                    animate: true,
-                    duration: 0.5
-                });
-            
-                let knowMore = document.querySelector(".know-more");
-                knowMore.addEventListener('click', event => {
-                    this.closePopup();
-                    toggleCard(false);
-                    let markerRankNumber;
-                    markerArray.forEach(item => {
-                        if(item['marker'] == mark) {
-                            markerRankNumber = markerArray.indexOf(item);
-                            console.log(markerRankNumber);
-                            console.log(item['position']);
-                        }
-                    })
-                    toggleShutter(shutter, markerRankNumber);
-                });
-            });
-
-            let shutterContent = document.createElement("div");
-            shutterContent.classList.add('shutter-content');
-            shutterContent.setAttribute("shutter_id_etape", `${step.identifiant}`);
-
-            let newContent = `
-                <div class="step-address">
-                    <img src="assets/images/gps.svg" alt="">
-                    <div class="address">${step.adresse}</div>
-                </div>
-                <h2>${step.ordre == 1 ? `${step.ordre}<sup>ère</sup>` : `${step.ordre}<sup>e</sup>`} étape : <span>${step.nom}</span>.</h2>
-
-                <div class="doc-header">
-                    <h3>Documents sur ce lieu :</h3>
-                    <div class="doc-list"><span class="doc-number"></span></div>
-                </div>
-
-                <div class="step-document" document_id_etape=${step.identifiant}></div>
-                <a href="" class="augmented-reality-link" target="_blank">
-                    <div class="augmented-reality">
-                        <img src="assets/images/photo-camera.svg" alt="">
-                        <span>Sortez l'appareil photo !</span>
+                        <button class="know-more" ordre="${step.ordre}">En savoir plus<img src="./assets/images/exit-top-right.svg" alt=""></img></button>
                     </div>
-                </a>`;
-
-            shutterContent.innerHTML = newContent;
-            shutterPage.append(shutterContent);
+                `, {closeOnClick: false}).on("click", function(coord) {
+                    let GPSMark;
+                    if(coord.latlng) {
+                        GPSMark = L.latLng(coord.latlng.lat + .0046, coord.latlng.lng);
+                    } else {
+                        GPSMark = L.latLng(coord.target._latlng.lat + .0046, coord.target._latlng.lng);
+                    }
         
-            let obj = {
-                'marker': mark,
-                'position': step.ordre
-            }
+                    mymap.flyTo(GPSMark, 16, {
+                        animate: true,
+                        duration: 0.5
+                    });
+                
+                    let knowMore = document.querySelector(".know-more");
+                    knowMore.addEventListener('click', event => {
+                        this.closePopup();
+                        toggleCard(false);
+                        let markerRankNumber;
+                        markerArray.forEach(item => {
+                            if(item['marker'] == mark) {
+                                markerRankNumber = markerArray.indexOf(item) + 1;
+                                console.log(markerRankNumber);
+                                console.log(item['identifiant']);
+                            }
+                        })
+                        toggleShutter(shutter, markerRankNumber);
+                    });
+                });
+    
+                const shutterContent = document.createElement("div");
+                shutterContent.classList.add('shutter-content');
+                shutterContent.setAttribute("shutter_id_etape", `${step.identifiant}`);
+    
+                let newContent = `
+                    <div class="step-address">
+                        <img src="assets/images/gps.svg" alt="">
+                        <div class="address">${step.adresse}</div>
+                    </div>
+                    <h2>${step.ordre == 1 ? `${step.ordre}<sup>ère</sup>` : `${step.ordre}<sup>e</sup>`} étape : <span>${step.nom}</span>.</h2>
+    
+                    <div class="doc-header">
+                        <h3>Documents sur ce lieu :</h3>
+                        <div class="doc-list"><span class="doc-number"></span></div>
+                    </div>
+    
+                    <div class="step-document" document_id_etape=${step.identifiant}></div>
+                    <a href="" class="augmented-reality-link" target="_blank">
+                        <div class="augmented-reality">
+                            <img src="assets/images/photo-camera.svg" alt="">
+                            <span>Sortez l'appareil photo !</span>
+                        </div>
+                    </a>`;
+    
+                shutterContent.innerHTML = newContent;
+                shutterPage.append(shutterContent);
             
-            // console.log(obj);
-            markerArray.push(obj);
-    });
-
-    console.log(markerArray);
-    // console.log(markerArray.sort())
-
-    markerArray.forEach((i) => {
-        i['marker'].addEventListener('click', function() {
-            checkPopupState(i['marker']);
-            document.querySelector('.leaflet-popup-close-button').addEventListener('click', function() {
+                let obj = {
+                    'marker': mark,
+                    'identifiant': step.identifiant
+                }
+                
+                markerArray.push(obj);
+        });
+    
+        console.log(markerArray);
+        // console.log(markerArray.sort())
+    
+        markerArray.forEach((i) => {
+            i['marker'].addEventListener('click', function() {
                 checkPopupState(i['marker']);
+                document.querySelector('.leaflet-popup-close-button').addEventListener('click', function() {
+                    checkPopupState(i['marker']);
+                })
             })
         })
-    })
+    } catch(error) {
+        console.log(`Une erreur s'est produite lors de la création des étapes de la promenade. ${error}`);
+    }
+
 }
 
 function addStepRoute(stepArrayReverse) {
-    // const tmpItems = stepArray;
-    // tmpItems.sort((a, b) => a.ordre - b.ordre);
-    // stepArray = tmpItems;
-    // console.log(stepArrayReverse);
-
-    stepArrayReverse.forEach(step => {
-            let stepRoute = document.createElement("div");
-            stepRoute.classList.add('step-route');
-            let newStep = `
-                <div class="step-indicator"></div>
-                <div class="step-route-info" id_step="${step.identifiant}">
-                    <div class="step-photo">
-                        <img src="${step.photo}" alt=""></img>
-                    </div>
-                    <div class="step-route-address">
-                        <div>
-                            <span class="location">${step.nom}</span>
-                            <span class="distance"></span>
+    try {
+        stepArrayReverse.forEach(step => {
+                const stepRoute = document.createElement("div");
+                stepRoute.classList.add('step-route');
+                let newStep = `
+                    <div class="step-indicator"></div>
+                    <div class="step-route-info" id_step="${step.identifiant}">
+                        <div class="step-photo">
+                            <img src="${step.photo}" alt=""></img>
                         </div>
-                        <p>${step.adresse}</p>
+                        <div class="step-route-address">
+                            <div>
+                                <span class="location">${step.nom}</span>
+                                <span class="distance"></span>
+                            </div>
+                            <p>${step.adresse}</p>
+                        </div>
                     </div>
-                </div>
-            `;
-            stepRoute.innerHTML = newStep;
-            route.append(stepRoute);
-    });
+                `;
+                stepRoute.innerHTML = newStep;
+                route.append(stepRoute);
+        });
+    } catch(error) {
+        console.log(`Une erreur s'est produite lors de la création de l'itinéraire. ${error}`);
+    }
 }
 
 function addDocuments(docArray, damesArray) {
-    let shutterChildrens = document.querySelectorAll(".step-document");
-    let docContent = docArray.forEach(doc => {
-        let a = damesArray.map(e => { 
-            return e.identifiant; 
-        }).indexOf(`${doc.id_dame}`);
+    const shutterChildrens = document.querySelectorAll(".step-document");
 
-        for (let i = 0; i < shutterChildrens.length; i++) {
-
-            if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
-                let docContent = document.createElement("div");
-                docContent.classList.add('document');
-                docContent.setAttribute("id_etape", `${doc.id_etape}`);
-        
-                let cardContent = `
-                    <div>
-                        <div class="dot"></div>
-                        <div class="photo-doc" identifiant="${damesArray[a].identifiant}">
-                            <img src="${damesArray[a].portrait}" alt="">
-                        </div>
-                        <div class="doc-content">
-                            <span>${doc.type}</span>
-                            <p>${doc.titre}</p>
-                        </div>
-                    </div>`;
-
-                let mainContent;
-
-                if(`${doc.type}` == 'citation') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="main-information">
-                            <p class="desc">${doc.texte}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'extrait') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="main-information">
-                            <p class="desc">${doc.description}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("dailymotion")){
-                    mainContent = `
-                    <article class="informations video-type">
-                        <div class="touch-bar"></div>
-                        <div class="embed-vid">
-                            <iframe frameborder="0" width="640" height="360" 
-                                src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
-                                allow="autoplay; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="additional-infos">
-                            <div class="marquee-rtl">
-                                <div><span>${doc.licence}</span></div>
+    try {
+        let docContent = docArray.forEach(doc => {
+            let a = damesArray.map(e => { 
+                return e.identifiant; 
+            }).indexOf(`${doc.id_dame}`);
+    
+            for (let i = 0; i < shutterChildrens.length; i++) {
+    
+                if(shutterChildrens[i].getAttribute("document_id_etape") == `${doc.id_etape}`) {
+                    let docContent = document.createElement("div");
+                    docContent.classList.add('document');
+                    docContent.setAttribute("id_etape", `${doc.id_etape}`);
+            
+                    let cardContent = `
+                        <div>
+                            <div class="dot"></div>
+                            <div class="photo-doc" identifiant="${damesArray[a].identifiant}">
+                                <img src="${damesArray[a].portrait}" alt="">
                             </div>
-                            <p class="desc">${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
-                    mainContent = `
-                    <article class="informations video-type">
-                        <div class="touch-bar"></div>
-                        <div class="embed-vid">
-                            <iframe frameborder="0" width="640" height="360" 
-                                src="https://www.youtube.com/embed/${youtube_parser(doc.URL)}" 
-                                allow="autoplay; fullscreen">
-                            </iframe>
-                        </div>
-                        <div class="additional-infos">
-                            <div class="marquee-rtl">
-                                <div><span>${doc.licence}</span></div>
+                            <div class="doc-content">
+                                <span>${doc.type}</span>
+                                <p>${doc.titre}</p>
                             </div>
-                            <p class="desc">${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                        </div>
-                    </article>`;
-                } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
-                    mainContent = `
-                    <article class="informations hidden">
-                        <div class="card-preview">
-                            <div>
-                                <h3>${doc.description}</h3>
-                                <span class="source">${addHref(doc.source)}</span>
+                        </div>`;
+    
+                    let mainContent;
+    
+                    if(`${doc.type}` == 'citation') {
+                        mainContent = `
+                        <article class="informations hidden">
+                            <div class="main-information">
+                                <p class="desc">${doc.texte}</p>
+                                <p class="source">${addHref(doc.source)}</p>
+                                <span>${doc.licence}</span>
                             </div>
-                            <div class="preview">
-                                <div class="shadow">
-                                    <a href="${doc.URL}" target="_blank">Clickez pour poursuivre vers le site</a>
-                                </div>
-                                <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
+                        </article>`;
+                    } else if(`${doc.type}` == 'extrait') {
+                        mainContent = `
+                        <article class="informations hidden">
+                            <div class="main-information">
+                                <p class="desc">${doc.description}</p>
+                                <p class="source">${addHref(doc.source)}</p>
+                                <span>${doc.licence}</span>
+                            </div>
+                        </article>`;
+                    } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("dailymotion")){
+                        mainContent = `
+                        <article class="informations video-type">
+                            <div class="touch-bar"></div>
+                            <div class="embed-vid">
+                                <iframe frameborder="0" width="640" height="360" 
+                                    src="https://www.dailymotion.com/embed/video/${doc.URL.slice(doc.URL.length - 7, doc.URL.length)}" 
+                                    allow="autoplay; fullscreen">
                                 </iframe>
                             </div>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else if(`${doc.type}` == 'image') {
-                    mainContent = `
-                    <article class="informations hidden">
-                    <div class="main-information">
-                        <img src="${doc.URL}"></img>
-                            <p class="desc">${doc.description}</p>
-                            <p class="source">${addHref(doc.source)}</p>
-                            <span>${doc.licence}</span>
-                        </div>
-                    </article>`;
-                } else {
-                    mainContent = `
-                    <article class="informations hidden">
+                            <div class="additional-infos">
+                                <div class="marquee-rtl">
+                                    <div><span>${doc.licence}</span></div>
+                                </div>
+                                <p class="desc">${doc.description}</p>
+                                <p class="source">${doc.source}</p>
+                            </div>
+                        </article>`;
+                    } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
+                        mainContent = `
+                        <article class="informations video-type">
+                            <div class="touch-bar"></div>
+                            <div class="embed-vid">
+                                <iframe frameborder="0" width="640" height="360" 
+                                    src="https://www.youtube.com/embed/${youtube_parser(doc.URL)}" 
+                                    allow="autoplay; fullscreen">
+                                </iframe>
+                            </div>
+                            <div class="additional-infos">
+                                <div class="marquee-rtl">
+                                    <div><span>${doc.licence}</span></div>
+                                </div>
+                                <p class="desc">${doc.description}</p>
+                                <p class="source">${doc.source}</p>
+                            </div>
+                        </article>`;
+                    } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
+                        mainContent = `
+                        <article class="informations hidden">
+                            <div class="card-preview">
+                                <div>
+                                    <h3>${doc.description}</h3>
+                                    <span class="source">${addHref(doc.source)}</span>
+                                </div>
+                                <div class="preview">
+                                    <div class="shadow">
+                                        <a href="${doc.URL}" target="_blank">Clickez pour poursuivre vers le site</a>
+                                    </div>
+                                    <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
+                                    </iframe>
+                                </div>
+                                <span>${doc.licence}</span>
+                            </div>
+                        </article>`;
+                    } else if(`${doc.type}` == 'image') {
+                        mainContent = `
+                        <article class="informations hidden">
                         <div class="main-information">
-                            <p class="desc">${doc.description}</p>
-                            <p class="source">${doc.source}</p>
-                            <span>${addHref(doc.licence)}</span>
-                        </div>
-                    </article>`;
+                            <img src="${doc.URL}"></img>
+                                <p class="desc">${doc.description}</p>
+                                <p class="source">${addHref(doc.source)}</p>
+                                <span>${doc.licence}</span>
+                            </div>
+                        </article>`;
+                    } else {
+                        mainContent = `
+                        <article class="informations hidden">
+                            <div class="main-information">
+                                <p class="desc">${doc.description}</p>
+                                <p class="source">${doc.source}</p>
+                                <span>${addHref(doc.licence)}</span>
+                            </div>
+                        </article>`;
+                    }
+    
+                    let newContent = cardContent + mainContent;
+                    docContent.innerHTML = newContent;
+                    shutterChildrens[i].append(docContent);
                 }
-
-                let newContent = cardContent + mainContent;
-                docContent.innerHTML = newContent;
-                shutterChildrens[i].append(docContent);
             }
-        }
-    });
+        });
+    } catch(error) {
+        console.log(`Une erreur s'est produite lors de l'importation des documents. ${error}`);
+    }
 }
 
 
@@ -455,7 +514,7 @@ function addDocuments(docArray, damesArray) {
 
 
 function onLocationFound(e) {
-    console.log(e)
+    console.log(e);
     if(radius && positionUser && accuracy) {
         radius = 0;
         mymap.removeLayer(positionUser);
@@ -471,8 +530,6 @@ function onLocationFound(e) {
 
     let distanceArray = [],
         allDstIndicator = document.querySelectorAll('.distance');
-    
-    // console.log(allDstIndicator);
 
     radius = e.accuracy;
     accuracy = L.circle(e.latlng, radius, {
@@ -535,16 +592,12 @@ function locateUser() {
 }
 
 function verifyPosition(step) {
-    // console.log(isCloseArray);
     let pst = etapeData.indexOf(step);
-    // console.log(isCloseArray[pst])
-    let allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
-    let stepAddressInNotif = document.querySelector('.position');
+    const allAugRealLinks = document.querySelectorAll('.augmented-reality-link');
+    const stepAddressInNotif = document.querySelector('.position');
+    const distanceMin = 30;
 
-    let test1 = 30;
-    let test2 = 20000;
-
-    if(distance < test1 && isCloseArray[pst] == false) {
+    if(distance < distanceMin && isCloseArray[pst] == false) {
         console.log("condition 1");
 
         console.log(step.nom)
@@ -571,12 +624,12 @@ function verifyPosition(step) {
             notif.style.top = "-24%";
         }, 5000)
         isCloseArray[pst] = true;
-    } else if(distance < test1 && isCloseArray[pst] == true) {
+    } else if(distance < distanceMin && isCloseArray[pst] == true) {
         // console.log("condition 2");
 
         isCloseArray[pst] = true;
         // console.log('Already close to step no need to notif the user');
-    } else if(distance > test1) {
+    } else if(distance > distanceMin) {
         // console.log("condition 3");
 
         isCloseArray[pst] = false;
@@ -599,7 +652,6 @@ function verifyPosition(step) {
 
 function updateOpacity(value) {
     for (const property in fondsDeCarte) {
-        // console.log(value);
         fondsDeCarte[property].setOpacity(value)
         document.querySelector('.range-value').innerHTML = value;
     }
@@ -607,13 +659,13 @@ function updateOpacity(value) {
 
 // ==============================================================
 //
-// Ouverture du volet latéral droit contenant étapes ou documnets
+// Ouverture du volet latéral droit contenant étapes ou documents
 //
 // ==============================================================
 
 
 function toggleShutter(element, rank, option) {
-    let stepDocumentChildrens = document.querySelectorAll(".shutter-content");
+    const stepDocumentChildrens = document.querySelectorAll(".shutter-content");
     console.log(option);
     if(!element.classList.contains("open")) {
         if(option == true || option == undefined) {
@@ -627,7 +679,7 @@ function toggleShutter(element, rank, option) {
         }, 350)
         
         for (let i = 0; i < stepDocumentChildrens.length; i++) {
-            if(stepDocumentChildrens[i].getAttribute("shutter_id_etape") == rank + 1) {
+            if(stepDocumentChildrens[i].getAttribute("shutter_id_etape") == rank) {
                 routeSection.classList.add("hidden");
                 stepDocumentChildrens[i].classList.add("reveal");
                 
@@ -668,11 +720,11 @@ function toggleShutter(element, rank, option) {
 }
 
 
-// ==================================
+// ===================================
 //
-// Déploiement des documents au click
+// Déploiement des documents au clique
 //
-// ==================================
+// ===================================
 
 
 function onDocumentClick(doc) {
@@ -698,7 +750,6 @@ function onDocumentClick(doc) {
 
 
 async function onRouteStepClick(step) {
-    let isOffsetNull = false;
     console.log(step);
     window.scrollTo({
         top: 0,
@@ -724,11 +775,9 @@ async function onRouteStepClick(step) {
     
             setTimeout(() => {
                 let target = step.getAttribute('id_step');
-                // console.log(target);
         
                 markerArray.forEach(item => {
-                    if(item['position'] == target) {
-                        // console.log(item['position']);
+                    if(item['identifiant'] == target) {
                         item['marker'].fire('click');
                     }
                 })
@@ -782,8 +831,8 @@ function toggleFullScreen(element) {
 }
 
 function youtube_parser(url){
-    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
-    var match = url.match(regExp);
+    let regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    let match = url.match(regExp);
     return (match&&match[7].length==11)? match[7] : false;
 }
 
@@ -899,7 +948,6 @@ function toggleControls(state) {
 }
 
 function toggleLayers(layers) {
-    // console.log(layers.childNodes)
     if(!layers.childNodes[3].classList.contains("hidden")) {
         document.querySelector('.layers-choice').classList.add("hidden");
         layers.childNodes[1].classList.remove("hidden");
@@ -1007,31 +1055,29 @@ const onCardClick = async (e) => {
     console.log(tmpStep);
 
 
-    // clone the card
+    // Clone la carte
     const cardClone = card.cloneNode();
     cardClone.classList.remove("card-dame");
     cardClone.classList.add("card-extend");
       
-    // get the location of the card in the view
+    // Récupère la position
     const {top, left, width, height} = card.getBoundingClientRect();
 
-    // position the clone on top of the original
+    // Positionne le clone au dessus de la carte originale
     cardClone.style.position = 'fixed';
     cardClone.style.top = top + 'px';
     cardClone.style.left = left + 'px';
     cardClone.style.width = width + 'px';
     cardClone.style.height = height + 'px';
 
-    // hide the original card with opacity
+    // Cache l'originale en applicquant une opacité nulle
     card.style.opacity = '0';
-    // add card to the same container
+    // Ajoute la carte au même conteneur
     card.parentNode.appendChild(cardClone);
 
-    // create a close button to handle the undo
-    // const closeButton = document.createElement('button');
+    // Création du bouton pour fermer la carte
     const closeButton = document.createElement("img");
     closeButton.setAttribute("src", "./assets/images/close.svg");
-    // position the close button top corner
     closeButton.style = `
         position: fixed;
         z-index: 10000;
@@ -1044,24 +1090,22 @@ const onCardClick = async (e) => {
         background-color: #C9C9C9;
     `;
 
-    // attach click event to the close button
+    // Lors de clique sur le bouton de fermeture
     closeButton.addEventListener('click', async () => {
-        // remove the button on close
         closeButton.remove();
 
-        // remove the display style so the original content is displayed right
         cardClone.style.removeProperty('display');
         cardClone.style.removeProperty('padding');
 
-        // show original card content
+        // Affiche le contenu original de la carte
         [...cardClone.children].forEach(child => child.style.removeProperty('display'));
         fadeContent(cardClone, '0');
 
-        // shrink the card back to the original position and size
+        // rétracte la carte pour qu'elle retrouve sa position et sa taille d'origine
         await toggleExpansion(cardClone, {top: `${top}px`, left: `${left}px`, width: `${width}px`, height: `${height}px`}, 300)
-        // show the original card again
+        // Affiche la carte original
         card.style.removeProperty('opacity');
-        // remove the clone card
+        // Retire le clone
         cardClone.remove();
 
         toggleControls(true);
@@ -1070,18 +1114,16 @@ const onCardClick = async (e) => {
     });
 
 
-    // expand the clone card
+    // Extension du clone
     await toggleExpansion(cardClone, {top: 0, left: 0, width: '100vw', height: '100vh'});
     const content = getCardContent(damesData, documentData, etapeData, id, cardClone)
 
-    // set the display block so the content will follow the normal flow in case the original card is not display block
     cardClone.style.display = 'block';
     cardClone.style.padding = '0';
       
-    // append the close button after the expansion is done
+    // Insertion du bouton de fermeture après l'extension du clone
     cardClone.appendChild(closeButton);
     cardClone.insertAdjacentHTML('afterbegin', content);
-    // console.log(cardClone.childNodes[3]);
     console.log(cardClone.childNodes[3].querySelector('section'));
     tmpStep.forEach(function(item, i){
         setTimeout(() => {
@@ -1181,7 +1223,7 @@ function addFdC(layers) {
 
         let layer = `
                 <input type="radio" id="${property}" class="radio-layer" name="layer" value="${property}">
-                <label for="${property}">${property}</label>
+                <label for="${property}">${PROMENADE[0].fonds_de_carte[property].name}</label>
         `;
 
         layerContainer.innerHTML = layer;
