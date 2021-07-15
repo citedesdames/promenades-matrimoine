@@ -167,6 +167,7 @@ if(typeof url[1] == "undefined") {
 
 fetch('./config.json')
   .then((response) => {
+    //console.log(response)
     return response.json()
   })
   .then((data) => {
@@ -175,7 +176,11 @@ fetch('./config.json')
         header: true,
         complete: function (results) {
             console.log(PROMENADE[0]);
+            //console.log("results");
+            //console.log(results);
             strollData = convertToJson(results.data);
+            //console.log("strollData");
+            //console.log(strollData);
             startApp(strollData);
         }
     });

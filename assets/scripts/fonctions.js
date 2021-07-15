@@ -87,6 +87,7 @@ function startApp(strollData) {
     } catch(error) {
         console.log(`Aucune donnée géoJSON n'a été trouvée. ${error}`);
     }
+    console.log(currentStroll[0])
 
     Papa.parse(currentStroll[0].data.etapes, {
         download: true,
@@ -1240,7 +1241,7 @@ function addFdC(layers) {
 
 
 function setPromenades(dataProm) {
-    // console.log(dataProm);
+    console.log(dataProm);
     for (const promenade in dataProm) {
         // console.log(dataProm[promenade]);
         let cardContent = document.createElement("div");
