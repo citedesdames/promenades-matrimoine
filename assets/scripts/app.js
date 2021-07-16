@@ -9,7 +9,8 @@
 //
 // =============================================================
 
-const STORAGE_KEY = 'matrimoine:promenade';
+const STORAGE_STROLL_KEY = 'matrimoine:promenade';
+const STORAGE_DATA_KEY = 'matrimoine:data';
 let PROMENADE = getPromenadeFromStorage();
 
 let sudOuest,
@@ -42,7 +43,8 @@ let etapeData,
     documentData,
     damesData,
     strollData,
-    markerArray;
+    markerArray,
+    globalData = {};
 
 let fondsDeCarte = {};
 let enabledSettings = [];
@@ -175,12 +177,7 @@ fetch('./config.json')
         download: true,
         header: true,
         complete: function (results) {
-            console.log(PROMENADE[0]);
-            //console.log("results");
-            //console.log(results);
             strollData = convertToJson(results.data);
-            //console.log("strollData");
-            //console.log(strollData);
             startApp(strollData);
         }
     });
@@ -196,15 +193,30 @@ fetch('./config.json')
 
 
 setTimeout(() => {
-    console.log(etapeData);
-    console.log(etapeDataReverse);
-    
-    for (var i = 0; i < etapeData.length; ++i) { isCloseArray.push(false); }
+    console.log(globalData);
+    saveDataToStorage(globalData)
+    const allData = JSON.parse(localStorage.getItem(STORAGE_DATA_KEY));
+    console.log(allData);
 
-    addStepRoute(etapeDataReverse);
-    addStep(etapeData);
-    addDocuments(documentData, damesData);
-    addDames(damesData);
+    try {
+        for (var i = 0; i < etapeData.length; ++i) { isCloseArray.push(false); }
+    } catch(e) {
+        console.log(`Une erreur s'est produite lors de l'incrémentation du tableau de proximité. ${e}`);
+        for (var i = 0; i < allData.etapes.length; ++i) { isCloseArray.push(false); }
+    }
+
+    try {
+        addStepRoute(etapeDataReverse);
+        addStep(etapeData);
+        addDocuments(documentData, damesData);
+        addDames(damesData);
+    } catch(e) {
+        console.log(`${e}. Utilisation des données localement stockées.`)
+        addStepRoute(allData.etapesReverse);
+        addStep(allData.etapes);
+        addDocuments(allData.documents, allData.dames);
+        addDames(allData.dames);
+    }
     handlePermission();
     addFdC(fondsDeCarte);
 

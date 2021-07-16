@@ -1010,16 +1010,12 @@ input[type=range]::-moz-range-thumb {
 .step-indicator::after,
 .step-indicator::before {
     content: '';
-    width: 1px;
-    height: 45px;
+    width: .75px;
+    height: 74px;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    /* background-image: linear-gradient(rgb(88, 156, 248, .8) 33%, rgba(255,255,255,0) 0%);
-    background-position: right;
-    background-size: 1px 12px;
-    background-repeat: repeat-y; */
-    background: rgb(88, 156, 248, .8);
+    background: rgb(88, 156, 248);
 }
 
 .step-indicator::after {

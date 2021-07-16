@@ -16,7 +16,7 @@ function startApp(strollData) {
     PROMENADE = [];
     PROMENADE.push(strollData[0])
     savePromenadeToStorage(PROMENADE);
-    let currentStroll = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    let currentStroll = JSON.parse(localStorage.getItem(STORAGE_STROLL_KEY));
 
     try {
         for (const [key, value] of Object.entries(currentStroll[0].palette)) {
@@ -81,7 +81,7 @@ function startApp(strollData) {
     try {
         L.geoJSON(strollData[0].chemin_geojson, {
             style: function(){
-                return { color: '#A1C6B9' }
+                return { color: `#${PROMENADE[0].palette.thirdColor}` }
             }
         }).addTo(mymap);
     } catch(error) {
@@ -95,6 +95,7 @@ function startApp(strollData) {
         complete: function (results) {
             let items = results.data;
             etapeDataReverse = items.sort((a, b) => a.ordre - b.ordre);
+            addGlobalDataToLocalStorage('etapesReverse', etapeDataReverse)
         }
     });
 
@@ -103,6 +104,8 @@ function startApp(strollData) {
         header: true,
         complete: function (results) {
             etapeData = results.data;
+            // globalData['etapes'] = etapeData;
+            addGlobalDataToLocalStorage('etapes', etapeData)
         }
     });
             
@@ -110,7 +113,9 @@ function startApp(strollData) {
         download: true,
         header: true,
         complete: function (results) {
-            documentData = results.data;
+            documentData = results.data;;
+            // globalData['documents'] = documentData;
+            addGlobalDataToLocalStorage('documents', documentData)
         }
     });
     
@@ -119,6 +124,8 @@ function startApp(strollData) {
         header: true,
         complete: function (results) {
             damesData = results.data;
+            // globalData['dames'] = damesData;
+            addGlobalDataToLocalStorage('dames', damesData)
         }
     });
 
@@ -137,9 +144,9 @@ function startApp(strollData) {
 
 
     try {
-        document.querySelector("header h1").textContent = currentStroll[0].titre;
-        document.querySelector(".route-section h2").textContent = currentStroll[0].titre;
-        document.querySelector(".route-section p").textContent = currentStroll[0].description;
+        document.querySelector("header h1").innerHTML = currentStroll[0].titre;
+        document.querySelector(".route-section h2").innerHTML = currentStroll[0].titre;
+        document.querySelector(".route-section p").innerHTML = currentStroll[0].description;
         document.querySelectorAll(".premonade-rank").forEach(rank => { rank.textContent = currentStroll[0]["id"].toString().padStart(2, '0') })
 
         if(header.classList.contains("closed")) {
@@ -173,13 +180,11 @@ function fetchDataFromConfig() {
     })
 }
 
-// function callDadForParsing(url) {
-//     // console.log('passed');
-//     return new Promise(function(resolve, reject) {
-
-//     })
-// }
-
+function addGlobalDataToLocalStorage(key, array) {
+    if(array != undefined || array.length != 0) {
+        globalData[key] = array;
+    }
+}
 
 // ==========================================================
 //
@@ -229,7 +234,7 @@ function addDames(damesArray) {
         })
         toggleCard(true);
     } catch(error) {
-        console.log(`Une erreur s'est produute lors de la création des cartes sur les Dames. ${error}`);
+        console.log(`Une erreur s'est produite lors de la création des cartes sur les Dames. ${error}`);
     }
 }
 
@@ -297,7 +302,7 @@ function addStep(stepArray) {
                 shutterContent.setAttribute("shutter_id_etape", `${step.identifiant}`);
     
                 let newContent = `
-                    <div class="step-address">
+                    <div class="step-address ${step.adresse == "" ? 'hidden' : ''}">
                         <img src="assets/images/gps.svg" alt="">
                         <div class="address">${step.adresse}</div>
                     </div>
@@ -786,12 +791,12 @@ async function onRouteStepClick(step) {
         })
 }
 
+
 // =================================
 //
 // Mode plein écran de l'application
 //
 // =================================
-
 
 
 function isFullScreen() {
@@ -888,14 +893,12 @@ function checkPopupState(popup) {
 }
 
 
-
 // =============================================================
 //
 // Fonctions liés à l'affichage des Cards, des contrôles, et des
 // boutons radios pour les fonds de cartes
 //
 // =============================================================
-
 
 
 function toggleCard(state) {
@@ -1208,7 +1211,7 @@ function onCheckboxClick(checkboxes, settings, layers) {
             mymap.removeLayer(layers[property])
         }
     } else {
-        range.style.left = "-81px";
+        range.style.left = "-82px";
         for (const property in layers) {
             mymap.removeLayer(layers[property])
         }
@@ -1240,23 +1243,22 @@ function addFdC(layers) {
 // ======================================================================
 
 
-function setPromenades(dataProm) {
+function setPromenades(dataProm, stroll) {
     console.log(dataProm);
     for (const promenade in dataProm) {
         // console.log(dataProm[promenade]);
         let cardContent = document.createElement("div");
-        // console.log(Object.keys(dataProm));
-        cardContent.setAttribute("stroll", `${promenade}`);
+        cardContent.setAttribute("stroll", `${stroll}`);
         cardContent.classList.add('swiper-slide');
         cardContent.classList.add('card-promenade');
 
         let promCard = `
-            <img src="${dataProm[promenade].visuel}" alt="">
+            <img src="${dataProm[promenade].visuel}" alt="${dataProm[promenade].titre}">
             <div class="promenade-info">
                 <h2>${dataProm[promenade].titre}</h2>
                 <a href="./promenade.html?stroll=${cardContent.getAttribute("stroll")}">
                     <div class="start">
-                        <img src="assets/images/start.svg" alt="">
+                        <img src="assets/images/start.svg" alt="Lancer la promenade">
                     </div>
                 </a>
             </div>`
@@ -1275,11 +1277,15 @@ function setPromenades(dataProm) {
 
 
 function getPromenadeFromStorage() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    return JSON.parse(localStorage.getItem(STORAGE_STROLL_KEY)) || [];
 }
 
 function savePromenadeToStorage(promenadeArray = []) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(promenadeArray));
+    localStorage.setItem(STORAGE_STROLL_KEY, JSON.stringify(promenadeArray));
+}
+
+function saveDataToStorage(promenadeArray = []) {
+    localStorage.setItem(STORAGE_DATA_KEY, JSON.stringify(promenadeArray));
 }
 
 function IsJsonString(str) {
