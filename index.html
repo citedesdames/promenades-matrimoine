@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Les Promenades du matrimoine.</title>
 
+    <!-- Manifest --> 
+    <link rel="manifest" href="./manifest.json">
+
     <!-- CSS Style --> 
     <link rel="stylesheet" href="assets/styles/style.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -17,6 +20,14 @@
     <!-- Swiper.JS // CSS --> 
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css" />
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <script>
+        window.addEventListener('load', () => {
+            if("serviceWorker" in navigator) {
+                navigator.serviceWorker.register('/sw.js');
+            }
+        })
+    </script>
 </head>
 
 <body>

@@ -1,0 +1,17 @@
+{
+    "name": "Les promenades du matrimoine",
+    "icons": [
+        {
+            "src": "./assets/icons/icon512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        },
+        {
+            "src": "./assets/icons/icon192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        }
+    ],
+    "start_url": "/?source=pwa",
+    "display": "standalone"
+}
