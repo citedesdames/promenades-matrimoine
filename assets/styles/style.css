@@ -1364,7 +1364,7 @@ input[type=range]::-moz-range-thumb {
 .video-type {
     position: fixed;
     z-index: 5;
-    bottom: -70%;
+    bottom: -100%;
     left: 0;
     height: auto;
     padding: 0;

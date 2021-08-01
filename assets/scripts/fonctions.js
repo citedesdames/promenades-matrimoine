@@ -728,7 +728,7 @@ function toggleShutter(element, rank, option) {
 
 // ===================================
 //
-// Déploiement des documents au clique
+// Déploiement des documents au clic
 //
 // ===================================
 
@@ -750,7 +750,7 @@ function onDocumentClick(doc) {
 
 // =========================================
 //
-// CLique sur une des étapes de l'itinéraire
+// Clic sur une des étapes de l'itinéraire
 //
 // =========================================
 

@@ -192,11 +192,12 @@ fetch('./config.json')
 //     })
 
 
-setTimeout(() => {
+function startStroll(){
     console.log(globalData);
     saveDataToStorage(globalData)
     const allData = JSON.parse(localStorage.getItem(STORAGE_DATA_KEY));
     console.log(allData);
+    console.log(etapeData)
 
     try {
         for (var i = 0; i < etapeData.length; ++i) { isCloseArray.push(false); }
@@ -243,4 +244,6 @@ setTimeout(() => {
         onPhotoDocClick(photo.getAttribute('identifiant'));
     }));
 
-}, 2500)
+}
+
+setTimeout(startStroll, 5000);
