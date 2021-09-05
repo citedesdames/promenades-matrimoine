@@ -169,7 +169,6 @@ if(typeof url[1] == "undefined") {
 
 fetch('./config.json')
   .then((response) => {
-    //console.log(response)
     return response.json()
   })
   .then((data) => {
@@ -193,11 +192,11 @@ fetch('./config.json')
 
 
 function startStroll(){
-    console.log(globalData);
+    //console.log(globalData);
     saveDataToStorage(globalData)
     const allData = JSON.parse(localStorage.getItem(STORAGE_DATA_KEY));
-    console.log(allData);
-    console.log(etapeData)
+    //console.log(allData);
+    //console.log(etapeData)
 
     try {
         for (var i = 0; i < etapeData.length; ++i) { isCloseArray.push(false); }
@@ -246,4 +245,3 @@ function startStroll(){
 
 }
 
-setTimeout(startStroll, 5000);

@@ -803,5 +803,5 @@ id,visuel,titre,description,icone_marqueur,palette,bounds,fonds_de_carte,chemin_
       }","{
      ""etapes"": ""./assets/data/MargueriteParis-Etape.csv"",
      ""documents"": ""./assets/data/MargueriteParis-Document.csv"",
-     ""dames"": ""./assets/data/MargueriteParis-Dame.csvsv""
+     ""dames"": ""./assets/data/MargueriteParis-Dame.csv""
 }"

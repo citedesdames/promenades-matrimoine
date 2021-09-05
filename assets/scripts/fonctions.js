@@ -1,23 +1,36 @@
 function onMapClick(e) {
     L.marker([e.latlng.lat, e.latlng.lng]).addTo(mymap)
-        .bindPopup("Vous avez clické sur la carte à " + e.latlng.toString()).openPopup()
+        .bindPopup("Vous avez cliqué sur la carte à " + e.latlng.toString()).openPopup()
 }
 
 
 // ================================================================
 //
-// *IMPORTANT* Démarrage de l'application selon la promenade choisi
+// *IMPORTANT* Démarrage de l'application selon la promenade choisie
 //
 // ================================================================
 
 
 function startApp(strollData) {
-    // console.log(strollData[0].chemin_geojson)
     PROMENADE = [];
     PROMENADE.push(strollData[0])
     savePromenadeToStorage(PROMENADE);
     let currentStroll = JSON.parse(localStorage.getItem(STORAGE_STROLL_KEY));
+    
+    document.querySelector(".stroll-intro").innerHTML += `
+    <div class="popup-description">
+    <p><img src="./assets/icons/favicon.png" style="width:120px;" alt="Logo Les promenades du matrimoine"></p>
+    <h2>${PROMENADE[0].titre}</h2>
+    ${PROMENADE[0].description}
+    </div>
+    <button class="stroll-intro-close">Commencer la promenade !</button>
+    `
+    
+    document.querySelector(".stroll-intro").addEventListener("click", function(){
+       document.querySelector(".stroll-intro").style.display = "none";
+    })
 
+    
     try {
         for (const [key, value] of Object.entries(currentStroll[0].palette)) {
             document.documentElement.style.setProperty(`--${key}`,`#${value}`);
@@ -88,46 +101,64 @@ function startApp(strollData) {
         console.log(`Aucune donnée géoJSON n'a été trouvée. ${error}`);
     }
     console.log(currentStroll[0])
-
-    Papa.parse(currentStroll[0].data.etapes, {
-        download: true,
-        header: true,
-        complete: function (results) {
-            let items = results.data;
-            etapeDataReverse = items.sort((a, b) => a.ordre - b.ordre);
-            addGlobalDataToLocalStorage('etapesReverse', etapeDataReverse)
-        }
-    });
-
-    Papa.parse(currentStroll[0].data.etapes, {
-        download: true,
-        header: true,
-        complete: function (results) {
-            etapeData = results.data;
-            // globalData['etapes'] = etapeData;
-            addGlobalDataToLocalStorage('etapes', etapeData)
-        }
-    });
-            
-    Papa.parse(currentStroll[0].data.documents, {
-        download: true,
-        header: true,
-        complete: function (results) {
-            documentData = results.data;;
-            // globalData['documents'] = documentData;
-            addGlobalDataToLocalStorage('documents', documentData)
-        }
-    });
     
-    Papa.parse(currentStroll[0].data.dames, {
-        download: true,
-        header: true,
-        complete: function (results) {
-            damesData = results.data;
-            // globalData['dames'] = damesData;
-            addGlobalDataToLocalStorage('dames', damesData)
-        }
+    console.log("Launching the stroll step data")
+    // Launching stroll step data
+    Papa.parse(currentStroll[0].data.etapes, {
+      download: true,
+      header: true,
+      complete: function (results) {
+        let items = results.data;
+        etapeDataReverse = items.sort((a, b) => a.ordre - b.ordre);
+        addGlobalDataToLocalStorage('etapesReverse', etapeDataReverse);
+
+        // Launching stroll step data again
+        Papa.parse(currentStroll[0].data.etapes, {
+          download: true,
+          header: true,
+          complete: function (results) {
+            etapeData = results.data;
+            console.log("Stroll step data launched!")
+            // globalData['etapes'] = etapeData;
+            addGlobalDataToLocalStorage('etapes', etapeData);
+
+            // Launching stroll document data
+            Papa.parse(currentStroll[0].data.documents, {
+              download: true,
+              header: true,
+              complete: function (results) {
+                documentData = results.data;
+                console.log("Stroll document data launched!")
+                // globalData['documents'] = documentData;
+                addGlobalDataToLocalStorage('documents', documentData);
+                
+
+                
+                // Launching stroll woman data
+                Papa.parse(currentStroll[0].data.dames, {
+                  download: true,
+                  header: true,
+                  complete: function (results) {
+                    damesData = results.data;
+                    console.log("Stroll woman data launched!")
+                    // globalData['dames'] = damesData;
+                    addGlobalDataToLocalStorage('dames', damesData)
+                    console.log("Launching the stroll steps")
+                    
+                    // Creating stroll
+                    startStroll();
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     });
+
+            
+    
+
 
     try {
         let tmpObj = currentStroll[0].fonds_de_carte;
@@ -139,7 +170,7 @@ function startApp(strollData) {
         }
         Object.assign(fondsDeCarte, tmpObj);
     } catch(error) {
-        console.log(`Une erreur s'est produite lors de l'assignation des fonds de carte historique. ${error}`);
+        console.log(`Une erreur s'est produite lors de l'assignation des fonds de carte historiques. ${error}`);
     }
 
 
@@ -161,6 +192,7 @@ function startApp(strollData) {
     }
 
     toggleControls(true);
+    
 }
 
 function fetchDataFromConfig() {
@@ -234,7 +266,7 @@ function addDames(damesArray) {
         })
         toggleCard(true);
     } catch(error) {
-        console.log(`Une erreur s'est produite lors de la création des cartes sur les Dames. ${error}`);
+        console.log(`Une erreur s'est produite lors de la création des cartes sur les dames. ${error}`);
     }
 }
 
@@ -293,6 +325,7 @@ function addStep(stepArray) {
                                 console.log(item['identifiant']);
                             }
                         })
+
                         toggleShutter(shutter, markerRankNumber);
                     });
                 });
@@ -307,7 +340,7 @@ function addStep(stepArray) {
                         <div class="address">${step.adresse}</div>
                     </div>
                     <h2>${step.ordre == 1 ? `${step.ordre}<sup>ère</sup>` : `${step.ordre}<sup>e</sup>`} étape : <span>${step.nom}</span>.</h2>
-    
+                    <div class="descriptionLongue">${step.descriptionLongue}</div>
                     <div class="doc-header">
                         <h3>Documents sur ce lieu :</h3>
                         <div class="doc-list"><span class="doc-number"></span></div>
@@ -437,10 +470,10 @@ function addDocuments(docArray, damesArray) {
                             </div>
                             <div class="additional-infos">
                                 <div class="marquee-rtl">
-                                    <div><span>${doc.licence}</span></div>
+                                    <div><span>${addHref(doc.source)} - ${doc.licence}</span></div>
                                 </div>
                                 <p class="desc">${doc.description}</p>
-                                <p class="source">${doc.source}</p>
+                                <!--<p class="source"></p>-->
                             </div>
                         </article>`;
                     } else if(`${doc.type}` == 'vidéo' && doc.URL.includes("youtube")) {
@@ -455,10 +488,25 @@ function addDocuments(docArray, damesArray) {
                             </div>
                             <div class="additional-infos">
                                 <div class="marquee-rtl">
-                                    <div><span>${doc.licence}</span></div>
+                                    <div><span>${addHref(doc.source)} - ${doc.licence}</span></div>
                                 </div>
                                 <p class="desc">${doc.description}</p>
-                                <p class="source">${doc.source}</p>
+                                <!--<p class="source"></p>-->
+                            </div>
+                        </article>`;
+                    } else if(`${doc.type}` == 'audio' && doc.URL.includes(".mp3")) {
+                        mainContent = `
+                        <article class="informations video-type">
+                            <div class="touch-bar"></div>
+                            <div class="embed-audio">
+                                <audio controls src="${doc.URL}">Your browser does not support the <code>audio</code> element.</audio>
+                            </div>
+                            <div class="additional-infos">
+                                <div class="marquee-rtl">
+                                    <div><span>${doc.licence} - ${addHref(doc.source)}</span></div>
+                                </div>
+                                <p class="desc">${doc.description}</p>
+                                <!--<p class="source">${addHref(doc.source)}</p>-->
                             </div>
                         </article>`;
                     } else if (`${doc.type}` == 'article' || `${doc.type}` == 'texte') {
@@ -471,7 +519,7 @@ function addDocuments(docArray, damesArray) {
                                 </div>
                                 <div class="preview">
                                     <div class="shadow">
-                                        <a href="${doc.URL}" target="_blank">Clickez pour poursuivre vers le site</a>
+                                        <a href="${doc.URL}" target="_blank">Cliquez pour poursuivre vers le site</a>
                                     </div>
                                     <iframe src="${doc.URL}" sandbox="allow-scripts" frameborder="0">
                                     </iframe>
@@ -494,7 +542,7 @@ function addDocuments(docArray, damesArray) {
                         <article class="informations hidden">
                             <div class="main-information">
                                 <p class="desc">${doc.description}</p>
-                                <p class="source">${doc.source}</p>
+                                <p class="source">${addHref(doc.source)}</p>
                                 <span>${addHref(doc.licence)}</span>
                             </div>
                         </article>`;
@@ -503,8 +551,11 @@ function addDocuments(docArray, damesArray) {
                     let newContent = cardContent + mainContent;
                     docContent.innerHTML = newContent;
                     shutterChildrens[i].append(docContent);
+
                 }
             }
+
+            
         });
     } catch(error) {
         console.log(`Une erreur s'est produite lors de l'importation des documents. ${error}`);
@@ -618,11 +669,11 @@ function verifyPosition(step) {
         Notification.requestPermission( function(status) {
             // console.log(status); // les notifications ne seront affichées que si "autorisées"
             var n = new Notification(`À proximité de : ${step.nom}`, {
-                body: "Accedez à des documents exclusifs via l'appareil photo de votre smartphone !"
+                body: "Accédez à des documents exclusifs via l'appareil photo de votre smartphone !"
             }); // this also shows the notification
         });
 
-        // Ne marche que si l'utilisateur attends que les étapes soient chargées
+        // Ne marche que si l'utilisateur attend que les étapes soient chargées
         document.querySelector('.btn-close').addEventListener('click', function () {
             notif.style.top = "-24%";
         })
@@ -672,7 +723,6 @@ function updateOpacity(value) {
 
 function toggleShutter(element, rank, option) {
     const stepDocumentChildrens = document.querySelectorAll(".shutter-content");
-    console.log(option);
     if(!element.classList.contains("open")) {
         if(option == true || option == undefined) {
             toggleControls(false);
@@ -689,10 +739,18 @@ function toggleShutter(element, rank, option) {
                 routeSection.classList.add("hidden");
                 stepDocumentChildrens[i].classList.add("reveal");
                 
+                
                 let elementList = stepDocumentChildrens[i].childNodes;
+                console.log(stepDocumentChildrens[i])
+                console.log(stepDocumentChildrens[i].querySelector(".doc-number"))
+                console.log(stepDocumentChildrens[i].querySelectorAll(".document").length)
+                
+                stepDocumentChildrens[i].querySelector(".doc-number").innerHTML = stepDocumentChildrens[i].querySelectorAll(".document").length
+                /*
                 let docNumber = elementList[7].childNodes.length;
                 let childNumber = elementList[5].childNodes;
                 childNumber[3].firstChild.innerHTML = docNumber;
+                */
 
                 setTimeout(() => {
                     if(elementList[9].getAttribute('location') == 'near') {
@@ -1094,7 +1152,7 @@ const onCardClick = async (e) => {
         background-color: #C9C9C9;
     `;
 
-    // Lors de clique sur le bouton de fermeture
+    // Lors d'un clic sur le bouton de fermeture
     closeButton.addEventListener('click', async () => {
         closeButton.remove();
 
