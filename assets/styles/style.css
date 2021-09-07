@@ -77,7 +77,7 @@ body {
 
 iframe {
     width: 100%;
-    height: calc((100vw / 26) * 14);
+    /*height: calc((100vw / 26) * 14);*/
     /* force le 16/9 */
     border: none;
 }
@@ -816,10 +816,6 @@ input[type=range]::-moz-range-thumb {
     left: 0px;
 }
 
-.shutter-page{
-    max-width: 700px;
-}
-
 .arrow {
     width: 70%;
     height: auto;
@@ -957,8 +953,9 @@ input[type=range]::-moz-range-thumb {
 }
 
 .shutter-page {
-    margin: 22% 0 25% 0;
+    margin: 60px 0 25% 0;
     padding: 0 20px;
+    max-width: 700px;
 }
 
 .step-document {
@@ -980,6 +977,7 @@ input[type=range]::-moz-range-thumb {
 
 .informations {
     width: 100%;
+    max-width: 700px;
     height: auto;
     font-family: var(--interFont-fam);
     color: #fff;
@@ -1912,7 +1910,8 @@ input[type=range]::-moz-range-thumb {
 }
 
 .video-reveal {
-    bottom: 0;
+    top: 0px;
+    bottom: 0px;
 }
 
 .main-indicator .premonade-rank {
