@@ -51,7 +51,7 @@ function startApp(strollData) {
         bounds = L.latLngBounds(sudOuest, nordEst);
         mymap = new L.Map('mapid', {
             center: bounds.getCenter(),
-            zoom: 12,
+            zoom: 15,
             minZoom: 5,
             zoomControl: false,
             maxBounds: bounds,
