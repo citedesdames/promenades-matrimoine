@@ -449,6 +449,15 @@ function addDocuments(docArray, damesArray) {
                                 <span>${doc.licence}</span>
                             </div>
                         </article>`;
+                    } else if(`${doc.type}` == 'audio') {
+                        mainContent = `
+                        <article class="informations hidden">
+                            <div class="main-information">
+                                <div class="embed-audio"><audio controls="" src="${doc.URL}">Your browser does not support the <code>audio</code> element.</audio></div>
+                                <p class="source">${addHref(doc.source)}</p>
+                                <span>${doc.licence}</span>
+                            </div>
+                        </article>`;
                     } else if(`${doc.type}` == 'extrait') {
                         mainContent = `
                         <article class="informations hidden">
@@ -565,7 +574,7 @@ function addDocuments(docArray, damesArray) {
 
 // ==================================================================================
 //
-// Fonctions retives au positionnement de l'utilisateur, coordonnées GPS et distances
+// Fonctions relatives au positionnement de l'utilisateur, coordonnées GPS et distances
 //
 // ==================================================================================
 
@@ -776,7 +785,7 @@ function toggleShutter(element, rank, option) {
             routeSection.classList.remove("hidden");
         }, 1200)
 
-        mymap.flyTo(mymap.getCenter(), 13, {
+        mymap.flyTo(mymap.getCenter(), 15, {
             animate: true,
             duration: 1.5
         });

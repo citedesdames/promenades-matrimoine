@@ -92,7 +92,7 @@ let CartoDB_Positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/
 
 // ============================================================
 //
-// Principales fonctionnalités liés à des écouteurs d'évènement.
+// Principales fonctionnalités liées à des écouteurs d'évènement.
 //
 // ============================================================
 
