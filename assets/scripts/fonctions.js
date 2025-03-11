@@ -313,7 +313,7 @@ function addStep(stepArray) {
                         duration: 0.5
                     });
                 
-                    let knowMore = document.querySelector(".know-more");
+                    let knowMore = document.querySelector(`.know-more[ordre="${step.ordre}"]`);
                     knowMore.addEventListener('click', event => {
                         this.closePopup();
                         toggleCard(false);
@@ -321,11 +321,13 @@ function addStep(stepArray) {
                         markerArray.forEach(item => {
                             if(item['marker'] == mark) {
                                 markerRankNumber = markerArray.indexOf(item) + 1;
+                                /*
                                 console.log(markerRankNumber);
                                 console.log(item['identifiant']);
+                                */
                             }
                         })
-
+                            
                         toggleShutter(shutter, markerRankNumber);
                     });
                 });
@@ -823,7 +825,6 @@ function onDocumentClick(doc) {
 
 
 async function onRouteStepClick(step) {
-    console.log(step);
     window.scrollTo({
         top: 0,
         behavior: 'smooth'
@@ -951,11 +952,13 @@ function checkPopupState(popup) {
     if(popup.isPopupOpen() == true) {
         toggleControls(false);
         toggleCard(false);
-        header.classList.add('closed');
+        header.classList.add('closed');        
+        console.log("ouvre !")
     } else if (popup.isPopupOpen() == false) {
         toggleControls(true);
         toggleCard(true);
         header.classList.remove('closed');
+        console.log("ferme !")
     }
 }
 
@@ -1141,7 +1144,7 @@ const onCardClick = async (e) => {
     cardClone.style.width = width + 'px';
     cardClone.style.height = height + 'px';
 
-    // Cache l'originale en applicquant une opacité nulle
+    // Cache l'originale en appliquant une opacité nulle
     card.style.opacity = '0';
     // Ajoute la carte au même conteneur
     card.parentNode.appendChild(cardClone);
